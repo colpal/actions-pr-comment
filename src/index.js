@@ -25,7 +25,7 @@ async function postComment() {
             owner,
             repo,
             pull_number: prNumber,
-            event: 'COMMENT',
+            event: 'APPROVE',
             body: commentBody,
         });
         core.info("Comment posted successfully.");
@@ -72,8 +72,8 @@ async function updateComment() {
 
 
 async function main() {
-    // await postComment();
-    await updateComment();
+    await postComment();
+    // await updateComment();
 }
 
 main();

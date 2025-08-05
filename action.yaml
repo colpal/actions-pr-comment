@@ -2,10 +2,14 @@ name: Submit Comment
 description: Submit a comment on a pull request
 
 inputs:
-  comment-body:
+  comment_body:
     description: Body of the comment
     required: true
     default: "Test Comment"
+  github_token:
+    description: The GitHub token used to create an authenticated client
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: node20

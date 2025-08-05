@@ -29,4 +29,5 @@ jobs:
         uses: ./
         id: hello
         with:
-          comment-body: ${{ env.COMMENT_BODY }}
+          comment_body: ${{ env.COMMENT_BODY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -4,8 +4,8 @@ const github = require("@actions/github");
 async function postComment() {
     core.info("Starting to post a comment...");
     try {
-        const token = process.env.GITHUB_TOKEN;
-        const commentBody = core.getInput('comment-body', { required: true });
+        const token = core.getInput('github_token', { required: true });
+        const commentBody = core.getInput('comment_body', { required: true });
 
         if (!token) {
             throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');

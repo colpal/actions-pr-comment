@@ -23907,7 +23907,7 @@ async function findComment() {
       pull_number: prNumber
     });
     const reviews = response.data;
-    const targetReview = reviews.find(
+    const targetReview = reviews.findLast(
       (review) => review.user.login === author && review.body?.includes(commentIdentifier)
     );
     if (!targetReview) {
@@ -23917,6 +23917,9 @@ async function findComment() {
     core.info("Matching review found successfully.");
     core.setOutput("comment_id", targetReview.id);
     core.setOutput("comment_body", targetReview.body);
+    core.info(`Comment ID: ${targetReview.id} 
+ Body: ${targetReview.body} 
+ State: ${targetReview.state}.`);
   } catch (error) {
     core.setFailed(error.message);
   }

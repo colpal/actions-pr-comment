@@ -22,6 +22,7 @@ jobs:
       - name: Load COMMENT_BODY from .env file
         run: |
           grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_IDENTIFIER=' ci/vars/test.env >> $GITHUB_ENV
 
       - name: Action step
         uses: ./

@@ -23858,8 +23858,8 @@ var require_github = __commonJS({
 // src/index.js
 var core = require_core();
 var github = require_github();
-async function postComment() {
-  core.info("Starting to post a comment...");
+async function updateComment() {
+  core.info("Starting to update a comment...");
   try {
     const token = core.getInput("github_token", { required: true });
     const commentBody = core.getInput("comment_body", { required: true });
@@ -23873,20 +23873,21 @@ async function postComment() {
     }
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    await octokit.rest.pulls.createReview({
+    const commentId = 3089380658;
+    await octokit.rest.pulls.updateReview({
       owner,
       repo,
       pull_number: prNumber,
-      event: "COMMENT",
+      review_id: commentId,
       body: commentBody
     });
-    core.info("Comment posted successfully.");
+    core.info("Comment updated successfully.");
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 async function main() {
-  await postComment();
+  await updateComment();
 }
 main();
 /*! Bundled license information:

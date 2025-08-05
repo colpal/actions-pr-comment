@@ -99,7 +99,7 @@ async function findComment() {
 
         const reviews = response.data;
 
-        const targetReview = reviews.find(review =>
+        const targetReview = reviews.findLast(review =>
             review.user.login === author &&
             review.body?.includes(commentIdentifier)
         );
@@ -112,6 +112,7 @@ async function findComment() {
         core.info("Matching review found successfully.");
         core.setOutput('comment_id', targetReview.id);
         core.setOutput('comment_body', targetReview.body);
+        core.info(`Comment ID: ${targetReview.id} \n Body: ${targetReview.body} \n State: ${targetReview.state}.`);
 
     } catch (error) {
         core.setFailed(error.message);

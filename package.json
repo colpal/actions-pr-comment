@@ -1,0 +1,32 @@
+{
+  "name": "actions-pr-comment",
+  "version": "1.0.0",
+  "description": "Internal action for creating comments on pull requests",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --outdir=dist --platform=node --target=node20",
+    "lint": "eslint src/*.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colpal/actions-pr-comment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/colpal/actions-pr-comment/issues"
+  },
+  "homepage": "https://github.com/colpal/actions-pr-comment#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "esbuild": "^0.25.8",
+    "eslint": "^9.32.0",
+    "globals": "^16.3.0"
+  }
+}

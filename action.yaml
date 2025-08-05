@@ -6,6 +6,10 @@ inputs:
     description: Body of the comment
     required: true
     default: "Test Comment"
+  comment_identifier:
+    description: Identifier for the comment
+    required: true
+    default: "<!-- Test Identifier  -->"
   github_token:
     description: The GitHub token used to create an authenticated client
     required: false

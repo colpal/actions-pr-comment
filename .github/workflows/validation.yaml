@@ -22,10 +22,12 @@ jobs:
       - name: Load COMMENT_BODY from .env file
         run: |
           grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_IDENTIFIER=' ci/vars/test.env >> $GITHUB_ENV
 
       - name: Action step
         uses: ./
         id: hello
         with:
           comment_body: ${{ env.COMMENT_BODY }}
+          comment_identifier: ${{ env.COMMENT_IDENTIFIER }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -20,7 +20,14 @@ jobs:
 
       - name: Load WHO_TO_GREET from .env file
         run: |
-          grep '^WHO_TO_GREET=' ci/vars/test.env >> $GITHUB_ENV
+          VALUE=$(grep '^WHO_TO_GREET=' ci/vars/test.env | cut -d'=' -f2-)
+          # Only allow alphanumeric, space, dash, underscore, and period
+          if [[ "$VALUE" =~ ^[a-zA-Z0-9 _.-]+$ ]]; then
+            echo "WHO_TO_GREET=$VALUE" >> $GITHUB_ENV
+          else
+            echo "Invalid WHO_TO_GREET value" >&2
+            exit 1
+          fi
 
       - name: Hello world action step
         uses: ./

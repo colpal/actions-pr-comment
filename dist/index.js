@@ -39,25 +39,27 @@ var require_utils = __commonJS({
 var require_command = __commonJS({
   "node_modules/@actions/core/lib/command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -125,25 +127,27 @@ var require_command = __commonJS({
 var require_file_command = __commonJS({
   "node_modules/@actions/core/lib/file-command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -336,7 +340,7 @@ var require_tunnel = __commonJS({
         self.requests.push(options);
         return;
       }
-      self.createSocket(options, function(socket) {
+      self.createSocket(options, function (socket) {
         socket.on("free", onFree);
         socket.on("close", onCloseOrRemove);
         socket.on("agentRemove", onCloseOrRemove);
@@ -383,7 +387,7 @@ var require_tunnel = __commonJS({
         res.upgrade = true;
       }
       function onUpgrade(res, socket, head) {
-        process.nextTick(function() {
+        process.nextTick(function () {
           onConnect(res, socket, head);
         });
       }
@@ -436,14 +440,14 @@ var require_tunnel = __commonJS({
       this.sockets.splice(pos, 1);
       var pending = this.requests.shift();
       if (pending) {
-        this.createSocket(pending, function(socket2) {
+        this.createSocket(pending, function (socket2) {
           pending.request.onSocket(socket2);
         });
       }
     };
     function createSecureSocket(options, cb) {
       var self = this;
-      TunnelingAgent.prototype.createSocket.call(self, options, function(socket) {
+      TunnelingAgent.prototype.createSocket.call(self, options, function (socket) {
         var hostHeader = options.request.getHeader("host");
         var tlsOptions = mergeOptions({}, self.options, {
           socket,
@@ -481,7 +485,7 @@ var require_tunnel = __commonJS({
     }
     var debug;
     if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
-      debug = function() {
+      debug = function () {
         var args = Array.prototype.slice.call(arguments);
         if (typeof args[0] === "string") {
           args[0] = "TUNNEL: " + args[0];
@@ -491,7 +495,7 @@ var require_tunnel = __commonJS({
         console.error.apply(console, args);
       };
     } else {
-      debug = function() {
+      debug = function () {
       };
     }
     exports2.debug = debug;
@@ -1402,12 +1406,12 @@ var require_sbmh = __commonJS({
       }
     }
     inherits(SBMH, EventEmitter);
-    SBMH.prototype.reset = function() {
+    SBMH.prototype.reset = function () {
       this._lookbehind_size = 0;
       this.matches = 0;
       this._bufpos = 0;
     };
-    SBMH.prototype.push = function(chunk, pos) {
+    SBMH.prototype.push = function (chunk, pos) {
       if (!Buffer.isBuffer(chunk)) {
         chunk = Buffer.from(chunk, "binary");
       }
@@ -1419,7 +1423,7 @@ var require_sbmh = __commonJS({
       }
       return r;
     };
-    SBMH.prototype._sbmh_feed = function(data) {
+    SBMH.prototype._sbmh_feed = function (data) {
       const len = data.length;
       const needle = this._needle;
       const needleLength = needle.length;
@@ -1492,10 +1496,10 @@ var require_sbmh = __commonJS({
       this._bufpos = len;
       return len;
     };
-    SBMH.prototype._sbmh_lookup_char = function(data, pos) {
+    SBMH.prototype._sbmh_lookup_char = function (data, pos) {
       return pos < 0 ? this._lookbehind[this._lookbehind_size + pos] : data[pos];
     };
-    SBMH.prototype._sbmh_memcmp = function(data, pos, len) {
+    SBMH.prototype._sbmh_memcmp = function (data, pos, len) {
       for (var i = 0; i < len; ++i) {
         if (this._sbmh_lookup_char(data, pos + i) !== this._needle[i]) {
           return false;
@@ -1517,7 +1521,7 @@ var require_PartStream = __commonJS({
       ReadableStream.call(this, opts);
     }
     inherits(PartStream, ReadableStream);
-    PartStream.prototype._read = function(n) {
+    PartStream.prototype._read = function (n) {
     };
     module2.exports = PartStream;
   }
@@ -1563,7 +1567,7 @@ var require_HeaderParser = __commonJS({
       this.header = {};
       this.finished = false;
       this.ss = new StreamSearch(B_DCRLF);
-      this.ss.on("info", function(isMatch, data, start, end) {
+      this.ss.on("info", function (isMatch, data, start, end) {
         if (data && !self.maxed) {
           if (self.nread + end - start >= self.maxHeaderSize) {
             end = self.maxHeaderSize - self.nread + start;
@@ -1580,19 +1584,19 @@ var require_HeaderParser = __commonJS({
       });
     }
     inherits(HeaderParser, EventEmitter);
-    HeaderParser.prototype.push = function(data) {
+    HeaderParser.prototype.push = function (data) {
       const r = this.ss.push(data);
       if (this.finished) {
         return r;
       }
     };
-    HeaderParser.prototype.reset = function() {
+    HeaderParser.prototype.reset = function () {
       this.finished = false;
       this.buffer = "";
       this.header = {};
       this.ss.reset();
     };
-    HeaderParser.prototype._finish = function() {
+    HeaderParser.prototype._finish = function () {
       if (this.buffer) {
         this._parseHeader();
       }
@@ -1605,7 +1609,7 @@ var require_HeaderParser = __commonJS({
       this.maxed = false;
       this.emit("header", header);
     };
-    HeaderParser.prototype._parseHeader = function() {
+    HeaderParser.prototype._parseHeader = function () {
       if (this.npairs === this.maxHeaderPairs) {
         return;
       }
@@ -1651,7 +1655,7 @@ var require_Dicer = __commonJS({
     var DASH = 45;
     var B_ONEDASH = Buffer.from("-");
     var B_CRLF = Buffer.from("\r\n");
-    var EMPTY_FN = function() {
+    var EMPTY_FN = function () {
     };
     function Dicer(cfg) {
       if (!(this instanceof Dicer)) {
@@ -1682,23 +1686,23 @@ var require_Dicer = __commonJS({
       this._pause = false;
       const self = this;
       this._hparser = new HeaderParser(cfg);
-      this._hparser.on("header", function(header) {
+      this._hparser.on("header", function (header) {
         self._inHeader = false;
         self._part.emit("header", header);
       });
     }
     inherits(Dicer, WritableStream);
-    Dicer.prototype.emit = function(ev) {
+    Dicer.prototype.emit = function (ev) {
       if (ev === "finish" && !this._realFinish) {
         if (!this._finished) {
           const self = this;
-          process.nextTick(function() {
+          process.nextTick(function () {
             self.emit("error", new Error("Unexpected end of multipart data"));
             if (self._part && !self._ignoreData) {
               const type = self._isPreamble ? "Preamble" : "Part";
               self._part.emit("error", new Error(type + " terminated early due to unexpected end of multipart data"));
               self._part.push(null);
-              process.nextTick(function() {
+              process.nextTick(function () {
                 self._realFinish = true;
                 self.emit("finish");
                 self._realFinish = false;
@@ -1714,7 +1718,7 @@ var require_Dicer = __commonJS({
         WritableStream.prototype.emit.apply(this, arguments);
       }
     };
-    Dicer.prototype._write = function(data, encoding, cb) {
+    Dicer.prototype._write = function (data, encoding, cb) {
       if (!this._hparser && !this._bparser) {
         return cb();
       }
@@ -1745,26 +1749,26 @@ var require_Dicer = __commonJS({
         cb();
       }
     };
-    Dicer.prototype.reset = function() {
+    Dicer.prototype.reset = function () {
       this._part = void 0;
       this._bparser = void 0;
       this._hparser = void 0;
     };
-    Dicer.prototype.setBoundary = function(boundary) {
+    Dicer.prototype.setBoundary = function (boundary) {
       const self = this;
       this._bparser = new StreamSearch("\r\n--" + boundary);
-      this._bparser.on("info", function(isMatch, data, start, end) {
+      this._bparser.on("info", function (isMatch, data, start, end) {
         self._oninfo(isMatch, data, start, end);
       });
     };
-    Dicer.prototype._ignore = function() {
+    Dicer.prototype._ignore = function () {
       if (this._part && !this._ignoreData) {
         this._ignoreData = true;
         this._part.on("error", EMPTY_FN);
         this._part.resume();
       }
     };
-    Dicer.prototype._oninfo = function(isMatch, data, start, end) {
+    Dicer.prototype._oninfo = function (isMatch, data, start, end) {
       let buf;
       const self = this;
       let i = 0;
@@ -1804,7 +1808,7 @@ var require_Dicer = __commonJS({
       }
       if (!this._part) {
         this._part = new PartStream(this._partOpts);
-        this._part._read = function(n) {
+        this._part._read = function (n) {
           self._unpause();
         };
         if (this._isPreamble && this.listenerCount("preamble") !== 0) {
@@ -1844,7 +1848,7 @@ var require_Dicer = __commonJS({
         } else {
           if (start !== end) {
             ++this._parts;
-            this._part.on("end", function() {
+            this._part.on("end", function () {
               if (--self._parts === 0) {
                 if (self._finished) {
                   self._realFinish = true;
@@ -1864,7 +1868,7 @@ var require_Dicer = __commonJS({
         this._dashes = 0;
       }
     };
-    Dicer.prototype._unpause = function() {
+    Dicer.prototype._unpause = function () {
       if (!this._pause) {
         return;
       }
@@ -2677,7 +2681,7 @@ var require_multipart = __commonJS({
         highWaterMark: cfg.highWaterMark
       };
       this.parser = new Dicer(parserCfg);
-      this.parser.on("drain", function() {
+      this.parser.on("drain", function () {
         self._needDrain = false;
         if (self._cb && !self._pause) {
           const cb = self._cb;
@@ -2697,7 +2701,7 @@ var require_multipart = __commonJS({
           field.emit("end");
           field.removeAllListeners("end");
         }
-        part.on("header", function(header) {
+        part.on("header", function (header) {
           let contype;
           let fieldname;
           let parsed;
@@ -2763,7 +2767,7 @@ var require_multipart = __commonJS({
             ++nends;
             const file = new FileStream(fileOpts);
             curFile = file;
-            file.on("end", function() {
+            file.on("end", function () {
               --nends;
               self._pause = false;
               checkFinished();
@@ -2773,7 +2777,7 @@ var require_multipart = __commonJS({
                 cb();
               }
             });
-            file._read = function(n) {
+            file._read = function (n) {
               if (!self._pause) {
                 return;
               }
@@ -2785,7 +2789,7 @@ var require_multipart = __commonJS({
               }
             };
             boy.emit("file", fieldname, file, filename, encoding, contype);
-            onData = function(data) {
+            onData = function (data) {
               if ((nsize += data.length) > fileSizeLimit) {
                 const extralen = fileSizeLimit - nsize + data.length;
                 if (extralen > 0) {
@@ -2801,7 +2805,7 @@ var require_multipart = __commonJS({
               }
               file.bytesRead = nsize;
             };
-            onEnd = function() {
+            onEnd = function () {
               curFile = void 0;
               file.push(null);
             };
@@ -2818,7 +2822,7 @@ var require_multipart = __commonJS({
             let buffer = "";
             let truncated = false;
             curField = part;
-            onData = function(data) {
+            onData = function (data) {
               if ((nsize += data.length) > fieldSizeLimit) {
                 const extralen = fieldSizeLimit - (nsize - data.length);
                 buffer += data.toString("binary", 0, extralen);
@@ -2828,7 +2832,7 @@ var require_multipart = __commonJS({
                 buffer += data.toString("binary");
               }
             };
-            onEnd = function() {
+            onEnd = function () {
               curField = void 0;
               if (buffer.length) {
                 buffer = decodeText(buffer, "binary", charset);
@@ -2841,19 +2845,19 @@ var require_multipart = __commonJS({
           part._readableState.sync = false;
           part.on("data", onData);
           part.on("end", onEnd);
-        }).on("error", function(err) {
+        }).on("error", function (err) {
           if (curFile) {
             curFile.emit("error", err);
           }
         });
-      }).on("error", function(err) {
+      }).on("error", function (err) {
         boy.emit("error", err);
-      }).on("finish", function() {
+      }).on("finish", function () {
         finished = true;
         checkFinished();
       });
     }
-    Multipart.prototype.write = function(chunk, cb) {
+    Multipart.prototype.write = function (chunk, cb) {
       const r = this.parser.write(chunk);
       if (r && !this._pause) {
         cb();
@@ -2862,12 +2866,12 @@ var require_multipart = __commonJS({
         this._cb = cb;
       }
     };
-    Multipart.prototype.end = function() {
+    Multipart.prototype.end = function () {
       const self = this;
       if (self.parser.writable) {
         self.parser.end();
       } else if (!self._boy._done) {
-        process.nextTick(function() {
+        process.nextTick(function () {
           self._boy._done = true;
           self._boy.emit("finish");
         });
@@ -2882,7 +2886,7 @@ var require_multipart = __commonJS({
       this.truncated = false;
     }
     inherits(FileStream, Readable);
-    FileStream.prototype._read = function(n) {
+    FileStream.prototype._read = function (n) {
     };
     module2.exports = Multipart;
   }
@@ -3026,7 +3030,7 @@ var require_Decoder = __commonJS({
     function Decoder() {
       this.buffer = void 0;
     }
-    Decoder.prototype.write = function(str) {
+    Decoder.prototype.write = function (str) {
       str = str.replace(RE_PLUS, " ");
       let res = "";
       let i = 0;
@@ -3060,7 +3064,7 @@ var require_Decoder = __commonJS({
       }
       return res;
     };
-    Decoder.prototype.reset = function() {
+    Decoder.prototype.reset = function () {
       this.buffer = void 0;
     };
     module2.exports = Decoder;
@@ -3106,7 +3110,7 @@ var require_urlencoded = __commonJS({
       this._valTrunc = false;
       this._hitLimit = false;
     }
-    UrlEncoded.prototype.write = function(data, cb) {
+    UrlEncoded.prototype.write = function (data, cb) {
       if (this._fields === this.fieldsLimit) {
         if (!this.boy.hitFieldsLimit) {
           this.boy.hitFieldsLimit = true;
@@ -3254,7 +3258,7 @@ var require_urlencoded = __commonJS({
       }
       cb();
     };
-    UrlEncoded.prototype.end = function() {
+    UrlEncoded.prototype.end = function () {
       if (this.boy._done) {
         return;
       }
@@ -3319,7 +3323,7 @@ var require_main = __commonJS({
       this._finished = false;
     }
     inherits(Busboy, WritableStream);
-    Busboy.prototype.emit = function(ev) {
+    Busboy.prototype.emit = function (ev) {
       if (ev === "finish") {
         if (!this._done) {
           this._parser?.end();
@@ -3331,7 +3335,7 @@ var require_main = __commonJS({
       }
       WritableStream.prototype.emit.apply(this, arguments);
     };
-    Busboy.prototype.getParserByHeaders = function(headers) {
+    Busboy.prototype.getParserByHeaders = function (headers) {
       const parsed = parseParams(headers["content-type"]);
       const cfg = {
         defCharset: this.opts.defCharset,
@@ -3351,7 +3355,7 @@ var require_main = __commonJS({
       }
       throw new Error("Unsupported Content-Type.");
     };
-    Busboy.prototype._write = function(chunk, encoding, cb) {
+    Busboy.prototype._write = function (chunk, encoding, cb) {
       this._parser.write(chunk, cb);
     };
     module2.exports = Busboy;
@@ -3519,19 +3523,19 @@ var require_constants2 = __commonJS({
     })();
     var channel;
     var structuredClone = globalThis.structuredClone ?? // https://github.com/nodejs/node/blob/b27ae24dcc4251bad726d9d84baf678d1f707fed/lib/internal/structured_clone.js
-    // structuredClone was added in v17.0.0, but fetch supports v16.8
-    function structuredClone2(value, options = void 0) {
-      if (arguments.length === 0) {
-        throw new TypeError("missing argument");
-      }
-      if (!channel) {
-        channel = new MessageChannel();
-      }
-      channel.port1.unref();
-      channel.port2.unref();
-      channel.port1.postMessage(value, options?.transfer);
-      return receiveMessageOnPort(channel.port2).message;
-    };
+      // structuredClone was added in v17.0.0, but fetch supports v16.8
+      function structuredClone2(value, options = void 0) {
+        if (arguments.length === 0) {
+          throw new TypeError("missing argument");
+        }
+        if (!channel) {
+          channel = new MessageChannel();
+        }
+        channel.port1.unref();
+        channel.port2.unref();
+        channel.port1.postMessage(value, options?.transfer);
+        return receiveMessageOnPort(channel.port2).message;
+      };
     module2.exports = {
       DOMException: DOMException2,
       structuredClone,
@@ -3649,8 +3653,8 @@ var require_util2 = __commonJS({
       for (let i = 0; i < statusText.length; ++i) {
         const c = statusText.charCodeAt(i);
         if (!(c === 9 || // HTAB
-        c >= 32 && c <= 126 || // SP / VCHAR
-        c >= 128 && c <= 255)) {
+          c >= 32 && c <= 126 || // SP / VCHAR
+          c >= 128 && c <= 255)) {
           return false;
         }
       }
@@ -4236,10 +4240,10 @@ var require_webidl = __commonJS({
     webidl.converters = {};
     webidl.util = {};
     webidl.errors = {};
-    webidl.errors.exception = function(message) {
+    webidl.errors.exception = function (message) {
       return new TypeError(`${message.header}: ${message.message}`);
     };
-    webidl.errors.conversionFailed = function(context) {
+    webidl.errors.conversionFailed = function (context) {
       const plural = context.types.length === 1 ? "" : " one of";
       const message = `${context.argument} could not be converted to${plural}: ${context.types.join(", ")}.`;
       return webidl.errors.exception({
@@ -4247,20 +4251,20 @@ var require_webidl = __commonJS({
         message
       });
     };
-    webidl.errors.invalidArgument = function(context) {
+    webidl.errors.invalidArgument = function (context) {
       return webidl.errors.exception({
         header: context.prefix,
         message: `"${context.value}" is an invalid ${context.type}.`
       });
     };
-    webidl.brandCheck = function(V, I, opts = void 0) {
+    webidl.brandCheck = function (V, I, opts = void 0) {
       if (opts?.strict !== false && !(V instanceof I)) {
         throw new TypeError("Illegal invocation");
       } else {
         return V?.[Symbol.toStringTag] === I.prototype[Symbol.toStringTag];
       }
     };
-    webidl.argumentLengthCheck = function({ length }, min, ctx) {
+    webidl.argumentLengthCheck = function ({ length }, min, ctx) {
       if (length < min) {
         throw webidl.errors.exception({
           message: `${min} argument${min !== 1 ? "s" : ""} required, but${length ? " only" : ""} ${length} found.`,
@@ -4268,13 +4272,13 @@ var require_webidl = __commonJS({
         });
       }
     };
-    webidl.illegalConstructor = function() {
+    webidl.illegalConstructor = function () {
       throw webidl.errors.exception({
         header: "TypeError",
         message: "Illegal constructor"
       });
     };
-    webidl.util.Type = function(V) {
+    webidl.util.Type = function (V) {
       switch (typeof V) {
         case "undefined":
           return "Undefined";
@@ -4297,7 +4301,7 @@ var require_webidl = __commonJS({
         }
       }
     };
-    webidl.util.ConvertToInt = function(V, bitLength, signedness, opts = {}) {
+    webidl.util.ConvertToInt = function (V, bitLength, signedness, opts = {}) {
       let upperBound;
       let lowerBound;
       if (bitLength === 64) {
@@ -4353,14 +4357,14 @@ var require_webidl = __commonJS({
       }
       return x;
     };
-    webidl.util.IntegerPart = function(n) {
+    webidl.util.IntegerPart = function (n) {
       const r = Math.floor(Math.abs(n));
       if (n < 0) {
         return -1 * r;
       }
       return r;
     };
-    webidl.sequenceConverter = function(converter) {
+    webidl.sequenceConverter = function (converter) {
       return (V) => {
         if (webidl.util.Type(V) !== "Object") {
           throw webidl.errors.exception({
@@ -4386,7 +4390,7 @@ var require_webidl = __commonJS({
         return seq;
       };
     };
-    webidl.recordConverter = function(keyConverter, valueConverter) {
+    webidl.recordConverter = function (keyConverter, valueConverter) {
       return (O) => {
         if (webidl.util.Type(O) !== "Object") {
           throw webidl.errors.exception({
@@ -4416,7 +4420,7 @@ var require_webidl = __commonJS({
         return result;
       };
     };
-    webidl.interfaceConverter = function(i) {
+    webidl.interfaceConverter = function (i) {
       return (V, opts = {}) => {
         if (opts.strict !== false && !(V instanceof i)) {
           throw webidl.errors.exception({
@@ -4427,7 +4431,7 @@ var require_webidl = __commonJS({
         return V;
       };
     };
-    webidl.dictionaryConverter = function(converters) {
+    webidl.dictionaryConverter = function (converters) {
       return (dictionary) => {
         const type = webidl.util.Type(dictionary);
         const dict = {};
@@ -4468,7 +4472,7 @@ var require_webidl = __commonJS({
         return dict;
       };
     };
-    webidl.nullableConverter = function(converter) {
+    webidl.nullableConverter = function (converter) {
       return (V) => {
         if (V === null) {
           return V;
@@ -4476,7 +4480,7 @@ var require_webidl = __commonJS({
         return converter(V);
       };
     };
-    webidl.converters.DOMString = function(V, opts = {}) {
+    webidl.converters.DOMString = function (V, opts = {}) {
       if (V === null && opts.legacyNullToEmptyString) {
         return "";
       }
@@ -4485,7 +4489,7 @@ var require_webidl = __commonJS({
       }
       return String(V);
     };
-    webidl.converters.ByteString = function(V) {
+    webidl.converters.ByteString = function (V) {
       const x = webidl.converters.DOMString(V);
       for (let index = 0; index < x.length; index++) {
         if (x.charCodeAt(index) > 255) {
@@ -4497,30 +4501,30 @@ var require_webidl = __commonJS({
       return x;
     };
     webidl.converters.USVString = toUSVString;
-    webidl.converters.boolean = function(V) {
+    webidl.converters.boolean = function (V) {
       const x = Boolean(V);
       return x;
     };
-    webidl.converters.any = function(V) {
+    webidl.converters.any = function (V) {
       return V;
     };
-    webidl.converters["long long"] = function(V) {
+    webidl.converters["long long"] = function (V) {
       const x = webidl.util.ConvertToInt(V, 64, "signed");
       return x;
     };
-    webidl.converters["unsigned long long"] = function(V) {
+    webidl.converters["unsigned long long"] = function (V) {
       const x = webidl.util.ConvertToInt(V, 64, "unsigned");
       return x;
     };
-    webidl.converters["unsigned long"] = function(V) {
+    webidl.converters["unsigned long"] = function (V) {
       const x = webidl.util.ConvertToInt(V, 32, "unsigned");
       return x;
     };
-    webidl.converters["unsigned short"] = function(V, opts) {
+    webidl.converters["unsigned short"] = function (V, opts) {
       const x = webidl.util.ConvertToInt(V, 16, "unsigned", opts);
       return x;
     };
-    webidl.converters.ArrayBuffer = function(V, opts = {}) {
+    webidl.converters.ArrayBuffer = function (V, opts = {}) {
       if (webidl.util.Type(V) !== "Object" || !types.isAnyArrayBuffer(V)) {
         throw webidl.errors.conversionFailed({
           prefix: `${V}`,
@@ -4536,7 +4540,7 @@ var require_webidl = __commonJS({
       }
       return V;
     };
-    webidl.converters.TypedArray = function(V, T, opts = {}) {
+    webidl.converters.TypedArray = function (V, T, opts = {}) {
       if (webidl.util.Type(V) !== "Object" || !types.isTypedArray(V) || V.constructor.name !== T.name) {
         throw webidl.errors.conversionFailed({
           prefix: `${T.name}`,
@@ -4552,7 +4556,7 @@ var require_webidl = __commonJS({
       }
       return V;
     };
-    webidl.converters.DataView = function(V, opts = {}) {
+    webidl.converters.DataView = function (V, opts = {}) {
       if (webidl.util.Type(V) !== "Object" || !types.isDataView(V)) {
         throw webidl.errors.exception({
           header: "DataView",
@@ -4567,7 +4571,7 @@ var require_webidl = __commonJS({
       }
       return V;
     };
-    webidl.converters.BufferSource = function(V, opts = {}) {
+    webidl.converters.BufferSource = function (V, opts = {}) {
       if (types.isAnyArrayBuffer(V)) {
         return webidl.converters.ArrayBuffer(V, opts);
       }
@@ -4846,10 +4850,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++) ;
+        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++);
       }
       if (trailing) {
-        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--) ;
+        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--);
       }
       return str.slice(lead, trail + 1);
     }
@@ -4860,10 +4864,10 @@ var require_dataURL = __commonJS({
       let lead = 0;
       let trail = str.length - 1;
       if (leading) {
-        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++) ;
+        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++);
       }
       if (trailing) {
-        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--) ;
+        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--);
       }
       return str.slice(lead, trail + 1);
     }
@@ -4989,7 +4993,7 @@ var require_file = __commonJS({
       lastModified: kEnumerableProperty
     });
     webidl.converters.Blob = webidl.interfaceConverter(Blob2);
-    webidl.converters.BlobPart = function(V, opts) {
+    webidl.converters.BlobPart = function (V, opts) {
       if (webidl.util.Type(V) === "Object") {
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
@@ -6243,7 +6247,7 @@ var require_connect = __commonJS({
             port: port || 443,
             host: hostname
           });
-          socket.on("session", function(session2) {
+          socket.on("session", function (session2) {
             sessionCache.set(sessionKey, session2);
           });
         } else {
@@ -6262,14 +6266,14 @@ var require_connect = __commonJS({
           socket.setKeepAlive(true, keepAliveInitialDelay);
         }
         const cancelTimeout = setupTimeout(() => onConnectTimeout(socket), timeout);
-        socket.setNoDelay(true).once(protocol === "https:" ? "secureConnect" : "connect", function() {
+        socket.setNoDelay(true).once(protocol === "https:" ? "secureConnect" : "connect", function () {
           cancelTimeout();
           if (callback) {
             const cb = callback;
             callback = null;
             cb(null, this);
           }
-        }).on("error", function(err) {
+        }).on("error", function (err) {
           cancelTimeout();
           if (callback) {
             const cb = callback;
@@ -6337,7 +6341,7 @@ var require_constants3 = __commonJS({
     exports2.SPECIAL_HEADERS = exports2.HEADER_STATE = exports2.MINOR = exports2.MAJOR = exports2.CONNECTION_TOKEN_CHARS = exports2.HEADER_CHARS = exports2.TOKEN = exports2.STRICT_TOKEN = exports2.HEX = exports2.URL_CHAR = exports2.STRICT_URL_CHAR = exports2.USERINFO_CHARS = exports2.MARK = exports2.ALPHANUM = exports2.NUM = exports2.HEX_MAP = exports2.NUM_MAP = exports2.ALPHA = exports2.FINISH = exports2.H_METHOD_MAP = exports2.METHOD_MAP = exports2.METHODS_RTSP = exports2.METHODS_ICE = exports2.METHODS_HTTP = exports2.METHODS = exports2.LENIENT_FLAGS = exports2.FLAGS = exports2.TYPE = exports2.ERROR = void 0;
     var utils_1 = require_utils2();
     var ERROR;
-    (function(ERROR2) {
+    (function (ERROR2) {
       ERROR2[ERROR2["OK"] = 0] = "OK";
       ERROR2[ERROR2["INTERNAL"] = 1] = "INTERNAL";
       ERROR2[ERROR2["STRICT"] = 2] = "STRICT";
@@ -6365,13 +6369,13 @@ var require_constants3 = __commonJS({
       ERROR2[ERROR2["USER"] = 24] = "USER";
     })(ERROR = exports2.ERROR || (exports2.ERROR = {}));
     var TYPE;
-    (function(TYPE2) {
+    (function (TYPE2) {
       TYPE2[TYPE2["BOTH"] = 0] = "BOTH";
       TYPE2[TYPE2["REQUEST"] = 1] = "REQUEST";
       TYPE2[TYPE2["RESPONSE"] = 2] = "RESPONSE";
     })(TYPE = exports2.TYPE || (exports2.TYPE = {}));
     var FLAGS;
-    (function(FLAGS2) {
+    (function (FLAGS2) {
       FLAGS2[FLAGS2["CONNECTION_KEEP_ALIVE"] = 1] = "CONNECTION_KEEP_ALIVE";
       FLAGS2[FLAGS2["CONNECTION_CLOSE"] = 2] = "CONNECTION_CLOSE";
       FLAGS2[FLAGS2["CONNECTION_UPGRADE"] = 4] = "CONNECTION_UPGRADE";
@@ -6383,13 +6387,13 @@ var require_constants3 = __commonJS({
       FLAGS2[FLAGS2["TRANSFER_ENCODING"] = 512] = "TRANSFER_ENCODING";
     })(FLAGS = exports2.FLAGS || (exports2.FLAGS = {}));
     var LENIENT_FLAGS;
-    (function(LENIENT_FLAGS2) {
+    (function (LENIENT_FLAGS2) {
       LENIENT_FLAGS2[LENIENT_FLAGS2["HEADERS"] = 1] = "HEADERS";
       LENIENT_FLAGS2[LENIENT_FLAGS2["CHUNKED_LENGTH"] = 2] = "CHUNKED_LENGTH";
       LENIENT_FLAGS2[LENIENT_FLAGS2["KEEP_ALIVE"] = 4] = "KEEP_ALIVE";
     })(LENIENT_FLAGS = exports2.LENIENT_FLAGS || (exports2.LENIENT_FLAGS = {}));
     var METHODS;
-    (function(METHODS2) {
+    (function (METHODS2) {
       METHODS2[METHODS2["DELETE"] = 0] = "DELETE";
       METHODS2[METHODS2["GET"] = 1] = "GET";
       METHODS2[METHODS2["HEAD"] = 2] = "HEAD";
@@ -6503,7 +6507,7 @@ var require_constants3 = __commonJS({
       }
     });
     var FINISH;
-    (function(FINISH2) {
+    (function (FINISH2) {
       FINISH2[FINISH2["SAFE"] = 0] = "SAFE";
       FINISH2[FINISH2["SAFE_WITH_CB"] = 1] = "SAFE_WITH_CB";
       FINISH2[FINISH2["UNSAFE"] = 2] = "UNSAFE";
@@ -6629,7 +6633,7 @@ var require_constants3 = __commonJS({
     exports2.MAJOR = exports2.NUM_MAP;
     exports2.MINOR = exports2.MAJOR;
     var HEADER_STATE;
-    (function(HEADER_STATE2) {
+    (function (HEADER_STATE2) {
       HEADER_STATE2[HEADER_STATE2["GENERAL"] = 0] = "GENERAL";
       HEADER_STATE2[HEADER_STATE2["CONNECTION"] = 1] = "CONNECTION";
       HEADER_STATE2[HEADER_STATE2["CONTENT_LENGTH"] = 2] = "CONTENT_LENGTH";
@@ -6687,13 +6691,13 @@ var require_RedirectHandler = __commonJS({
         this.history = [];
         if (util.isStream(this.opts.body)) {
           if (util.bodyLength(this.opts.body) === 0) {
-            this.opts.body.on("data", function() {
+            this.opts.body.on("data", function () {
               assert(false);
             });
           }
           if (typeof this.opts.body.readableDidRead !== "boolean") {
             this.opts.body[kBodyUsed] = false;
-            EE.prototype.on.call(this.opts.body, "data", function() {
+            EE.prototype.on.call(this.opts.body, "data", function () {
               this[kBodyUsed] = true;
             });
           }
@@ -7507,7 +7511,7 @@ var require_client = __commonJS({
         assert.strictEqual(this.timeoutType, TIMEOUT_HEADERS);
         this.statusCode = statusCode;
         this.shouldKeepAlive = shouldKeepAlive || // Override llhttp value which does not allow keepAlive for HEAD.
-        request.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
+          request.method === "HEAD" && !socket[kReset] && this.connection.toLowerCase() === "keep-alive";
         if (this.statusCode >= 200) {
           const bodyTimeout = request.bodyTimeout != null ? request.bodyTimeout : client[kBodyTimeout];
           this.setTimeout(bodyTimeout, TIMEOUT_BODY);
@@ -8178,7 +8182,7 @@ upgrade: ${upgrade}\r
           session.unref();
         }
       });
-      stream.once("error", function(err) {
+      stream.once("error", function (err) {
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           h2State.streams -= 1;
           util.destroy(stream, err);
@@ -8258,7 +8262,7 @@ upgrade: ${upgrade}\r
     function writeStream({ h2stream, body, client, request, socket, contentLength, header, expectsPayload }) {
       assert(contentLength !== 0 || client[kRunning] === 0, "stream body cannot be pipelined");
       if (client[kHTTPConnVersion] === "h2") {
-        let onPipeData = function(chunk) {
+        let onPipeData = function (chunk) {
           request.onBodySent(chunk);
         };
         const pipe = pipeline(
@@ -8282,7 +8286,7 @@ upgrade: ${upgrade}\r
       }
       let finished = false;
       const writer = new AsyncWriter({ socket, request, contentLength, client, expectsPayload, header });
-      const onData = function(chunk) {
+      const onData = function (chunk) {
         if (finished) {
           return;
         }
@@ -8294,7 +8298,7 @@ upgrade: ${upgrade}\r
           util.destroy(this, err);
         }
       };
-      const onDrain = function() {
+      const onDrain = function () {
         if (finished) {
           return;
         }
@@ -8302,14 +8306,14 @@ upgrade: ${upgrade}\r
           body.resume();
         }
       };
-      const onAbort = function() {
+      const onAbort = function () {
         if (finished) {
           return;
         }
         const err = new RequestAbortedError();
         queueMicrotask(() => onFinished(err));
       };
-      const onFinished = function(err) {
+      const onFinished = function (err) {
         if (finished) {
           return;
         }
@@ -9039,7 +9043,7 @@ var require_dispatcher_weakref = __commonJS({
         }
       }
     };
-    module2.exports = function() {
+    module2.exports = function () {
       if (process.env.NODE_V8_COVERAGE) {
         return {
           WeakRef: CompatWeakRef,
@@ -9310,14 +9314,14 @@ var require_readable = __commonJS({
           const signalListenerCleanup = signal ? util.addAbortListener(signal, () => {
             this.destroy();
           }) : noop;
-          this.on("close", function() {
+          this.on("close", function () {
             signalListenerCleanup();
             if (signal && signal.aborted) {
               reject(signal.reason || Object.assign(new Error("The operation was aborted"), { name: "AbortError" }));
             } else {
               resolve(null);
             }
-          }).on("error", noop).on("data", function(chunk) {
+          }).on("error", noop).on("data", function (chunk) {
             limit -= chunk.length;
             if (limit <= 0) {
               this.destroy();
@@ -9346,9 +9350,9 @@ var require_readable = __commonJS({
           length: 0,
           body: []
         };
-        stream.on("error", function(err) {
+        stream.on("error", function (err) {
           consumeFinish(this[kConsume], err);
-        }).on("close", function() {
+        }).on("close", function () {
           if (this[kConsume].body !== null) {
             consumeFinish(this[kConsume], new RequestAbortedError());
           }
@@ -9367,7 +9371,7 @@ var require_readable = __commonJS({
       if (state.endEmitted) {
         consumeEnd(this[kConsume]);
       } else {
-        consume2.stream.on("end", function() {
+        consume2.stream.on("end", function () {
           consumeEnd(this[kConsume]);
         });
       }
@@ -11887,7 +11891,7 @@ var require_headers = __commonJS({
         enumerable: false
       }
     });
-    webidl.converters.HeadersInit = function(V) {
+    webidl.converters.HeadersInit = function (V) {
       if (webidl.util.Type(V) === "Object") {
         if (V[Symbol.iterator]) {
           return webidl.converters["sequence<sequence<ByteString>>"](V);
@@ -12233,7 +12237,7 @@ var require_response = __commonJS({
     webidl.converters.URLSearchParams = webidl.interfaceConverter(
       URLSearchParams
     );
-    webidl.converters.XMLHttpRequestBodyInit = function(V) {
+    webidl.converters.XMLHttpRequestBodyInit = function (V) {
       if (typeof V === "string") {
         return webidl.converters.USVString(V);
       }
@@ -12251,7 +12255,7 @@ var require_response = __commonJS({
       }
       return webidl.converters.DOMString(V);
     };
-    webidl.converters.BodyInit = function(V) {
+    webidl.converters.BodyInit = function (V) {
       if (V instanceof ReadableStream) {
         return webidl.converters.ReadableStream(V);
       }
@@ -12518,7 +12522,7 @@ var require_request2 = __commonJS({
           } else {
             this[kAbortController] = ac;
             const acRef = new WeakRef(ac);
-            const abort = function() {
+            const abort = function () {
               const ac2 = acRef.deref();
               if (ac2 !== void 0) {
                 ac2.abort(this.reason);
@@ -12834,7 +12838,7 @@ var require_request2 = __commonJS({
     webidl.converters.Request = webidl.interfaceConverter(
       Request
     );
-    webidl.converters.RequestInfo = function(V) {
+    webidl.converters.RequestInfo = function (V) {
       if (typeof V === "string") {
         return webidl.converters.USVString(V);
       }
@@ -15497,7 +15501,7 @@ var require_util6 = __commonJS({
       for (const char of value) {
         const code = char.charCodeAt(0);
         if (code < 33 || // exclude CTLs (0-31)
-        code === 34 || code === 44 || code === 59 || code === 92 || code > 126) {
+          code === 34 || code === 44 || code === 59 || code === 92 || code > 126) {
           throw new Error("Invalid header value");
         }
       }
@@ -16238,7 +16242,7 @@ var require_util7 = __commonJS({
       for (const char of protocol) {
         const code = char.charCodeAt(0);
         if (code < 33 || code > 126 || char === "(" || char === ")" || char === "<" || char === ">" || char === "@" || char === "," || char === ";" || char === ":" || char === "\\" || char === '"' || char === "/" || char === "[" || char === "]" || char === "?" || char === "=" || char === "{" || char === "}" || code === 32 || // SP
-        code === 9) {
+          code === 9) {
           return false;
         }
       }
@@ -16247,8 +16251,8 @@ var require_util7 = __commonJS({
     function isValidStatusCode(code) {
       if (code >= 1e3 && code < 1015) {
         return code !== 1004 && // reserved
-        code !== 1005 && // "MUST NOT be set as a status code"
-        code !== 1006;
+          code !== 1005 && // "MUST NOT be set as a status code"
+          code !== 1006;
       }
       return code >= 3e3 && code <= 4999;
     }
@@ -17074,7 +17078,7 @@ var require_websocket = __commonJS({
     webidl.converters["sequence<DOMString>"] = webidl.sequenceConverter(
       webidl.converters.DOMString
     );
-    webidl.converters["DOMString or sequence<DOMString>"] = function(V) {
+    webidl.converters["DOMString or sequence<DOMString>"] = function (V) {
       if (webidl.util.Type(V) === "Object" && Symbol.iterator in V) {
         return webidl.converters["sequence<DOMString>"](V);
       }
@@ -17100,13 +17104,13 @@ var require_websocket = __commonJS({
         converter: webidl.nullableConverter(webidl.converters.HeadersInit)
       }
     ]);
-    webidl.converters["DOMString or sequence<DOMString> or WebSocketInit"] = function(V) {
+    webidl.converters["DOMString or sequence<DOMString> or WebSocketInit"] = function (V) {
       if (webidl.util.Type(V) === "Object" && !(Symbol.iterator in V)) {
         return webidl.converters.WebSocketInit(V);
       }
       return { protocols: webidl.converters["DOMString or sequence<DOMString>"](V) };
     };
-    webidl.converters.WebSocketSendData = function(V) {
+    webidl.converters.WebSocketSendData = function (V) {
       if (webidl.util.Type(V) === "Object") {
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
@@ -17266,25 +17270,27 @@ var require_undici = __commonJS({
 var require_lib = __commonJS({
   "node_modules/@actions/http-client/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -17293,13 +17299,13 @@ var require_lib = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -17328,7 +17334,7 @@ var require_lib = __commonJS({
     var tunnel = __importStar(require_tunnel2());
     var undici_1 = require_undici();
     var HttpCodes;
-    (function(HttpCodes2) {
+    (function (HttpCodes2) {
       HttpCodes2[HttpCodes2["OK"] = 200] = "OK";
       HttpCodes2[HttpCodes2["MultipleChoices"] = 300] = "MultipleChoices";
       HttpCodes2[HttpCodes2["MovedPermanently"] = 301] = "MovedPermanently";
@@ -17358,12 +17364,12 @@ var require_lib = __commonJS({
       HttpCodes2[HttpCodes2["GatewayTimeout"] = 504] = "GatewayTimeout";
     })(HttpCodes || (exports2.HttpCodes = HttpCodes = {}));
     var Headers;
-    (function(Headers2) {
+    (function (Headers2) {
       Headers2["Accept"] = "accept";
       Headers2["ContentType"] = "content-type";
     })(Headers || (exports2.Headers = Headers = {}));
     var MediaTypes;
-    (function(MediaTypes2) {
+    (function (MediaTypes2) {
       MediaTypes2["ApplicationJson"] = "application/json";
     })(MediaTypes || (exports2.MediaTypes = MediaTypes = {}));
     function getProxyUrl(serverUrl) {
@@ -17677,14 +17683,14 @@ var require_lib = __commonJS({
           }
           handleResult(new Error(`Request timeout: ${info.options.path}`));
         });
-        req.on("error", function(err) {
+        req.on("error", function (err) {
           handleResult(err);
         });
         if (data && typeof data === "string") {
           req.write(data, "utf8");
         }
         if (data && typeof data !== "string") {
-          data.on("close", function() {
+          data.on("close", function () {
             req.end();
           });
           data.pipe(req);
@@ -17885,13 +17891,13 @@ var require_lib = __commonJS({
 var require_auth = __commonJS({
   "node_modules/@actions/http-client/lib/auth.js"(exports2) {
     "use strict";
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -17989,13 +17995,13 @@ var require_auth = __commonJS({
 var require_oidc_utils = __commonJS({
   "node_modules/@actions/core/lib/oidc-utils.js"(exports2) {
     "use strict";
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -18087,13 +18093,13 @@ var require_oidc_utils = __commonJS({
 var require_summary = __commonJS({
   "node_modules/@actions/core/lib/summary.js"(exports2) {
     "use strict";
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -18381,25 +18387,27 @@ var require_summary = __commonJS({
 var require_path_utils = __commonJS({
   "node_modules/@actions/core/lib/path-utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -18430,21 +18438,23 @@ var require_path_utils = __commonJS({
 var require_io_util = __commonJS({
   "node_modules/@actions/io/lib/io-util.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
+      Object.defineProperty(o, k2, {
+        enumerable: true, get: function () {
+          return m[k];
+        }
+      });
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -18453,13 +18463,13 @@ var require_io_util = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -18603,21 +18613,23 @@ var require_io_util = __commonJS({
 var require_io = __commonJS({
   "node_modules/@actions/io/lib/io.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
+      Object.defineProperty(o, k2, {
+        enumerable: true, get: function () {
+          return m[k];
+        }
+      });
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -18626,13 +18638,13 @@ var require_io = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -18851,21 +18863,23 @@ var require_io = __commonJS({
 var require_toolrunner = __commonJS({
   "node_modules/@actions/exec/lib/toolrunner.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
+      Object.defineProperty(o, k2, {
+        enumerable: true, get: function () {
+          return m[k];
+        }
+      });
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -18874,13 +18888,13 @@ var require_toolrunner = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -19335,21 +19349,23 @@ var require_toolrunner = __commonJS({
 var require_exec = __commonJS({
   "node_modules/@actions/exec/lib/exec.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
-      Object.defineProperty(o, k2, { enumerable: true, get: function() {
-        return m[k];
-      } });
-    } : function(o, m, k, k2) {
+      Object.defineProperty(o, k2, {
+        enumerable: true, get: function () {
+          return m[k];
+        }
+      });
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -19358,13 +19374,13 @@ var require_exec = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -19442,25 +19458,27 @@ var require_exec = __commonJS({
 var require_platform = __commonJS({
   "node_modules/@actions/core/lib/platform.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -19469,13 +19487,13 @@ var require_platform = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -19496,7 +19514,7 @@ var require_platform = __commonJS({
         step((generator = generator.apply(thisArg, _arguments || [])).next());
       });
     };
-    var __importDefault = exports2 && exports2.__importDefault || function(mod) {
+    var __importDefault = exports2 && exports2.__importDefault || function (mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -19561,25 +19579,27 @@ var require_platform = __commonJS({
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -19588,13 +19608,13 @@ var require_core = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -19624,7 +19644,7 @@ var require_core = __commonJS({
     var path = __importStar(require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
-    (function(ExitCode2) {
+    (function (ExitCode2) {
       ExitCode2[ExitCode2["Success"] = 0] = "Success";
       ExitCode2[ExitCode2["Failure"] = 1] = "Failure";
     })(ExitCode || (exports2.ExitCode = ExitCode = {}));
@@ -19765,23 +19785,33 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports2.getIDToken = getIDToken;
     var summary_1 = require_summary();
-    Object.defineProperty(exports2, "summary", { enumerable: true, get: function() {
-      return summary_1.summary;
-    } });
+    Object.defineProperty(exports2, "summary", {
+      enumerable: true, get: function () {
+        return summary_1.summary;
+      }
+    });
     var summary_2 = require_summary();
-    Object.defineProperty(exports2, "markdownSummary", { enumerable: true, get: function() {
-      return summary_2.markdownSummary;
-    } });
+    Object.defineProperty(exports2, "markdownSummary", {
+      enumerable: true, get: function () {
+        return summary_2.markdownSummary;
+      }
+    });
     var path_utils_1 = require_path_utils();
-    Object.defineProperty(exports2, "toPosixPath", { enumerable: true, get: function() {
-      return path_utils_1.toPosixPath;
-    } });
-    Object.defineProperty(exports2, "toWin32Path", { enumerable: true, get: function() {
-      return path_utils_1.toWin32Path;
-    } });
-    Object.defineProperty(exports2, "toPlatformPath", { enumerable: true, get: function() {
-      return path_utils_1.toPlatformPath;
-    } });
+    Object.defineProperty(exports2, "toPosixPath", {
+      enumerable: true, get: function () {
+        return path_utils_1.toPosixPath;
+      }
+    });
+    Object.defineProperty(exports2, "toWin32Path", {
+      enumerable: true, get: function () {
+        return path_utils_1.toWin32Path;
+      }
+    });
+    Object.defineProperty(exports2, "toPlatformPath", {
+      enumerable: true, get: function () {
+        return path_utils_1.toPlatformPath;
+      }
+    });
     exports2.platform = __importStar(require_platform());
   }
 });
@@ -19849,25 +19879,27 @@ var require_context = __commonJS({
 var require_utils3 = __commonJS({
   "node_modules/@actions/github/lib/internal/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -19876,13 +19908,13 @@ var require_utils3 = __commonJS({
       __setModuleDefault(result, mod);
       return result;
     };
-    var __awaiter = exports2 && exports2.__awaiter || function(thisArg, _arguments, P, generator) {
+    var __awaiter = exports2 && exports2.__awaiter || function (thisArg, _arguments, P, generator) {
       function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P(function (resolve) {
           resolve(value);
         });
       }
-      return new (P || (P = Promise))(function(resolve, reject) {
+      return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
           try {
             step(generator.next(value));
@@ -19971,15 +20003,15 @@ var require_register = __commonJS({
         options = {};
       }
       if (Array.isArray(name)) {
-        return name.reverse().reduce(function(callback, name2) {
+        return name.reverse().reduce(function (callback, name2) {
           return register.bind(null, state, name2, callback, options);
         }, method)();
       }
-      return Promise.resolve().then(function() {
+      return Promise.resolve().then(function () {
         if (!state.registry[name]) {
           return method(options);
         }
-        return state.registry[name].reduce(function(method2, registered) {
+        return state.registry[name].reduce(function (method2, registered) {
           return registered.hook.bind(null, method2, options);
         }, method)();
       });
@@ -19997,24 +20029,24 @@ var require_add = __commonJS({
         state.registry[name] = [];
       }
       if (kind === "before") {
-        hook = function(method, options) {
+        hook = function (method, options) {
           return Promise.resolve().then(orig.bind(null, options)).then(method.bind(null, options));
         };
       }
       if (kind === "after") {
-        hook = function(method, options) {
+        hook = function (method, options) {
           var result;
-          return Promise.resolve().then(method.bind(null, options)).then(function(result_) {
+          return Promise.resolve().then(method.bind(null, options)).then(function (result_) {
             result = result_;
             return orig(result, options);
-          }).then(function() {
+          }).then(function () {
             return result;
           });
         };
       }
       if (kind === "error") {
-        hook = function(method, options) {
-          return Promise.resolve().then(method.bind(null, options)).catch(function(error) {
+        hook = function (method, options) {
+          return Promise.resolve().then(method.bind(null, options)).catch(function (error) {
             return orig(error, options);
           });
         };
@@ -20035,7 +20067,7 @@ var require_remove = __commonJS({
       if (!state.registry[name]) {
         return;
       }
-      var index = state.registry[name].map(function(registered) {
+      var index = state.registry[name].map(function (registered) {
         return registered.orig;
       }).indexOf(method);
       if (index === -1) {
@@ -20061,7 +20093,7 @@ var require_before_after_hook = __commonJS({
       );
       hook.api = { remove: removeHookRef };
       hook.remove = removeHookRef;
-      ["before", "error", "after", "wrap"].forEach(function(kind) {
+      ["before", "error", "after", "wrap"].forEach(function (kind) {
         var args = name ? [state, kind, name] : [state, kind];
         hook[kind] = hook.api[kind] = bindable(addHook, null).apply(null, args);
       });
@@ -20239,7 +20271,7 @@ var require_dist_node2 = __commonJS({
       return result;
     }
     function encodeReserved(str) {
-      return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+      return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
         if (!/%[0-9A-Fa-f]/.test(part)) {
           part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
         }
@@ -20247,7 +20279,7 @@ var require_dist_node2 = __commonJS({
       }).join("");
     }
     function encodeUnreserved(str) {
-      return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+      return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
         return "%" + c.charCodeAt(0).toString(16).toUpperCase();
       });
     }
@@ -20279,13 +20311,13 @@ var require_dist_node2 = __commonJS({
         } else {
           if (modifier === "*") {
             if (Array.isArray(value)) {
-              value.filter(isDefined).forEach(function(value2) {
+              value.filter(isDefined).forEach(function (value2) {
                 result.push(
                   encodeValue(operator, value2, isKeyOperator(operator) ? key : "")
                 );
               });
             } else {
-              Object.keys(value).forEach(function(k) {
+              Object.keys(value).forEach(function (k) {
                 if (isDefined(value[k])) {
                   result.push(encodeValue(operator, value[k], k));
                 }
@@ -20294,11 +20326,11 @@ var require_dist_node2 = __commonJS({
           } else {
             const tmp = [];
             if (Array.isArray(value)) {
-              value.filter(isDefined).forEach(function(value2) {
+              value.filter(isDefined).forEach(function (value2) {
                 tmp.push(encodeValue(operator, value2));
               });
             } else {
-              Object.keys(value).forEach(function(k) {
+              Object.keys(value).forEach(function (k) {
                 if (isDefined(value[k])) {
                   tmp.push(encodeUnreserved(k));
                   tmp.push(encodeValue(operator, value[k].toString()));
@@ -20334,7 +20366,7 @@ var require_dist_node2 = __commonJS({
       var operators = ["+", "#", ".", "/", ";", "?", "&"];
       template = template.replace(
         /\{([^\{\}]+)\}|([^\{\}]+)/g,
-        function(_, expression, literal) {
+        function (_, expression, literal) {
           if (expression) {
             let operator = "";
             const values = [];
@@ -20342,7 +20374,7 @@ var require_dist_node2 = __commonJS({
               operator = expression.charAt(0);
               expression = expression.substr(1);
             }
-            expression.split(/,/g).forEach(function(variable) {
+            expression.split(/,/g).forEach(function (variable) {
               var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
               values.push(getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
             });
@@ -20474,7 +20506,7 @@ var require_wrappy = __commonJS({
       if (fn && cb) return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
-      Object.keys(fn).forEach(function(k) {
+      Object.keys(fn).forEach(function (k) {
         wrapper[k] = fn[k];
       });
       return wrapper;
@@ -20486,7 +20518,7 @@ var require_wrappy = __commonJS({
         var ret = fn.apply(this, args);
         var cb2 = args[args.length - 1];
         if (typeof ret === "function" && ret !== cb2) {
-          Object.keys(cb2).forEach(function(k) {
+          Object.keys(cb2).forEach(function (k) {
             ret[k] = cb2[k];
           });
         }
@@ -20502,22 +20534,22 @@ var require_once = __commonJS({
     var wrappy = require_wrappy();
     module2.exports = wrappy(once);
     module2.exports.strict = wrappy(onceStrict);
-    once.proto = once(function() {
+    once.proto = once(function () {
       Object.defineProperty(Function.prototype, "once", {
-        value: function() {
+        value: function () {
           return once(this);
         },
         configurable: true
       });
       Object.defineProperty(Function.prototype, "onceStrict", {
-        value: function() {
+        value: function () {
           return onceStrict(this);
         },
         configurable: true
       });
     });
     function once(fn) {
-      var f = function() {
+      var f = function () {
         if (f.called) return f.value;
         f.called = true;
         return f.value = fn.apply(this, arguments);
@@ -20526,7 +20558,7 @@ var require_once = __commonJS({
       return f;
     }
     function onceStrict(fn) {
-      var f = function() {
+      var f = function () {
         if (f.called)
           throw new Error(f.onceError);
         f.called = true;
@@ -20813,7 +20845,7 @@ var require_dist_node5 = __commonJS({
     }
     function withDefaults(oldEndpoint, newDefaults) {
       const endpoint2 = oldEndpoint.defaults(newDefaults);
-      const newApi = function(route, parameters) {
+      const newApi = function (route, parameters) {
         const endpointOptions = endpoint2.merge(route, parameters);
         if (!endpointOptions.request || !endpointOptions.request.hook) {
           return fetchWrapper(endpoint2.parse(endpointOptions));
@@ -23755,25 +23787,27 @@ var require_dist_node10 = __commonJS({
 var require_utils4 = __commonJS({
   "node_modules/@actions/github/lib/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -23815,25 +23849,27 @@ var require_utils4 = __commonJS({
 var require_github = __commonJS({
   "node_modules/@actions/github/lib/github.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-        desc = { enumerable: true, get: function() {
-          return m[k];
-        } };
+        desc = {
+          enumerable: true, get: function () {
+            return m[k];
+          }
+        };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    } : function (o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function (o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    } : function (o, v) {
       o["default"] = v;
     });
-    var __importStar = exports2 && exports2.__importStar || function(mod) {
+    var __importStar = exports2 && exports2.__importStar || function (mod) {
       if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
@@ -23858,16 +23894,37 @@ var require_github = __commonJS({
 // src/index.js
 var core = require_core();
 var github = require_github();
-try {
-  const nameToGreet = core.getInput("who-to-greet");
-  core.info(`Hello ${nameToGreet}!`);
-  const time = (/* @__PURE__ */ new Date()).toTimeString();
-  core.setOutput("time", time);
-  const payload = JSON.stringify(github.context.payload, void 0, 2);
-  core.info(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
+async function postComment() {
+  core.info("Starting to post a comment...");
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const commentBody = core.getInput("comment-body", { required: true });
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    }
+    const prNumber = github.context.payload.pull_request.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping review submission.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    await octokit.rest.pulls.createReview({
+      owner,
+      repo,
+      pull_number: prNumber,
+      event: "REQUEST_CHANGES",
+      body: commentBody
+    });
+    core.info("Comment posted successfully.");
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
+async function main() {
+  await postComment();
+}
+main();
 /*! Bundled license information:
 
 undici/lib/fetch/body.js:

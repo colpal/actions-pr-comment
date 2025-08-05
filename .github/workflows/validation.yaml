@@ -14,19 +14,19 @@ jobs:
   validate_test_env:
     name: Unit Test 1 - Validate defaults
     runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Load WHO_TO_GREET from .env file
+      - name: Load COMMENT_BODY from .env file
         run: |
-          grep '^WHO_TO_GREET=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
 
-      - name: Hello world action step
+      - name: Action step
         uses: ./
         id: hello
         with:
-          who-to-greet: ${{ env.WHO_TO_GREET }}
-
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+          comment-body: ${{ env.COMMENT_BODY }}

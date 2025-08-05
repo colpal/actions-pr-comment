@@ -25,7 +25,7 @@ async function postComment() {
             owner,
             repo,
             pull_number: prNumber,
-            event: 'APPROVE',
+            event: 'REQUEST_CHANGES',
             body: commentBody,
         });
         core.info("Comment posted successfully.");
@@ -70,9 +70,57 @@ async function updateComment() {
     }
 }
 
+async function findComment() {
+    core.info("Starting to find a comment...");
+    try {
+        const token = core.getInput('github_token', { required: true });
+        const author = core.getInput('author', { required: false }) || "github-actions[bot]";
+        const commentIdentifier = core.getInput('comment_identifier', { required: true });
+
+        if (!token) {
+            throw new Error('GITHUB_TOKEN is not available.');
+        }
+
+        const prNumber = github.context.payload.pull_request?.number;
+
+        if (!prNumber) {
+            core.warning('Not a pull request, skipping operation.');
+            return;
+        }
+
+        const octokit = github.getOctokit(token);
+        const { owner, repo } = github.context.repo;
+
+        const response = await octokit.rest.pulls.listReviews({
+            owner,
+            repo,
+            pull_number: prNumber
+        });
+
+        const reviews = response.data;
+
+        const targetReview = reviews.find(review =>
+            review.user.login === author &&
+            review.body?.includes(commentIdentifier)
+        );
+
+        if (!targetReview) {
+            core.setFailed('A review matching the author and identifier was not found.');
+            return;
+        }
+
+        core.info("Matching review found successfully.");
+        core.setOutput('comment_id', targetReview.id);
+        core.setOutput('comment_body', targetReview.body);
+
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+}
 
 async function main() {
     await postComment();
+    await findComment();
     // await updateComment();
 }
 

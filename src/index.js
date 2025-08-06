@@ -119,9 +119,44 @@ async function findComment() {
     }
 }
 
+async function dismissReview(reviewId) {
+    core.info("Starting to dismiss a review...");
+    try {
+        const token = core.getInput('github_token', { required: true });
+
+        if (!token) {
+            throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
+        }
+
+        const prNumber = github.context.payload.pull_request.number;
+
+        if (!prNumber) {
+            core.warning('Not a pull request, skipping review dismissal.');
+            return;
+        }
+
+        const octokit = github.getOctokit(token);
+
+        const { owner, repo } = github.context.repo;
+        const dismissMessage = "This review is outdated.";
+        await octokit.rest.pulls.createReview({
+            owner,
+            repo,
+            pull_number: prNumber,
+            review_id: reviewId,
+            message: dismissMessage,
+        });
+        core.info("Review dismissed successfully.");
+
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+}
+
 async function main() {
     await postComment();
-    await findComment();
+    let reviewId = await findComment();
+    await dismissReview(reviewId);
     // await updateComment();
 }
 

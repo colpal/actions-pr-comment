@@ -156,8 +156,8 @@ async function dismissReview(reviewId) {
 
 async function main() {
     await postComment();
-    let reviewId = await findComment();
-    await dismissReview(reviewId);
+    // let reviewId = await findComment();
+    // await dismissReview(reviewId);
     // await updateComment();
 }
 

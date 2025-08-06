@@ -113,6 +113,7 @@ async function findComment() {
         core.setOutput('comment_id', targetReview.id);
         core.setOutput('comment_body', targetReview.body);
         core.info(`Comment ID: ${targetReview.id} \n Body: ${targetReview.body} \n State: ${targetReview.state}.`);
+        return targetReview.id;
 
     } catch (error) {
         core.setFailed(error.message);

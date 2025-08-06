@@ -23920,6 +23920,7 @@ async function findComment() {
     core.info(`Comment ID: ${targetReview.id} 
  Body: ${targetReview.body} 
  State: ${targetReview.state}.`);
+    return targetReview.id;
   } catch (error) {
     core.setFailed(error.message);
   }

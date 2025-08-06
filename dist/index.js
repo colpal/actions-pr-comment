@@ -23877,7 +23877,7 @@ async function postComment() {
       owner,
       repo,
       pull_number: prNumber,
-      event: "APPROVE",
+      event: "REQUEST_CHANGES",
       body: commentBody
     });
     core.info("Comment posted successfully.");

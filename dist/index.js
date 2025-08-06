@@ -23925,7 +23925,7 @@ async function findComment() {
   }
 }
 async function dismissReview(reviewId) {
-  core.info("Starting to dismiss a review...");
+  core.info(`Starting to dismiss a review with id ${reviewId}...`);
   try {
     const token = core.getInput("github_token", { required: true });
     if (!token) {
@@ -23939,7 +23939,7 @@ async function dismissReview(reviewId) {
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
     const dismissMessage = "This review is outdated.";
-    await octokit.rest.pulls.createReview({
+    await octokit.rest.pulls.dismissReview({
       owner,
       repo,
       pull_number: prNumber,

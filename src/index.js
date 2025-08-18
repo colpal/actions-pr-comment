@@ -31,7 +31,7 @@ async function postComment() {
             owner,
             repo,
             pull_number: prNumber,
-            event: 'REQUEST_CHANGES',
+            event: 'COMMENT',
             body: commentBody,
         });
         core.info("Comment posted successfully.");
@@ -206,40 +206,43 @@ async function findDismissalMessage(reviewId, dismissMessage) {
     }
 }
 
-async function hideDismissedReviewAndComment(reviewId, dismissalMessageId) {
-    core.info(`Starting to hide dismissed review (${reviewId}) and the dismissal comment (${dismissalMessageId})...`);
+async function hideDismissedReviewAndComment(reviewId) {
+    core.info(`Starting to hide dismissed review (${reviewId})`);
     try {
-        await hideComment(reviewId, "OUTDATED");
-        core.info("Dismissed review hidden successfully.");
+        await hideReviewComments(reviewId, "OUTDATED");
+        core.info("Hiding all review elements successfully.");
 
-        await hideComment(dismissalMessageId, "OUTDATED");
-        core.info("Dismissal comment hidden successfully.");
+        // await hideComment(dismissalMessageId, "OUTDATED");
+        // core.info("Dismissal comment hidden successfully.");
 
     } catch (error) {
         core.setFailed(error.message);
     }
 }
 
-async function hideComment(commentId, reason) {
-    console.log(`Hiding comment with comment id: ${commentId} for reason: ${reason}`);
+async function hideReviewComments(reviewId, reason) {
+    console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
     await graphqlWithAuth(
         `
-          mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
-              clientMutationId
-            }
-          }
-        `,
-        { subjectId: commentId, classifier: reason }
+      mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+        minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
+          clientMutationId
+        }
+      }
+    `,
+        {
+            subjectId: reviewId,
+            classifier: reason
+        }
     );
 }
 
 async function main() {
     await postComment();
     let review = await findComment();
-    let dismissMessage = await dismissReview(review.id);
-    let dismissalMessageNodeId = await findDismissalMessage(review.id, dismissMessage);
-    await hideDismissedReviewAndComment(review.node_id, dismissalMessageNodeId);
+    // let dismissMessage = await dismissReview(review.id);
+    // await findDismissalMessage(review.id, dismissMessage);
+    await hideDismissedReviewAndComment(review.node_id);
     // await updateComment();
 }
 

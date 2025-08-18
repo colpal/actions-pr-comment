@@ -23883,7 +23883,7 @@ async function postComment() {
       owner,
       repo,
       pull_number: prNumber,
-      event: "REQUEST_CHANGES",
+      event: "COMMENT",
       body: commentBody
     });
     core.info("Comment posted successfully.");
@@ -23931,99 +23931,35 @@ async function findComment() {
     core.setFailed(error.message);
   }
 }
-async function dismissReview(reviewId) {
-  core.info(`Starting to dismiss a review with id ${reviewId}...`);
+async function hideDismissedReviewAndComment(reviewId) {
+  core.info(`Starting to hide dismissed review (${reviewId})`);
   try {
-    const token = core.getInput("github_token", { required: true });
-    if (!token) {
-      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
-    }
-    const prNumber = github.context.payload.pull_request.number;
-    if (!prNumber) {
-      core.warning("Not a pull request, skipping review dismissal.");
-      return;
-    }
-    const octokit = github.getOctokit(token);
-    const { owner, repo } = github.context.repo;
-    const dismissMessage = `This review (#${reviewId}) is outdated.`;
-    await octokit.rest.pulls.dismissReview({
-      owner,
-      repo,
-      pull_number: prNumber,
-      review_id: reviewId,
-      message: dismissMessage
-    });
-    core.info(`Review (#${reviewId}) dismissed successfully. With message - ${dismissMessage}`);
-    return dismissMessage;
+    await hideReviewComments(reviewId, "OUTDATED");
+    core.info("Hiding all review elements successfully.");
   } catch (error) {
     core.setFailed(error.message);
   }
 }
-async function findDismissalMessage(reviewId, dismissMessage) {
-  core.info(`Starting to find the dismissal message for review id ${reviewId}...`);
-  try {
-    const token = core.getInput("github_token", { required: true });
-    if (!token) {
-      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
-    }
-    const prNumber = github.context.payload.pull_request.number;
-    if (!prNumber) {
-      core.warning("Not a pull request, skipping finding dismissal message.");
-      return;
-    }
-    const octokit = github.getOctokit(token);
-    const { owner, repo } = github.context.repo;
-    const response = await octokit.rest.pulls.listCommentsForReview({
-      owner,
-      repo,
-      pull_number: prNumber,
-      review_id: reviewId
-    });
-    core.info(`Total comments found for review id ${reviewId} is ${response.data.length}`);
-    const comments = response.data;
-    core.info(`Searching through comments - ${comments}`);
-    const dismissalMessage = comments.find((comment) => comment.body.includes(dismissMessage));
-    if (!dismissalMessage) {
-      core.setFailed(`Dismissal message not found. Couldn't find message - ${dismissMessage}`);
-      return;
-    }
-    core.info("Dismissal message found successfully.");
-    core.setOutput("dismissal_message_id", dismissalMessage.id);
-    return dismissalMessage.node_id;
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
-async function hideDismissedReviewAndComment(reviewId, dismissalMessageId) {
-  core.info(`Starting to hide dismissed review (${reviewId}) and the dismissal comment (${dismissalMessageId})...`);
-  try {
-    await hideComment(reviewId, "OUTDATED");
-    core.info("Dismissed review hidden successfully.");
-    await hideComment(dismissalMessageId, "OUTDATED");
-    core.info("Dismissal comment hidden successfully.");
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
-async function hideComment(commentId, reason) {
-  console.log(`Hiding comment with comment id: ${commentId} for reason: ${reason}`);
+async function hideReviewComments(reviewId, reason) {
+  console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
   await graphqlWithAuth(
     `
-          mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
-              clientMutationId
-            }
-          }
-        `,
-    { subjectId: commentId, classifier: reason }
+      mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+        minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
+          clientMutationId
+        }
+      }
+    `,
+    {
+      subjectId: reviewId,
+      classifier: reason
+    }
   );
 }
 async function main() {
   await postComment();
   let review = await findComment();
-  let dismissMessage = await dismissReview(review.id);
-  let dismissalMessageNodeId = await findDismissalMessage(review.id, dismissMessage);
-  await hideDismissedReviewAndComment(review.node_id, dismissalMessageNodeId);
+  await hideDismissedReviewAndComment(review.node_id);
 }
 main();
 /*! Bundled license information:

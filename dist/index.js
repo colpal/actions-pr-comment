@@ -23953,7 +23953,7 @@ async function dismissReview(reviewId) {
       review_id: reviewId,
       message: dismissMessage
     });
-    core.info("Review dismissed successfully.");
+    core.info(`Review (#${reviewId}) dismissed successfully. With message - ${dismissMessage}`);
     return dismissMessage;
   } catch (error) {
     core.setFailed(error.message);
@@ -23979,10 +23979,12 @@ async function findDismissalMessage(reviewId, dismissMessage) {
       pull_number: prNumber,
       review_id: reviewId
     });
+    core.info(`Total comments found for review id ${reviewId} is ${response.data.length}`);
     const comments = response.data;
+    core.info(`Searching through comments - ${comments}`);
     const dismissalMessage = comments.find((comment) => comment.body.includes(dismissMessage));
     if (!dismissalMessage) {
-      core.setFailed("Dismissal message not found.");
+      core.setFailed(`Dismissal message not found. Couldn't find message - ${dismissMessage}`);
       return;
     }
     core.info("Dismissal message found successfully.");

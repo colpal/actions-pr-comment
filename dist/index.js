@@ -23879,11 +23879,10 @@ async function postComment() {
     }
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    await octokit.rest.pulls.createReview({
+    await octokit.rest.issues.createComment({
       owner,
       repo,
-      pull_number: prNumber,
-      event: "COMMENT",
+      issue_number: prNumber,
       body: commentBody
     });
     core.info("Comment posted successfully.");
@@ -23907,10 +23906,10 @@ async function findComment() {
     }
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    const response = await octokit.rest.pulls.listReviews({
+    const response = await octokit.rest.issues.listComments({
       owner,
       repo,
-      pull_number: prNumber
+      issue_number: prNumber
     });
     const reviews = response.data;
     const targetReview = reviews.findLast(

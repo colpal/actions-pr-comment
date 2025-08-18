@@ -24020,9 +24020,21 @@ async function hideComment(commentId, reason) {
 }
 async function main() {
   await postComment();
+  setTimeout(() => {
+    console.log("Delayed for 10 seconds.");
+  }, "10000");
   let reviewId = await findComment();
+  setTimeout(() => {
+    console.log("Delayed for 10 seconds.");
+  }, "10000");
   let dismissMessage = await dismissReview(reviewId);
+  setTimeout(() => {
+    console.log("Delayed for 10 seconds.");
+  }, "10000");
   let dismissalMessageId = await findDismissalMessage(reviewId, dismissMessage);
+  setTimeout(() => {
+    console.log("Delayed for 10 seconds.");
+  }, "10000");
   await hideDismissedReviewAndComment(reviewId, dismissalMessageId);
 }
 main();

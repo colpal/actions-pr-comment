@@ -119,7 +119,7 @@ async function findComment() {
         core.setOutput('comment_id', targetReview.id);
         core.setOutput('comment_body', targetReview.body);
         core.info(`Comment ID: ${targetReview.id} \n Body: ${targetReview.body} \n State: ${targetReview.state}.`);
-        return targetReview.id;
+        return targetReview;
 
     } catch (error) {
         core.setFailed(error.message);
@@ -200,7 +200,7 @@ async function findDismissalMessage(reviewId, dismissMessage) {
 
         core.info("Dismissal message found successfully.");
         core.setOutput('dismissal_message_id', dismissalMessage.id);
-        return dismissalMessage.id;
+        return dismissalMessage.node_id;
     } catch (error) {
         core.setFailed(error.message);
     }
@@ -236,26 +236,10 @@ async function hideComment(commentId, reason) {
 
 async function main() {
     await postComment();
-    setTimeout(() => {
-        console.log("Delayed for 10 seconds.");
-    }, "10000");
-
-    let reviewId = await findComment();
-    setTimeout(() => {
-        console.log("Delayed for 10 seconds.");
-    }, "10000");
-
-    let dismissMessage = await dismissReview(reviewId);
-    setTimeout(() => {
-        console.log("Delayed for 10 seconds.");
-    }, "10000");
-
-    let dismissalMessageId = await findDismissalMessage(reviewId, dismissMessage);
-    setTimeout(() => {
-        console.log("Delayed for 10 seconds.");
-    }, "10000");
-
-    await hideDismissedReviewAndComment(reviewId, dismissalMessageId);
+    let review = await findComment();
+    let dismissMessage = await dismissReview(review.id);
+    let dismissalMessageNodeId = await findDismissalMessage(review.id, dismissMessage);
+    await hideDismissedReviewAndComment(review.node_id, dismissalMessageNodeId);
     // await updateComment();
 }
 

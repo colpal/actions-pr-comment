@@ -20866,7 +20866,7 @@ var require_dist_node6 = __commonJS({
     var index_exports = {};
     __export(index_exports, {
       GraphqlResponseError: () => GraphqlResponseError,
-      graphql: () => graphql2,
+      graphql: () => graphql22,
       withCustomRequest: () => withCustomRequest
     });
     module2.exports = __toCommonJS(index_exports);
@@ -20904,7 +20904,7 @@ var require_dist_node6 = __commonJS({
     ];
     var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
-    function graphql(request2, query, options) {
+    function graphql2(request2, query, options) {
       if (options) {
         if (typeof query === "string" && "query" in options) {
           return Promise.reject(
@@ -20956,14 +20956,14 @@ var require_dist_node6 = __commonJS({
     function withDefaults(request2, newDefaults) {
       const newRequest = request2.defaults(newDefaults);
       const newApi = (query, options) => {
-        return graphql(newRequest, query, options);
+        return graphql2(newRequest, query, options);
       };
       return Object.assign(newApi, {
         defaults: withDefaults.bind(null, newRequest),
         endpoint: newRequest.endpoint
       });
     }
-    var graphql2 = withDefaults(import_request3.request, {
+    var graphql22 = withDefaults(import_request3.request, {
       headers: {
         "user-agent": `octokit-graphql.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`
       },
@@ -23858,6 +23858,12 @@ var require_github = __commonJS({
 // src/index.js
 var core = require_core();
 var github = require_github();
+var { graphql } = require_dist_node6();
+var graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token ${process.env.GITHUB_TOKEN}`
+  }
+});
 async function postComment() {
   core.info("Starting to post a comment...");
   try {
@@ -23885,8 +23891,137 @@ async function postComment() {
     core.setFailed(error.message);
   }
 }
+async function findComment() {
+  core.info("Starting to find a comment...");
+  try {
+    const token = core.getInput("github_token", { required: true });
+    const author = core.getInput("author", { required: false }) || "github-actions[bot]";
+    const commentIdentifier = core.getInput("comment_identifier", { required: true });
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available.");
+    }
+    const prNumber = github.context.payload.pull_request?.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping operation.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    const response = await octokit.rest.pulls.listReviews({
+      owner,
+      repo,
+      pull_number: prNumber
+    });
+    const reviews = response.data;
+    const targetReview = reviews.findLast(
+      (review) => review.user.login === author && review.body?.includes(commentIdentifier)
+    );
+    if (!targetReview) {
+      core.setFailed("A review matching the author and identifier was not found.");
+      return;
+    }
+    core.info("Matching review found successfully.");
+    core.setOutput("comment_id", targetReview.id);
+    core.setOutput("comment_body", targetReview.body);
+    core.info(`Comment ID: ${targetReview.id} 
+ Body: ${targetReview.body} 
+ State: ${targetReview.state}.`);
+    return targetReview.id;
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+async function dismissReview(reviewId) {
+  core.info(`Starting to dismiss a review with id ${reviewId}...`);
+  try {
+    const token = core.getInput("github_token", { required: true });
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    }
+    const prNumber = github.context.payload.pull_request.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping review dismissal.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    const dismissMessage = `This review (#${reviewId}) is outdated.`;
+    await octokit.rest.pulls.dismissReview({
+      owner,
+      repo,
+      pull_number: prNumber,
+      review_id: reviewId,
+      message: dismissMessage
+    });
+    core.info("Review dismissed successfully.");
+    return dismissMessage;
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+async function findDismissalMessage(reviewId, dismissMessage) {
+  core.info(`Starting to find the dismissal message for review id ${reviewId}...`);
+  try {
+    const token = core.getInput("github_token", { required: true });
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    }
+    const prNumber = github.context.payload.pull_request.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping finding dismissal message.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    const response = await octokit.rest.pulls.listCommentsForReview({
+      owner,
+      repo,
+      pull_number: prNumber,
+      review_id: reviewId
+    });
+    const comments = response.data;
+    const dismissalMessage = comments.find((comment) => comment.body.includes(dismissMessage));
+    if (!dismissalMessage) {
+      core.setFailed("Dismissal message not found.");
+      return;
+    }
+    core.info("Dismissal message found successfully.");
+    core.setOutput("dismissal_message_id", dismissalMessage.id);
+    return dismissalMessage.id;
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+async function hideDismissedReviewAndComment(reviewId, dismissalMessageId) {
+  core.info(`Starting to hide dismissed review (${reviewId}) and the dismissal comment (${dismissalMessageId})...`);
+  try {
+    await hideComment(reviewId, "OUTDATED");
+    core.info("Dismissed review hidden successfully.");
+    await hideComment(dismissalMessageId, "OUTDATED");
+    core.info("Dismissal comment hidden successfully.");
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+async function hideComment(commentId, reason) {
+  console.log(`Hiding comment with comment id: ${commentId} for reason: ${reason}`);
+  await graphqlWithAuth(
+    `
+          mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
+              clientMutationId
+            }
+          }
+        `,
+    { subjectId: commentId, classifier: reason }
+  );
+}
 async function main() {
   await postComment();
+  let reviewId = await findComment();
+  let dismissMessage = await dismissReview(reviewId);
+  let dismissalMessageId = await findDismissalMessage(reviewId, dismissMessage);
+  await hideDismissedReviewAndComment(reviewId, dismissalMessageId);
 }
 main();
 /*! Bundled license information:

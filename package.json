@@ -4,16 +4,15 @@
   "description": "Internal action for creating comments on pull requests",
   "main": "dist/index.js",
   "scripts": {
-    "build": "esbuild src/index.js --bundle --outdir=dist --platform=node --target=node20",
-    "lint": "eslint src/*.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "esbuild src/index.js --bundle --outdir=dist --platform=node --target=node20 --watch=forever",
+    "lint": "eslint src/*.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/colpal/actions-pr-comment.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "joseph_mcdonough@colpal.com",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/colpal/actions-pr-comment/issues"

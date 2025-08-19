@@ -9,7 +9,6 @@ const graphqlWithAuth = graphql.defaults({
 
 async function postComment(token, octokit, owner, repo) {
     core.info("Starting to post a comment...");
-    let errorCaught = null;
     try {
         const commentBody = core.getInput('comment_body', { required: true });
 
@@ -164,7 +163,7 @@ async function main() {
             const updateMode = core.getInput('update_mode', { required: false }) || "create";
             core.debug(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
-                await hideComment(comment, "OUTDATED");
+                // await hideComment(comment, "OUTDATED");
                 await postComment();
             }
             else {

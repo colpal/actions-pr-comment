@@ -40,12 +40,12 @@ async function postComment() {
     }
 }
 
-async function updateComment() {
+async function updateComment(commentId) {
     core.info("Starting to update a comment...");
     try {
         const token = core.getInput('github_token', { required: true });
-        const commentBody = core.getInput('comment_body', { required: true });
-
+        let commentBody = core.getInput('comment_body', { required: true });
+        commentBody = " UPDATED: " + commentBody;
         if (!token) {
             throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
         }
@@ -60,7 +60,6 @@ async function updateComment() {
         const octokit = github.getOctokit(token);
 
         const { owner, repo } = github.context.repo;
-        const commentId = 3089380658;
         await octokit.rest.pulls.updateReview({
             owner,
             repo,
@@ -125,100 +124,6 @@ async function findComment() {
     }
 }
 
-async function dismissReview(reviewId) {
-    core.info(`Starting to dismiss a review with id ${reviewId}...`);
-    try {
-        const token = core.getInput('github_token', { required: true });
-
-        if (!token) {
-            throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
-        }
-
-        const prNumber = github.context.payload.pull_request.number;
-
-        if (!prNumber) {
-            core.warning('Not a pull request, skipping review dismissal.');
-            return;
-        }
-
-        const octokit = github.getOctokit(token);
-
-        const { owner, repo } = github.context.repo;
-        const dismissMessage = `This review (#${reviewId}) is outdated.`;
-        await octokit.rest.pulls.dismissReview({
-            owner,
-            repo,
-            pull_number: prNumber,
-            review_id: reviewId,
-            message: dismissMessage,
-        });
-        core.info(`Review (#${reviewId}) dismissed successfully. With message - ${dismissMessage}`);
-        return dismissMessage;
-
-    } catch (error) {
-        core.setFailed(error.message);
-    }
-}
-
-async function findDismissalMessage(reviewId, dismissMessage) {
-    core.info(`Starting to find the dismissal message for review id ${reviewId}...`);
-    try {
-        const token = core.getInput('github_token', { required: true });
-
-        if (!token) {
-            throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
-        }
-
-        const prNumber = github.context.payload.pull_request.number;
-
-        if (!prNumber) {
-            core.warning('Not a pull request, skipping finding dismissal message.');
-            return;
-        }
-
-        const octokit = github.getOctokit(token);
-        const { owner, repo } = github.context.repo;
-
-        const response = await octokit.rest.pulls.listCommentsForReview({
-            owner,
-            repo,
-            pull_number: prNumber,
-            review_id: reviewId
-        });
-        core.info(`Total comments found for review id ${reviewId} is ${response.data.length}`);
-
-        const comments = response.data;
-        core.info(`Searching through comments - ${comments}`)
-
-        const dismissalMessage = comments.find(comment => comment.body.includes(dismissMessage));
-
-        if (!dismissalMessage) {
-            core.setFailed(`Dismissal message not found. Couldn't find message - ${dismissMessage}`);
-            return;
-        }
-
-        core.info("Dismissal message found successfully.");
-        core.setOutput('dismissal_message_id', dismissalMessage.id);
-        return dismissalMessage.node_id;
-    } catch (error) {
-        core.setFailed(error.message);
-    }
-}
-
-async function hideDismissedReviewAndComment(reviewId) {
-    core.info(`Starting to hide dismissed review (${reviewId})`);
-    try {
-        await hideReviewComments(reviewId, "OUTDATED");
-        core.info("Hiding all review elements successfully.");
-
-        // await hideComment(dismissalMessageId, "OUTDATED");
-        // core.info("Dismissal comment hidden successfully.");
-
-    } catch (error) {
-        core.setFailed(error.message);
-    }
-}
-
 async function hideReviewComments(reviewId, reason) {
     console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
     await graphqlWithAuth(
@@ -243,11 +148,9 @@ async function hideReviewComments(reviewId, reason) {
 
 async function main() {
     await postComment();
-    let review = await findComment();
-    // let dismissMessage = await dismissReview(review.id);
-    // await findDismissalMessage(review.id, dismissMessage);
-    await hideDismissedReviewAndComment(review.node_id);
-    // await updateComment();
+    let comment = await findComment();
+    await updateComment(comment.id);
+    await hideReviewComments(comment.id, "OUTDATED");
 }
 
 main();

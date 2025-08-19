@@ -23890,6 +23890,34 @@ async function postComment() {
     core.setFailed(error.message);
   }
 }
+async function updateComment(commentId) {
+  core.info("Starting to update a comment...");
+  try {
+    const token = core.getInput("github_token", { required: true });
+    let commentBody = core.getInput("comment_body", { required: true });
+    commentBody = " UPDATED: " + commentBody;
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    }
+    const prNumber = github.context.payload.pull_request.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping review submission.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    await octokit.rest.pulls.updateReview({
+      owner,
+      repo,
+      pull_number: prNumber,
+      review_id: commentId,
+      body: commentBody
+    });
+    core.info("Comment updated successfully.");
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
 async function findComment() {
   core.info("Starting to find a comment...");
   try {
@@ -23930,15 +23958,6 @@ async function findComment() {
     core.setFailed(error.message);
   }
 }
-async function hideDismissedReviewAndComment(reviewId) {
-  core.info(`Starting to hide dismissed review (${reviewId})`);
-  try {
-    await hideReviewComments(reviewId, "OUTDATED");
-    core.info("Hiding all review elements successfully.");
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
 async function hideReviewComments(reviewId, reason) {
   console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
   await graphqlWithAuth(
@@ -23962,8 +23981,9 @@ async function hideReviewComments(reviewId, reason) {
 }
 async function main() {
   await postComment();
-  let review = await findComment();
-  await hideDismissedReviewAndComment(review.node_id);
+  let comment = await findComment();
+  await updateComment(comment.id);
+  await hideReviewComments(comment.id, "OUTDATED");
 }
 main();
 /*! Bundled license information:

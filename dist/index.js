@@ -23943,12 +23943,17 @@ async function hideReviewComments(reviewId, reason) {
   console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
   await graphqlWithAuth(
     `
-      mutation($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-        minimizeComment(input: {subjectId: $subjectId, classifier: $classifier}) {
-          clientMutationId
+        mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+                clientMutationId
+                minimizedComment {
+                    isMinimized
+                    minimizedReason
+                    viewerCanMinimize
+                }
+            }
         }
-      }
-    `,
+        `,
     {
       subjectId: reviewId,
       classifier: reason

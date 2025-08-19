@@ -23938,27 +23938,27 @@ async function findComment() {
       repo,
       issue_number: prNumber
     });
-    const reviews = response.data;
-    const targetReview = reviews.findLast(
-      (review) => review.user.login === author && review.body?.includes(commentIdentifier)
+    const comments = response.data;
+    const targetComment = comments.findLast(
+      (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
     );
-    if (!targetReview) {
-      core.setFailed("A review matching the author and identifier was not found.");
+    if (!targetComment) {
+      core.setFailed("A comment matching the author and identifier was not found.");
       return;
     }
-    core.info("Matching review found successfully.");
-    core.setOutput("comment_id", targetReview.id);
-    core.setOutput("comment_body", targetReview.body);
-    core.info(`Comment ID: ${targetReview.id} 
- Body: ${targetReview.body} 
- State: ${targetReview.state}.`);
-    return targetReview;
+    core.info("Matching comment found successfully.");
+    core.setOutput("comment_id", targetComment.id);
+    core.setOutput("comment_body", targetComment.body);
+    core.info(`Comment ID: ${targetComment.id} 
+ Body: ${targetComment.body} 
+ State: ${targetComment.state}.`);
+    return targetComment;
   } catch (error) {
     core.setFailed(error.message);
   }
 }
-async function hideReviewComments(reviewId, reason) {
-  console.log(`Hiding review with review id: ${reviewId} for reason: ${reason}`);
+async function hideComment(comment, reason) {
+  console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
   await graphqlWithAuth(
     `
         mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
@@ -23973,7 +23973,7 @@ async function hideReviewComments(reviewId, reason) {
         }
         `,
     {
-      subjectId: reviewId,
+      subjectId: comment.node_id,
       classifier: reason
     }
   );
@@ -23982,7 +23982,7 @@ async function main() {
   await postComment();
   let comment = await findComment();
   await updateComment(comment.id);
-  await hideReviewComments(comment.id, "OUTDATED");
+  await hideComment(comment, "OUTDATED");
 }
 main();
 /*! Bundled license information:

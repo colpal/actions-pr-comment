@@ -20866,7 +20866,7 @@ var require_dist_node6 = __commonJS({
     var index_exports = {};
     __export(index_exports, {
       GraphqlResponseError: () => GraphqlResponseError,
-      graphql: () => graphql2,
+      graphql: () => graphql22,
       withCustomRequest: () => withCustomRequest
     });
     module2.exports = __toCommonJS(index_exports);
@@ -20904,7 +20904,7 @@ var require_dist_node6 = __commonJS({
     ];
     var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
     var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
-    function graphql(request2, query, options) {
+    function graphql2(request2, query, options) {
       if (options) {
         if (typeof query === "string" && "query" in options) {
           return Promise.reject(
@@ -20956,14 +20956,14 @@ var require_dist_node6 = __commonJS({
     function withDefaults(request2, newDefaults) {
       const newRequest = request2.defaults(newDefaults);
       const newApi = (query, options) => {
-        return graphql(newRequest, query, options);
+        return graphql2(newRequest, query, options);
       };
       return Object.assign(newApi, {
         defaults: withDefaults.bind(null, newRequest),
         endpoint: newRequest.endpoint
       });
     }
-    var graphql2 = withDefaults(import_request3.request, {
+    var graphql22 = withDefaults(import_request3.request, {
       headers: {
         "user-agent": `octokit-graphql.js/${VERSION} ${(0, import_universal_user_agent.getUserAgent)()}`
       },
@@ -23858,6 +23858,12 @@ var require_github = __commonJS({
 // src/index.js
 var core = require_core();
 var github = require_github();
+var { graphql } = require_dist_node6();
+var graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token ${process.env.GITHUB_TOKEN}`
+  }
+});
 async function postComment() {
   core.info("Starting to post a comment...");
   try {
@@ -23873,14 +23879,40 @@ async function postComment() {
     }
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    await octokit.rest.pulls.createReview({
+    await octokit.rest.issues.createComment({
       owner,
       repo,
-      pull_number: prNumber,
-      event: "REQUEST_CHANGES",
+      issue_number: prNumber,
       body: commentBody
     });
     core.info("Comment posted successfully.");
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+async function updateComment(commentId) {
+  core.info("Starting to update a comment...");
+  try {
+    const token = core.getInput("github_token", { required: true });
+    let commentBody = core.getInput("comment_body", { required: true });
+    commentBody = " UPDATED: " + commentBody;
+    if (!token) {
+      throw new Error("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    }
+    const prNumber = github.context.payload.pull_request.number;
+    if (!prNumber) {
+      core.warning("Not a pull request, skipping review submission.");
+      return;
+    }
+    const octokit = github.getOctokit(token);
+    const { owner, repo } = github.context.repo;
+    await octokit.rest.issues.updateComment({
+      owner,
+      repo,
+      comment_id: commentId,
+      body: commentBody
+    });
+    core.info("Comment updated successfully.");
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -23901,32 +23933,56 @@ async function findComment() {
     }
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    const response = await octokit.rest.pulls.listReviews({
+    const response = await octokit.rest.issues.listComments({
       owner,
       repo,
-      pull_number: prNumber
+      issue_number: prNumber
     });
-    const reviews = response.data;
-    const targetReview = reviews.findLast(
-      (review) => review.user.login === author && review.body?.includes(commentIdentifier)
+    const comments = response.data;
+    const targetComment = comments.findLast(
+      (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
     );
-    if (!targetReview) {
-      core.setFailed("A review matching the author and identifier was not found.");
+    if (!targetComment) {
+      core.setFailed("A comment matching the author and identifier was not found.");
       return;
     }
-    core.info("Matching review found successfully.");
-    core.setOutput("comment_id", targetReview.id);
-    core.setOutput("comment_body", targetReview.body);
-    core.info(`Comment ID: ${targetReview.id} 
- Body: ${targetReview.body} 
- State: ${targetReview.state}.`);
+    core.info("Matching comment found successfully.");
+    core.setOutput("comment_id", targetComment.id);
+    core.setOutput("comment_body", targetComment.body);
+    core.info(`Comment ID: ${targetComment.id} 
+ Body: ${targetComment.body} 
+ State: ${targetComment.state}.`);
+    return targetComment;
   } catch (error) {
     core.setFailed(error.message);
   }
 }
+async function hideComment(comment, reason) {
+  console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+  await graphqlWithAuth(
+    `
+        mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+                clientMutationId
+                minimizedComment {
+                    isMinimized
+                    minimizedReason
+                    viewerCanMinimize
+                }
+            }
+        }
+        `,
+    {
+      subjectId: comment.node_id,
+      classifier: reason
+    }
+  );
+}
 async function main() {
   await postComment();
-  await findComment();
+  let comment = await findComment();
+  await updateComment(comment.id);
+  await hideComment(comment, "OUTDATED");
 }
 main();
 /*! Bundled license information:

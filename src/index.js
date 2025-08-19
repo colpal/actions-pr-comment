@@ -40,12 +40,12 @@ async function postComment() {
     }
 }
 
-async function updateComment(commentId) {
+async function updateComment(comment, updateType) {
     core.info("Starting to update a comment...");
     try {
         const token = core.getInput('github_token', { required: true });
-        let commentBody = core.getInput('comment_body', { required: true });
-        commentBody = " UPDATED: " + commentBody;
+        let newCommentBody = core.getInput('comment_body', { required: true });
+
         if (!token) {
             throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
         }
@@ -57,13 +57,28 @@ async function updateComment(commentId) {
             return;
         }
 
+        let commentBody = ""
+        switch (updateType) {
+            case "replace":
+                core.debug("Replacing comment body.");
+                commentBody = newCommentBody;
+                break;
+            case "append": {
+                core.debug("Appending to comment body.");
+                const timestamp = new Date().toUTCString();
+                const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
+                commentBody = comment.body + divider + newCommentBody;
+                break;
+            }
+        }
+
         const octokit = github.getOctokit(token);
 
         const { owner, repo } = github.context.repo;
         await octokit.rest.issues.updateComment({
             owner,
             repo,
-            comment_id: commentId,
+            comment_id: comment.id,
             body: commentBody,
         });
         core.info("Comment updated successfully.");
@@ -108,7 +123,7 @@ async function findComment() {
         );
 
         if (!targetComment) {
-            core.setFailed('A comment matching the author and identifier was not found.');
+            core.info('No comment matching the author and identifier was not found.');
             return;
         }
 
@@ -124,7 +139,7 @@ async function findComment() {
 }
 
 async function hideComment(comment, reason) {
-    console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    core.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
     await graphqlWithAuth(
         `
         mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
@@ -146,10 +161,31 @@ async function hideComment(comment, reason) {
 }
 
 async function main() {
-    await postComment();
     let comment = await findComment();
-    await updateComment(comment.id);
-    await hideComment(comment, "OUTDATED");
+    if (!comment) {
+        core.info("No existing comment found, posting a new comment.");
+        await postComment();
+        return;
+    } else {
+        core.debug(`Comment found: ${comment.body}`);
+        const updateMode = core.getInput('update_mode', { required: false }) || "create";
+        core.debug(`Update mode is set to: ${updateMode}`);
+        if (updateMode === "create") {
+            await hideComment(comment, "OUTDATED");
+            await postComment();
+        }
+        else {
+            await updateComment(comment, updateMode);
+        }
+    }
 }
+
+module.exports = {
+    postComment,
+    updateComment,
+    findComment,
+    hideComment,
+    main
+};
 
 main();

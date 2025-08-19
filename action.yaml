@@ -14,6 +14,10 @@ inputs:
     description: The GitHub token used to create an authenticated client
     required: false
     default: ${{ github.token }}
+  update_mode:
+    description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)."
+    required: false
+    default: "create"
 
 runs:
   using: node20

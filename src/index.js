@@ -164,7 +164,7 @@ async function main() {
             core.debug(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
                 // await hideComment(comment, "OUTDATED");
-                await postComment();
+                await postComment(token, octokit, owner, repo);
             }
             else {
                 await updateComment(token, octokit, owner, repo, comment, updateMode);

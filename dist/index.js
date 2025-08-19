@@ -24003,7 +24003,7 @@ async function main() {
       const updateMode = core.getInput("update_mode", { required: false }) || "create";
       core.debug(`Update mode is set to: ${updateMode}`);
       if (updateMode === "create") {
-        await postComment();
+        await postComment(token, octokit, owner, repo);
       } else {
         await updateComment(token, octokit, owner, repo, comment, updateMode);
       }

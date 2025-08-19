@@ -60,11 +60,10 @@ async function updateComment(commentId) {
         const octokit = github.getOctokit(token);
 
         const { owner, repo } = github.context.repo;
-        await octokit.rest.pulls.updateReview({
+        await octokit.rest.issues.updateComment({
             owner,
             repo,
-            pull_number: prNumber,
-            review_id: commentId,
+            comment_id: commentId,
             body: commentBody,
         });
         core.info("Comment updated successfully.");

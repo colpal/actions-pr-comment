@@ -23859,11 +23859,6 @@ var require_github = __commonJS({
 var core = require_core();
 var github = require_github();
 var { graphql } = require_dist_node6();
-var graphqlWithAuth = graphql.defaults({
-  headers: {
-    authorization: `token ${process.env.GITHUB_TOKEN}`
-  }
-});
 async function postComment(octokit, owner, repo, commentIdentifier) {
   core.info("Starting to post a comment...");
   try {
@@ -23961,12 +23956,17 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
     core.setFailed(error.message);
   }
 }
-async function hideComment(comment, reason, graphqlFn = graphqlWithAuth) {
-  core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
-  await graphqlFn(
+async function hideComment(token, comment, reason) {
+  console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${token}`
+    }
+  });
+  await graphqlWithAuth(
     `
-        mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+        mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
                 clientMutationId
                 minimizedComment {
                     isMinimized
@@ -24001,7 +24001,7 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, 
     check_run_id: checkRunId,
     status,
     conclusion,
-    details_url: "https://github.com/colpal/actions-pr-comment/pull/15#issuecomment-3206630767",
+    details_url: "https://github.com/colpal/actions-pr-comment/pull/15#issuecomment-3206600151",
     output: {
       summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
       title: checkName
@@ -24027,6 +24027,7 @@ async function main() {
       const updateMode = core.getInput("update_mode", { required: false }) || "create";
       core.info(`Update mode is set to: ${updateMode}`);
       if (updateMode === "create") {
+        await hideComment(token, comment, "OUTDATED");
         await postComment(octokit, owner, repo, commentIdentifier);
       } else {
         await updateComment(octokit, owner, repo, comment, updateMode);

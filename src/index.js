@@ -1,11 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const { graphql } = require("@octokit/graphql");
-const graphqlWithAuth = graphql.defaults({
-    headers: {
-        authorization: `token ${process.env.GITHUB_TOKEN}`,
-    },
-});
 
 async function postComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to post a comment...");
@@ -116,12 +111,18 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
     }
 }
 
-async function hideComment(comment, reason, graphqlFn = graphqlWithAuth) {
-    core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
-    await graphqlFn(
+async function hideComment(token, comment, reason) {
+    console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    const graphqlWithAuth = graphql.defaults({
+        headers: {
+            authorization: `token ${token}`,
+        },
+    });
+
+    await graphqlWithAuth(
         `
-        mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+        mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
                 clientMutationId
                 minimizedComment {
                     isMinimized
@@ -178,7 +179,7 @@ async function main() {
 
         let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
 
-        const commentIdentifier = `<!-- ` + checkName + ` -->`
+        const commentIdentifier = `<!-- ` + checkName + ` -->`;
 
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
@@ -189,7 +190,7 @@ async function main() {
             const updateMode = core.getInput('update_mode', { required: false }) || "create";
             core.info(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
-                // await hideComment(comment, "OUTDATED");
+                await hideComment(token, comment, "OUTDATED");
                 await postComment(octokit, owner, repo, commentIdentifier);
             }
             else {

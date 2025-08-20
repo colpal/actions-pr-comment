@@ -7,14 +7,10 @@ const graphqlWithAuth = graphql.defaults({
     },
 });
 
-async function postComment(token, octokit, owner, repo) {
+async function postComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to post a comment...");
     try {
-        const commentBody = core.getInput('comment_body', { required: true });
-
-        if (!token) {
-            throw new Error('GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.');
-        }
+        const commentBody = core.getInput('comment_body', { required: true }) + commentIdentifier;
 
         const prNumber = github.context.payload.pull_request.number;
 
@@ -36,7 +32,7 @@ async function postComment(token, octokit, owner, repo) {
     }
 }
 
-async function updateComment(token, octokit, owner, repo, comment, updateType) {
+async function updateComment(octokit, owner, repo, comment, updateType) {
     core.info("Starting to update a comment...");
     try {
         let newCommentBody = core.getInput('comment_body', { required: true });
@@ -80,12 +76,10 @@ async function updateComment(token, octokit, owner, repo, comment, updateType) {
     }
 }
 
-async function findComment(token, octokit, owner, repo) {
+async function findComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to find a comment...");
     try {
         const author = core.getInput('author', { required: false }) || "github-actions[bot]";
-        const commentIdentifier = core.getInput('comment_identifier', { required: true });
-
         const prNumber = github.context.payload.pull_request?.number;
 
         if (!prNumber) {
@@ -144,6 +138,33 @@ async function hideComment(comment, reason, graphqlFn = graphqlWithAuth) {
     );
 }
 
+async function initializeStatusCheck(octokit, owner, repo, checkName) {
+    core.info(`Creating a pending check named "${checkName}"...`);
+    const { data: checkRun } = await octokit.rest.checks.create({
+        owner,
+        repo,
+        checkName,
+        head_sha: github.context.payload.pull_request?.head.sha || github.context.sha,
+        status: 'in_progress',
+    });
+    return checkRun.id;
+}
+
+async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion) {
+    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    await octokit.rest.checks.update({
+        owner,
+        repo,
+        check_run_id: checkRunId,
+        status: status,
+        conclusion,
+        output: {
+            summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
+            title: checkName
+        }
+    });
+}
+
 async function main() {
     const token = core.getInput('github_token', { required: true });
 
@@ -152,11 +173,16 @@ async function main() {
     } else {
         const octokit = github.getOctokit(token);
         const { owner, repo } = github.context.repo;
+        const checkName = core.getInput('check_name', { required: true });
 
-        let comment = await findComment(token, octokit, owner, repo);
+        let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
+
+        const commentIdentifier = `<!-- ` + checkName + ` -->`
+
+        let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
             core.info("No existing comment found, posting a new comment.");
-            await postComment(token, octokit, owner, repo);
+            await postComment(octokit, owner, repo, commentIdentifier);
             return;
         } else {
             core.debug(`Comment found: ${comment.body}`);
@@ -164,12 +190,16 @@ async function main() {
             core.debug(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
                 // await hideComment(comment, "OUTDATED");
-                await postComment(token, octokit, owner, repo);
+                await postComment(octokit, owner, repo);
             }
             else {
-                await updateComment(token, octokit, owner, repo, comment, updateMode);
+                await updateComment(octokit, owner, repo, comment, updateMode);
             }
         }
+
+        const status = 'completed';
+        const conclusion = 'success';
+        await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion);
     }
 }
 

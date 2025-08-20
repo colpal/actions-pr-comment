@@ -1,7 +1,6 @@
 
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { graphql } = require('@octokit/graphql');
 const index = require('./index');
 
 jest.mock('@actions/core');
@@ -16,16 +15,30 @@ describe('actions-pr-comment', () => {
         owner = 'owner';
         repo = 'repo';
         github.context = {
-            payload: { pull_request: { number: 123 } },
-            repo: { owner, repo }
+            payload: {
+                pull_request: {
+                    number: 123,
+                    head: { sha: 'test-sha' }
+                }
+            },
+            repo: { owner, repo },
+            sha: 'fallback-sha'
         };
         octokit = {
             rest: {
                 issues: {
                     createComment: jest.fn(),
                     updateComment: jest.fn(),
-                    listComments: jest.fn()
+                    listComments: jest.fn(),
+                    create: jest.fn()
+                },
+                checks: {
+                    create: jest.fn().mockResolvedValue({ data: { id: 1 } }),
+                    update: jest.fn().mockResolvedValue({})
                 }
+            },
+            issues: {
+                create: jest.fn()
             }
         };
         github.getOctokit.mockReturnValue(octokit);
@@ -35,23 +48,24 @@ describe('actions-pr-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'comment_body') return 'Test comment';
         });
-        await index.postComment(token, octokit, owner, repo);
+        await index.postComment(octokit, owner, repo, '<!-- Test Identifier -->');
         expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
             owner,
             repo,
             issue_number: 123,
-            body: 'Test comment'
+            body: 'Test comment<!-- Test Identifier -->'
         });
         expect(core.info).toHaveBeenCalledWith('Comment posted successfully.');
     });
 
-    it('postComment: should fail if token is missing', async () => {
+    it('postComment: should fail if prNumber is missing', async () => {
         core.getInput.mockImplementation((key) => {
-            if (key === 'github_token') return undefined;
             if (key === 'comment_body') return 'Test comment';
         });
-        await index.postComment(undefined, octokit, owner, repo);
-        expect(core.setFailed).toHaveBeenCalled();
+        github.context.payload.pull_request = '';
+        await index.postComment(octokit, owner, repo, 'Test comment');
+        expect(core.setFailed).not.toHaveBeenCalled();
+        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
     });
 
     it('updateComment: should replace comment body', async () => {
@@ -59,7 +73,7 @@ describe('actions-pr-comment', () => {
             if (key === 'comment_body') return 'Updated comment';
         });
         const comment = { id: 1, body: 'Old', user: { login: 'bot' } };
-        await index.updateComment(token, octokit, owner, repo, comment, 'replace');
+        await index.updateComment(octokit, owner, repo, comment, 'replace');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalledWith({
             owner,
             repo,
@@ -73,7 +87,7 @@ describe('actions-pr-comment', () => {
             if (key === 'comment_body') return 'Appended';
         });
         const comment = { id: 2, body: 'Old', user: { login: 'bot' } };
-        await index.updateComment(token, octokit, owner, repo, comment, 'append');
+        await index.updateComment(octokit, owner, repo, comment, 'append');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalled();
         expect(octokit.rest.issues.updateComment.mock.calls[0][0].body).toContain('Appended');
         expect(octokit.rest.issues.updateComment.mock.calls[0][0].body).toContain('Old');
@@ -82,14 +96,13 @@ describe('actions-pr-comment', () => {
     it('findComment: should find the correct comment', async () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
-            if (key === 'comment_identifier') return 'identifier';
         });
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' },
             { id: 2, user: { login: 'github-actions[bot]' }, body: 'identifier' }
         ];
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
-        const result = await index.findComment(token, octokit, owner, repo);
+        const result = await index.findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
         expect(core.setOutput).toHaveBeenCalledWith('comment_id', 2);
     });
@@ -97,13 +110,12 @@ describe('actions-pr-comment', () => {
     it('findComment: should return undefined if no matching comment', async () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
-            if (key === 'comment_identifier') return 'notfound';
         });
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' }
         ];
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
-        const result = await index.findComment(token, octokit, owner, repo);
+        const result = await index.findComment(octokit, owner, repo, 'notfound');
         expect(result).toBeUndefined();
     });
 
@@ -121,16 +133,21 @@ describe('actions-pr-comment', () => {
         jest.spyOn(index, 'hideComment').mockResolvedValue();
         github.getOctokit.mockReturnValue(octokit);
         github.context.repo = { owner, repo };
-        github.context.payload = { pull_request: { number: 123 } };
+        github.context.payload.pull_request = {
+            number: 123,
+            head: { sha: 'test-sha' }
+        };
         core.getInput.mockImplementation((key) => {
             if (key === 'github_token') return token;
             if (key === 'comment_body') return 'Test comment';
             if (key === 'update_mode') return 'create';
             if (key === 'author') return 'github-actions[bot]';
             if (key === 'comment_identifier') return 'identifier';
+            if (key === 'check_name') return 'Test Check';
             return undefined;
         });
-        await expect(index.main()).resolves.toBeUndefined();
+        // Pass all required arguments to main
+        await expect(index.main(octokit, owner, repo, 'identifier')).resolves.toBeUndefined();
     });
 });
 

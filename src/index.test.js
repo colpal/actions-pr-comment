@@ -1,4 +1,7 @@
 
+const mockGraphql = jest.fn().mockResolvedValue({});
+mockGraphql.defaults = () => mockGraphql;
+jest.mock('@octokit/graphql', () => ({ graphql: mockGraphql }));
 const core = require('@actions/core');
 const github = require('@actions/github');
 const index = require('./index');
@@ -8,6 +11,12 @@ jest.mock('@actions/github');
 
 describe('actions-pr-comment', () => {
     let token, octokit, owner, repo;
+    // Mock @octokit/graphql globally
+    jest.mock('@octokit/graphql', () => {
+        return {
+            defaults: () => jest.fn().mockResolvedValue({})
+        };
+    });
     beforeEach(() => {
         jest.clearAllMocks();
         process.env.GITHUB_TOKEN = 'test-token';
@@ -120,10 +129,8 @@ describe('actions-pr-comment', () => {
     });
 
     it('hideComment: should call graphqlWithAuth without error', async () => {
-        // Mock graphqlWithAuth to avoid real network call
-        const mockGraphqlWithAuth = jest.fn().mockResolvedValue({});
-        const comment = { node_id: 'node123', id: 1 };
-        await expect(index.hideComment(comment, 'OUTDATED', mockGraphqlWithAuth)).resolves.toBeUndefined();
+    const comment = { node_id: 'node123', id: 1 };
+    await expect(index.hideComment(token, comment, 'OUTDATED')).resolves.toBeUndefined();
     });
 
     it('main: should run main without error', async () => {

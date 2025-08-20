@@ -20,8 +20,8 @@ async function postComment(octokit, owner, repo, commentIdentifier) {
         }
 
         await octokit.rest.issues.createComment({
-            owner,
-            repo,
+            owner: owner,
+            repo: repo,
             issue_number: prNumber,
             body: commentBody,
         });
@@ -64,8 +64,8 @@ async function updateComment(octokit, owner, repo, comment, updateType) {
         }
 
         await octokit.rest.issues.updateComment({
-            owner,
-            repo,
+            owner: owner,
+            repo: repo,
             comment_id: comment.id,
             body: commentBody,
         });
@@ -88,8 +88,8 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
         }
 
         const response = await octokit.rest.issues.listComments({
-            owner,
-            repo,
+            owner: owner,
+            repo: repo,
             issue_number: prNumber
         });
 
@@ -141,9 +141,9 @@ async function hideComment(comment, reason, graphqlFn = graphqlWithAuth) {
 async function initializeStatusCheck(octokit, owner, repo, checkName) {
     core.info(`Creating a pending check named "${checkName}"...`);
     const { data: checkRun } = await octokit.rest.checks.create({
-        owner,
-        repo,
-        checkName,
+        owner: owner,
+        repo: repo,
+        name: checkName,
         head_sha: github.context.payload.pull_request?.head.sha || github.context.sha,
         status: 'in_progress',
     });
@@ -153,11 +153,11 @@ async function initializeStatusCheck(octokit, owner, repo, checkName) {
 async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion) {
     core.info(`Finalizing status check with ID: ${checkRunId}...`);
     await octokit.rest.checks.update({
-        owner,
-        repo,
+        owner: owner,
+        repo: repo,
         check_run_id: checkRunId,
         status: status,
-        conclusion,
+        conclusion: conclusion,
         output: {
             summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
             title: checkName

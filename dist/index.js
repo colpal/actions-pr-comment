@@ -23987,7 +23987,7 @@ async function initializeStatusCheck(octokit, owner, repo, checkName) {
   const { data: checkRun } = await octokit.rest.checks.create({
     owner,
     repo,
-    checkName,
+    name: checkName,
     head_sha: github.context.payload.pull_request?.head.sha || github.context.sha,
     status: "in_progress"
   });

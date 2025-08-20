@@ -2,14 +2,14 @@ name: Submit Comment
 description: Submit a comment on a pull request
 
 inputs:
+  check_name:
+    description: Name of the check (to be used in the identifying comment)
+    required: true
+    default: "Sample Name"
   comment_body:
     description: Body of the comment
     required: true
     default: "Test Comment"
-  comment_identifier:
-    description: Identifier for the comment
-    required: true
-    default: "<!-- Test Identifier  -->"
   github_token:
     description: The GitHub token used to create an authenticated client
     required: false

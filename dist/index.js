@@ -23962,8 +23962,8 @@ async function hideComment(comment, reason) {
   });
   await graphqlWithAuth(
     `
-        mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+        mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+            minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
                 clientMutationId
                 minimizedComment {
                     isMinimized

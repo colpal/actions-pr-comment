@@ -158,6 +158,7 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, 
         check_run_id: checkRunId,
         status: status,
         conclusion: conclusion,
+        details_url: "https://github.com/colpal/actions-pr-comment/pull/15#issuecomment-3206600151",
         output: {
             summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
             title: checkName
@@ -197,7 +198,7 @@ async function main() {
         }
 
         const status = 'completed';
-        const conclusion = 'success';
+        const conclusion = 'action_required';
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion);
     }
 }

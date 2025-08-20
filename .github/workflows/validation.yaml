@@ -33,4 +33,4 @@ jobs:
           check_name: ${{ env.CHECK_NAME }}
           comment_body: ${{ env.COMMENT_BODY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          update_mode: "create"
+          update_mode: "append"

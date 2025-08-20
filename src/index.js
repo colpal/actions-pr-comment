@@ -1,11 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const { graphql } = require("@octokit/graphql");
-const graphqlWithAuth = graphql.defaults({
-    headers: {
-        authorization: `token ${process.env.GITHUB_TOKEN}`,
-    },
-});
 
 async function postComment() {
     core.info("Starting to post a comment...");
@@ -125,6 +120,13 @@ async function findComment() {
 
 async function hideComment(comment, reason) {
     console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    const token = core.getInput('github_token', { required: true });
+    const graphqlWithAuth = graphql.defaults({
+        headers: {
+            authorization: `token ${token}`,
+        },
+    });
+
     await graphqlWithAuth(
         `
         mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {

@@ -5,8 +5,8 @@ on:
     types:
       - opened
       - synchronize
-    branches:
-      - main
+    # branches:
+    #   - main
 
 jobs:
   validate_test_env:

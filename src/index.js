@@ -183,7 +183,6 @@ async function main() {
         if (!comment) {
             core.info("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
-            return;
         } else {
             core.debug(`Comment found: ${comment.body}`);
             const updateMode = core.getInput('update_mode', { required: false }) || "create";

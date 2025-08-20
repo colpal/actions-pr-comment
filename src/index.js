@@ -47,11 +47,11 @@ async function updateComment(octokit, owner, repo, comment, updateType) {
         let commentBody = ""
         switch (updateType) {
             case "replace":
-                core.debug("Replacing comment body.");
+                core.info("Replacing comment body.");
                 commentBody = newCommentBody;
                 break;
             case "append": {
-                core.debug("Appending to comment body.");
+                core.info("Appending to comment body.");
                 const timestamp = new Date().toUTCString();
                 const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
                 commentBody = comment.body + divider + newCommentBody;
@@ -117,7 +117,7 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
 }
 
 async function hideComment(comment, reason, graphqlFn = graphqlWithAuth) {
-    core.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
     await graphqlFn(
         `
         mutation minimizeComment($id: ID!, $classifier: ReportedContentClassifiers!) {
@@ -184,12 +184,12 @@ async function main() {
             core.info("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-            core.debug(`Comment found: ${comment.body}`);
+            core.info(`Comment found: ${comment.body}`);
             const updateMode = core.getInput('update_mode', { required: false }) || "create";
-            core.debug(`Update mode is set to: ${updateMode}`);
+            core.info(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
                 // await hideComment(comment, "OUTDATED");
-                await postComment(octokit, owner, repo);
+                await postComment(octokit, owner, repo, commentIdentifier);
             }
             else {
                 await updateComment(octokit, owner, repo, comment, updateMode);

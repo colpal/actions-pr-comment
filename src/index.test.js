@@ -1,4 +1,3 @@
-
 const mockGraphql = jest.fn().mockResolvedValue({});
 mockGraphql.defaults = () => mockGraphql;
 jest.mock('@octokit/graphql', () => ({ graphql: mockGraphql }));
@@ -129,8 +128,8 @@ describe('actions-pr-comment', () => {
     });
 
     it('hideComment: should call graphqlWithAuth without error', async () => {
-    const comment = { node_id: 'node123', id: 1 };
-    await expect(index.hideComment(token, comment, 'OUTDATED')).resolves.toBeUndefined();
+        const comment = { node_id: 'node123', id: 1 };
+        await expect(index.hideComment(token, comment, 'OUTDATED')).resolves.toBeUndefined();
     });
 
     it('main: should run main without error', async () => {

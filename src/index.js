@@ -198,7 +198,7 @@ async function main() {
         }
 
         const status = 'completed';
-        const conclusion = 'success';
+        const conclusion = core.getInput('conclusion', { required: true });
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion);
     }
 }
@@ -208,6 +208,8 @@ module.exports = {
     updateComment,
     findComment,
     hideComment,
+    initializeStatusCheck,
+    finalizeStatusCheck,
     main
 };
 

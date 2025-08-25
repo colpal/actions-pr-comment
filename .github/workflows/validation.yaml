@@ -32,5 +32,6 @@ jobs:
         with:
           check_name: ${{ env.CHECK_NAME }}
           comment_body: ${{ env.COMMENT_BODY }}
+          conclusion: ${{ env.CONCLUSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           update_mode: "create"

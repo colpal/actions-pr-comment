@@ -1,7 +1,8 @@
 const { graphql } = require("@octokit/graphql");
+const core = require('@actions/core');
 
 async function hideComment(token, comment, reason) {
-    console.log(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
     const graphqlWithAuth = graphql.defaults({
         headers: {
             authorization: `token ${token}`,

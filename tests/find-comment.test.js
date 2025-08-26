@@ -1,21 +1,12 @@
-const mockGraphql = jest.fn().mockResolvedValue({});
-mockGraphql.defaults = () => mockGraphql;
-jest.mock('@octokit/graphql', () => ({ graphql: mockGraphql }));
 const core = require('@actions/core');
 const github = require('@actions/github');
-const index = require('../src/index');
+const { findComment } = require('../src/find-comment');
 
 jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('actions-pr-comment', () => {
     let token, octokit, owner, repo;
-    // Mock @octokit/graphql globally
-    jest.mock('@octokit/graphql', () => {
-        return {
-            defaults: () => jest.fn().mockResolvedValue({})
-        };
-    });
     beforeEach(() => {
         jest.clearAllMocks();
         process.env.GITHUB_TOKEN = 'test-token';
@@ -35,18 +26,8 @@ describe('actions-pr-comment', () => {
         octokit = {
             rest: {
                 issues: {
-                    createComment: jest.fn(),
-                    updateComment: jest.fn(),
                     listComments: jest.fn(),
-                    create: jest.fn()
-                },
-                checks: {
-                    create: jest.fn().mockResolvedValue({ data: { id: 1 } }),
-                    update: jest.fn().mockResolvedValue({})
                 }
-            },
-            issues: {
-                create: jest.fn()
             }
         };
         github.getOctokit.mockReturnValue(octokit);
@@ -61,7 +42,7 @@ describe('actions-pr-comment', () => {
             { id: 2, user: { login: 'github-actions[bot]' }, body: 'identifier' }
         ];
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
-        const result = await index.findComment(octokit, owner, repo, 'identifier');
+        const result = await findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
         expect(core.setOutput).toHaveBeenCalledWith('comment_id', 2);
     });
@@ -76,7 +57,7 @@ describe('actions-pr-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return undefined;
         });
-        const result = await index.findComment(octokit, owner, repo, 'identifier');
+        const result = await findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
         expect(core.setOutput).toHaveBeenCalledWith('comment_id', 2);
     });
@@ -89,7 +70,7 @@ describe('actions-pr-comment', () => {
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' }
         ];
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
-        const result = await index.findComment(octokit, owner, repo, 'notfound');
+        const result = await findComment(octokit, owner, repo, 'notfound');
         expect(result).toBeUndefined();
     });
 
@@ -103,7 +84,7 @@ describe('actions-pr-comment', () => {
         github.context.payload.pull_request = '';
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
 
-        await index.findComment(octokit, owner, repo, 'identifier');
+        await findComment(octokit, owner, repo, 'identifier');
         expect(core.setFailed).not.toHaveBeenCalled();
         expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping operation.');
     });
@@ -114,7 +95,7 @@ describe('actions-pr-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
         });
-        await index.findComment(octokit, owner, repo, 'identifier');
+        await findComment(octokit, owner, repo, 'identifier');
         expect(octokit.rest.issues.listComments).toHaveBeenCalledWith({
             owner,
             repo,

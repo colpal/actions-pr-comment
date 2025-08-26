@@ -7,8 +7,10 @@ inputs:
     required: true
   comment_body:
     description: Body of the comment
-    required: true
-    default: "Test Comment"
+    required: false
+  comment_body_path:
+    description: Path to a file containing the body of the comment (overrides comment_body if both are provided)
+    required: false
   conclusion:
     description: The conclusion status of the check (e.g., success, failure)
     required: true

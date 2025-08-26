@@ -15,13 +15,14 @@ jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('comment-workflow', () => {
-    let token, octokit, owner, repo;
+    let token, octokit, owner, repo, commentIdentifier;
     beforeEach(() => {
         jest.clearAllMocks();
         process.env.GITHUB_TOKEN = 'test-token';
         token = 'test-token';
         owner = 'owner';
         repo = 'repo';
+        commentIdentifier = '<!-- Test Check -->'
         github.context = {
             payload: {
                 pull_request: {
@@ -63,7 +64,7 @@ describe('comment-workflow', () => {
         });
         await commentWorkflow(token);
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, 'OUTDATED');
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -84,7 +85,7 @@ describe('comment-workflow', () => {
         });
         await commentWorkflow(token);
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, 'OUTDATED');
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -105,7 +106,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
         expect(hideComment).not.toHaveBeenCalled();
         expect(postComment).not.toHaveBeenCalled();
-        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, 'append');
+        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, commentIdentifier, 'append');
     });
 
     it('commentWorkflow: should update existing comment with `replace` (override existing comment)', async () => {
@@ -125,7 +126,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
         expect(hideComment).not.toHaveBeenCalled();
         expect(postComment).not.toHaveBeenCalled();
-        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, 'replace');
+        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, commentIdentifier, 'replace');
     });
 
     it('commentWorkflow: should create new comment when no previous comment found', async () => {
@@ -141,8 +142,8 @@ describe('comment-workflow', () => {
             return undefined;
         });
         await commentWorkflow(token);
-        expect(findComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
+        expect(findComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
         expect(hideComment).not.toHaveBeenCalled();
         expect(updateComment).not.toHaveBeenCalled();
     });

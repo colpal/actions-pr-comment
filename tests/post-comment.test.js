@@ -6,13 +6,12 @@ jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('post-comment', () => {
-    let token, octokit, owner, repo;
+    let octokit, owner, repo, commentIdentifier;
     beforeEach(() => {
         jest.clearAllMocks();
-        process.env.GITHUB_TOKEN = 'test-token';
-        token = 'test-token';
         owner = 'owner';
         repo = 'repo';
+        commentIdentifier = '<!-- Test Check -->'
         github.context = {
             payload: {
                 pull_request: {
@@ -44,12 +43,12 @@ describe('post-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'comment_body') return 'Test comment';
         });
-        await postComment(octokit, owner, repo, '<!-- Test Identifier -->');
+        await postComment(octokit, owner, repo, commentIdentifier);
         expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
             owner,
             repo,
             issue_number: 123,
-            body: 'Test comment<!-- Test Identifier -->'
+            body: commentIdentifier + 'Test comment'
         });
         expect(core.info).toHaveBeenCalledWith('Comment posted successfully.');
     });
@@ -70,12 +69,12 @@ describe('post-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'comment_body') return 'Test comment';
         });
-        await postComment(octokit, owner, repo, '<!-- Test Identifier -->');
+        await postComment(octokit, owner, repo, commentIdentifier);
         expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
             owner,
             repo,
             issue_number: 123,
-            body: 'Test comment<!-- Test Identifier -->'
+            body: commentIdentifier + 'Test comment'
         });
         expect(core.setFailed).toHaveBeenCalledWith('Resource not accessible by integration');
     });

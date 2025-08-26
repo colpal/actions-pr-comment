@@ -1,10 +1,12 @@
+const { getCommentBody } = require("./util");
+
 const core = require("@actions/core");
 const github = require("@actions/github");
 
 async function postComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to post a comment...");
     try {
-        const commentBody = core.getInput('comment_body', { required: true }) + commentIdentifier;
+        const commentBody = commentIdentifier + getCommentBody();
 
         const prNumber = github.context.payload.pull_request.number;
 

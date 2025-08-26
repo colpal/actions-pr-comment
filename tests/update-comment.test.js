@@ -6,13 +6,12 @@ jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('update-comment', () => {
-    let token, octokit, owner, repo;
+    let octokit, owner, repo, commentIdentifier;
     beforeEach(() => {
         jest.clearAllMocks();
-        process.env.GITHUB_TOKEN = 'test-token';
-        token = 'test-token';
         owner = 'owner';
         repo = 'repo';
+        commentIdentifier = '<!-- Test Check -->'
         github.context = {
             payload: {
                 pull_request: {
@@ -41,12 +40,12 @@ describe('update-comment', () => {
             if (key === 'comment_body') return 'Updated comment';
         });
         const comment = { id: 1, body: 'Old', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, 'replace');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalledWith({
             owner,
             repo,
             comment_id: 1,
-            body: 'Updated comment'
+            body: commentIdentifier + 'Updated comment'
         });
     });
 
@@ -55,7 +54,7 @@ describe('update-comment', () => {
             if (key === 'comment_body') return 'Appended';
         });
         const comment = { id: 2, body: 'Old', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, 'append');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'append');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalled();
         expect(octokit.rest.issues.updateComment.mock.calls[0][0].body).toContain('Appended');
         expect(octokit.rest.issues.updateComment.mock.calls[0][0].body).toContain('Old');
@@ -67,7 +66,7 @@ describe('update-comment', () => {
         });
         const comment = { id: 3, body: 'Old', user: { login: 'bot' } };
         github.context.payload.pull_request = '';
-        await updateComment(octokit, owner, repo, comment, 'append');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'append');
         expect(core.setFailed).not.toHaveBeenCalled();
         expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
     });
@@ -77,7 +76,7 @@ describe('update-comment', () => {
             if (key === 'comment_body') return 'Appended';
         });
         const comment = { id: 4, body: 'Old', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, 'replacement');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replacement');
         expect(core.setFailed).not.toHaveBeenCalled();
         expect(core.warning).toHaveBeenCalledWith('Unknown update type: replacement');
     });
@@ -89,12 +88,12 @@ describe('update-comment', () => {
             if (key === 'comment_body') return 'Test comment';
         });
         const comment = { id: 4, body: 'Test comment', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, 'replace');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalledWith({
             owner,
             repo,
             comment_id: 4,
-            body: "Test comment"
+            body: commentIdentifier + "Test comment"
         });
         expect(core.setFailed).toHaveBeenCalledWith('Resource not accessible by integration');
     });

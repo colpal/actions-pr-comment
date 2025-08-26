@@ -1,10 +1,12 @@
+const { getCommentBody } = require("./util");
+
 const core = require("@actions/core");
 const github = require("@actions/github");
 
-async function updateComment(octokit, owner, repo, comment, updateType) {
+async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
     core.info("Starting to update a comment...");
     try {
-        let newCommentBody = core.getInput('comment_body', { required: true });
+        let newCommentBody = getCommentBody();
 
         const prNumber = github.context.payload.pull_request.number;
 
@@ -17,13 +19,13 @@ async function updateComment(octokit, owner, repo, comment, updateType) {
         switch (updateType) {
             case "replace":
                 core.info("Replacing comment body.");
-                commentBody = newCommentBody;
+                commentBody = commentIdentifier + newCommentBody;
                 break;
             case "append": {
                 core.info("Appending to comment body.");
                 const timestamp = new Date().toUTCString();
                 const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
-                commentBody = comment.body + divider + newCommentBody;
+                commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment
                 break;
             }
             default: {

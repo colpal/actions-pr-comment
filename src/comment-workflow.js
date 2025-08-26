@@ -29,7 +29,7 @@ async function commentWorkflow(token) {
             await postComment(octokit, owner, repo, commentIdentifier);
         }
         else {
-            await updateComment(octokit, owner, repo, comment, updateMode);
+            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
         }
     }
 

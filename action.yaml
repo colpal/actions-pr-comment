@@ -5,11 +5,13 @@ inputs:
   check_name:
     description: Name of the check (to be used in the identifying comment)
     required: true
-    default: "Sample Name"
   comment_body:
     description: Body of the comment
     required: true
     default: "Test Comment"
+  conclusion:
+    description: The conclusion status of the check (e.g., success, failure)
+    required: true
   github_token:
     description: The GitHub token used to create an authenticated client
     required: false

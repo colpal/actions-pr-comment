@@ -23,9 +23,10 @@ jobs:
 
       - name: Load environment variables from .env file
         run: |
-          grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
           grep '^CHECK_NAME=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
           grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^UPDATE_MODE=' ci/vars/test.env >> $GITHUB_ENV
 
       - name: Action step
         uses: ./
@@ -35,4 +36,4 @@ jobs:
           comment_body: ${{ env.COMMENT_BODY }}
           conclusion: ${{ env.CONCLUSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          update_mode: "create"
+          update_mode: ${{ env.UPDATE_MODE}}

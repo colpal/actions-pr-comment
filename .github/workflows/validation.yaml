@@ -21,10 +21,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Load COMMENT_BODY from .env file
+      - name: Load environment variables from .env file
         run: |
           grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
           grep '^CHECK_NAME=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
 
       - name: Action step
         uses: ./

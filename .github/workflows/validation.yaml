@@ -34,7 +34,7 @@ jobs:
         id: hello
         with:
           check_name: ${{ env.CHECK_NAME }}
-          # comment_body: ${{ env.COMMENT_BODY }}
+          comment_body: ${{ env.COMMENT_BODY }}
           # comment_body_path: ${{ env.COMMENT_BODY_PATH }}
           conclusion: ${{ env.CONCLUSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

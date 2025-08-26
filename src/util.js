@@ -12,7 +12,11 @@ function getCommentBody() {
     if (commentPath) {
         try {
             info(`Reading comment body from file: ${commentPath}`);
-            return readFileSync(commentPath, 'utf8');
+            let fileContent = readFileSync(commentPath, 'utf8');
+            if (fileContent.charCodeAt(0) === 0xFEFF) {
+                fileContent = fileContent.slice(1);
+            }
+            return fileContent;
         } catch (error) {
             throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
         }

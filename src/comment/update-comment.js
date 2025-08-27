@@ -35,7 +35,7 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
         switch (updateType) {
             case "replace":
                 core.info("Replacing comment body.");
-                commentBody = commentIdentifier + newCommentBody;
+                commentBody = commentIdentifier + "\n" + newCommentBody;
                 break;
             case "append": {
                 core.info("Appending to comment body.");

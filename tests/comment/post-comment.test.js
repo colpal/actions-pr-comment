@@ -46,7 +46,7 @@ describe('postComment', () => {
             owner: 'owner',
             repo: 'repo',
             issue_number: 42,
-            body: 'identifier: mocked body'
+            body: 'identifier: \nmocked body'
         });
         expect(core.info).toHaveBeenCalledWith("Comment posted successfully.");
     });

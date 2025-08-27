@@ -47,7 +47,7 @@ describe('update-comment', () => {
             owner,
             repo,
             comment_id: 1,
-            body: commentIdentifier + 'Mocked body'
+            body: commentIdentifier + "\n" + 'Mocked body'
         });
         expect(core.info).toHaveBeenCalledWith("Replacing comment body.");
         expect(core.info).toHaveBeenCalledWith("Comment updated successfully.");

@@ -6,11 +6,9 @@ jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('actions-pr-comment', () => {
-    let token, octokit, owner, repo;
+    let octokit, owner, repo;
     beforeEach(() => {
         jest.clearAllMocks();
-        process.env.GITHUB_TOKEN = 'test-token';
-        token = 'test-token';
         owner = 'owner';
         repo = 'repo';
         github.context = {

@@ -5,12 +5,10 @@ jest.mock('@actions/core');
 jest.mock('@actions/github');
 
 describe('status-check', () => {
-    let token, octokit, owner, repo, checkName;
+    let octokit, owner, repo, checkName;
     beforeEach(() => {
         jest.clearAllMocks();
-        process.env.GITHUB_TOKEN = 'test-token';
         checkName = 'Test Check';
-        token = 'test-token';
         owner = 'owner';
         repo = 'repo';
         github.context = {

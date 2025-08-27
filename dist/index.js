@@ -23931,15 +23931,48 @@ var require_find_comment = __commonJS({
   }
 });
 
+// src/util.js
+var require_util8 = __commonJS({
+  "src/util.js"(exports2, module2) {
+    var { getInput: getInput2, info } = require_core();
+    var { readFileSync } = require("fs");
+    function getCommentBody() {
+      const directComment = getInput2("comment_body");
+      const commentPath = getInput2("comment_body_path");
+      if (directComment && commentPath) {
+        throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
+      }
+      if (commentPath) {
+        try {
+          info(`Reading comment body from file: ${commentPath}`);
+          let fileContent = readFileSync(commentPath, "utf8");
+          if (fileContent.charCodeAt(0) === 65279) {
+            fileContent = fileContent.slice(1);
+          }
+          return fileContent;
+        } catch (error) {
+          throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
+        }
+      }
+      if (directComment) {
+        return directComment;
+      }
+      throw new Error("Either a 'comment_body' or a 'comment_body_path' input must be supplied.");
+    }
+    module2.exports = { getCommentBody };
+  }
+});
+
 // src/update-comment.js
 var require_update_comment = __commonJS({
   "src/update-comment.js"(exports2, module2) {
+    var { getCommentBody } = require_util8();
     var core = require_core();
     var github = require_github();
-    async function updateComment(octokit, owner, repo, comment, updateType) {
+    async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
       core.info("Starting to update a comment...");
       try {
-        let newCommentBody = core.getInput("comment_body", { required: true });
+        let newCommentBody = getCommentBody();
         const prNumber = github.context.payload.pull_request.number;
         if (!prNumber) {
           core.warning("Not a pull request, skipping review submission.");
@@ -23949,7 +23982,7 @@ var require_update_comment = __commonJS({
         switch (updateType) {
           case "replace":
             core.info("Replacing comment body.");
-            commentBody = newCommentBody;
+            commentBody = commentIdentifier + newCommentBody;
             break;
           case "append": {
             core.info("Appending to comment body.");
@@ -24022,12 +24055,13 @@ var require_hide_comment = __commonJS({
 // src/post-comment.js
 var require_post_comment = __commonJS({
   "src/post-comment.js"(exports2, module2) {
+    var { getCommentBody } = require_util8();
     var core = require_core();
     var github = require_github();
     async function postComment(octokit, owner, repo, commentIdentifier) {
       core.info("Starting to post a comment...");
       try {
-        const commentBody = core.getInput("comment_body", { required: true }) + commentIdentifier;
+        const commentBody = commentIdentifier + getCommentBody();
         const prNumber = github.context.payload.pull_request.number;
         if (!prNumber) {
           core.warning("Not a pull request, skipping review submission.");
@@ -24076,7 +24110,7 @@ var require_comment_workflow = __commonJS({
           await hideComment(token, comment, "OUTDATED");
           await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-          await updateComment(octokit, owner, repo, comment, updateMode);
+          await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
         }
       }
       const status = "completed";

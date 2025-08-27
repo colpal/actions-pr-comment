@@ -9,8 +9,8 @@ on:
     #   - main
 
 jobs:
-  validate_test_env:
-    name: Unit Test 1 - Validate defaults
+  test_action:
+    name: Test Actions PR Comment Action
     runs-on: [self-hosted, org]
     permissions:
       pull-requests: write
@@ -23,19 +23,29 @@ jobs:
 
       - name: Load environment variables from .env file
         run: |
-          grep '^CHECK_NAME=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^CHECK_NAME_1=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^CHECK_NAME_2=' ci/vars/test.env >> $GITHUB_ENV
           grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
           grep '^COMMENT_BODY_PATH=' ci/vars/test.env >> $GITHUB_ENV
           grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
           grep '^UPDATE_MODE=' ci/vars/test.env >> $GITHUB_ENV
 
-      - name: Comment on PR
+      - name: Comment on PR with direct comment
         uses: ./
-        id: comment
+        id: comment-direct
         with:
-          check_name: ${{ env.CHECK_NAME }}
-          # comment_body: ${{ env.COMMENT_BODY }}
+          check_name: ${{ env.CHECK_NAME_1 }}
+          comment_body: ${{ env.COMMENT_BODY }}
+          conclusion: ${{ env.CONCLUSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          update_mode: ${{ env.UPDATE_MODE }}
+
+      - name: Comment on PR with markdown file path
+        uses: ./
+        id: comment-file
+        with:
+          check_name: ${{ env.CHECK_NAME_2 }}
           comment_body_path: ${{ env.COMMENT_BODY_PATH }}
           conclusion: ${{ env.CONCLUSION }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          update_mode: ${{ env.UPDATE_MODE}}
+          update_mode: ${{ env.UPDATE_MODE }}

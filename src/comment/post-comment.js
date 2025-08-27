@@ -1,8 +1,19 @@
-const { getCommentBody } = require("./util");
+const { getCommentBody } = require("../util/util");
 
 const core = require("@actions/core");
 const github = require("@actions/github");
 
+/**
+ * Posts a comment to a pull request using the provided Octokit instance.
+ *
+ * @async
+ * @function postComment
+ * @param {object} octokit - An authenticated Octokit REST client instance.
+ * @param {string} owner - The owner of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {string} commentIdentifier - A string to identify the comment, prepended to the comment body.
+ * @returns {Promise<void>} Resolves when the comment is posted or skipped if not a pull request.
+ */
 async function postComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to post a comment...");
     try {

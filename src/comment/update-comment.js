@@ -1,8 +1,24 @@
-const { getCommentBody } = require("./util");
+const { getCommentBody } = require("../util/util");
 
 const core = require("@actions/core");
 const github = require("@actions/github");
 
+/**
+ * Updates a GitHub pull request comment with new content.
+ *
+ * Depending on the updateType, the comment body is either replaced or appended with new content.
+ * - "replace": Replaces the comment body with the commentIdentifier and new content.
+ * - "append": Appends new content to the existing comment body, separated by a divider and timestamp.
+ *
+ * @async
+ * @param {object} octokit - The authenticated Octokit REST client instance.
+ * @param {string} owner - The owner of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {object} comment - The existing comment object to update.
+ * @param {string} commentIdentifier - A string used to identify the comment (used in "replace" mode).
+ * @param {string} updateType - The type of update ("replace" or "append").
+ * @returns {Promise<void>} Resolves when the comment is updated or skips if not a pull request.
+ */
 async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
     core.info("Starting to update a comment...");
     try {

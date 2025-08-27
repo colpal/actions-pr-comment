@@ -1,4 +1,4 @@
-const { commentWorkflow } = require('./comment-workflow.js');
+const { commentWorkflow } = require('./comment/comment-workflow.js');
 
 const { getInput, setFailed } = require("@actions/core");
 

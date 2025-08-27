@@ -1,6 +1,16 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
+/**
+ * Finds the most recent comment on a pull request that matches the specified author and contains the given identifier in its body.
+ *
+ * @async
+ * @param {import('@octokit/rest').Octokit} octokit - An authenticated Octokit REST client instance.
+ * @param {string} owner - The owner of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {string} commentIdentifier - A unique string to identify the target comment in its body.
+ * @returns {Promise<Object|undefined>} The matching comment object if found, otherwise undefined.
+ */
 async function findComment(octokit, owner, repo, commentIdentifier) {
     core.info("Starting to find a comment...");
     try {

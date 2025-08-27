@@ -1,7 +1,7 @@
 const mockGraphql = jest.fn().mockResolvedValue({});
 mockGraphql.defaults = () => mockGraphql;
 jest.mock('@octokit/graphql', () => ({ graphql: mockGraphql }));
-const { hideComment } = require('../src/hide-comment.js');
+const { hideComment } = require('../../src/comment/hide-comment');
 
 
 jest.mock('@actions/core');

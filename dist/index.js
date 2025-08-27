@@ -23994,7 +23994,7 @@ var require_update_comment = __commonJS({
         switch (updateType) {
           case "replace":
             core.info("Replacing comment body.");
-            commentBody = commentIdentifier + newCommentBody;
+            commentBody = commentIdentifier + "\n" + newCommentBody;
             break;
           case "append": {
             core.info("Appending to comment body.");
@@ -24073,7 +24073,7 @@ var require_post_comment = __commonJS({
     async function postComment(octokit, owner, repo, commentIdentifier) {
       core.info("Starting to post a comment...");
       try {
-        const commentBody = commentIdentifier + getCommentBody();
+        const commentBody = commentIdentifier + "\n" + getCommentBody();
         const prNumber = github.context.payload.pull_request.number;
         if (!prNumber) {
           core.warning("Not a pull request, skipping review submission.");

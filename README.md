@@ -24,7 +24,8 @@
     comment_body_path: "My comment here"
     
     # Result of the workflows that are providing the comments to be posted. Will be set to "success" or "failure" such that this action can prevent merge whilst posting comments explaining the problem
-    # Required
+    # Optional
+    # Default: "neutral"
     conclusion: "success"
 
     # The path where the markdown (.md) file is stored which holds the text to be used as the message body

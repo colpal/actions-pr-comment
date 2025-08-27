@@ -23874,7 +23874,11 @@ var require_status_check = __commonJS({
     async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
       core.info(`Finalizing status check with ID: ${checkRunId}...`);
       const status = "completed";
-      let conclusion = "neutral";
+      let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
+      if (conclusion !== "success" && conclusion !== "failure" && conclusion !== "neutral") {
+        core.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+        conclusion = "neutral";
+      }
       await octokit.rest.checks.update({
         owner,
         repo,

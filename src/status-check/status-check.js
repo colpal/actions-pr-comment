@@ -45,18 +45,12 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
     core.info(`Finalizing status check with ID: ${checkRunId}...`);
     const status = "completed";
 
-    let conclusion = "neutral";
-    // try {
-    //     conclusion = core.getInput('conclusion', { required: true });
-    // } catch (error) {
-    //     core.setFailed(`Failed to get conclusion input: ${error.message}`);
-    //     return;
-    // }
+    let conclusion = core.getInput('conclusion', { required: false }) || "neutral";
 
-    // if (conclusion !== 'success' && conclusion !== 'failure') {
-    //     core.error(`Invalid conclusion: "${conclusion}". Must be 'success' or 'failure'.`);
-    //     conclusion = 'neutral';
-    // }
+    if (conclusion !== 'success' && conclusion !== 'failure' && conclusion !== 'neutral') {
+        core.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+        conclusion = 'neutral';
+    }
 
     await octokit.rest.checks.update({
         owner: owner,

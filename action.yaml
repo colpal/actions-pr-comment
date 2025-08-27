@@ -13,7 +13,8 @@ inputs:
     required: false
   conclusion:
     description: The conclusion status of the check (e.g., success, failure)
-    required: true
+    required: false
+    default: "neutral"
   github_token:
     description: The GitHub token used to create an authenticated client
     required: false

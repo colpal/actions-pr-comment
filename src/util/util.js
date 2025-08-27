@@ -28,6 +28,9 @@ function getCommentBody() {
     }
 
     if (commentPath) {
+        if (!commentPath.endsWith('.md')) {
+            throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
+        }
         try {
             info(`Reading comment body from file: ${commentPath}`);
             let fileContent = readFileSync(commentPath, 'utf8');

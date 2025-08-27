@@ -91,19 +91,28 @@ describe('finalizeStatusCheck', () => {
         }));
     });
 
-    it('handles invalid conclusion', async () => {
-        core.getInput.mockReturnValue('invalid');
-        await finalizeStatusCheck(octokit, 'owner', 'repo', 202, 'checkName');
-        expect(core.error).toHaveBeenCalledWith('Invalid conclusion: "invalid". Must be \'success\' or \'failure\'.');
+    it('finalizes with neutral conclusion', async () => {
+        core.getInput.mockReturnValue('neutral');
+        await finalizeStatusCheck(octokit, 'owner', 'repo', 102, 'checkName');
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
             conclusion: 'neutral'
         }));
     });
 
-    it('handles getInput throwing error', async () => {
-        core.getInput.mockImplementation(() => { throw new Error('input error'); });
-        await finalizeStatusCheck(octokit, 'owner', 'repo', 303, 'checkName');
-        expect(core.setFailed).toHaveBeenCalledWith('Failed to get conclusion input: input error');
-        expect(octokit.rest.checks.update).not.toHaveBeenCalled();
+    it('defaults to neutral if no conclusion provided', async () => {
+        core.getInput.mockReturnValue('');
+        await finalizeStatusCheck(octokit, 'owner', 'repo', 103, 'checkName');
+        expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
+            conclusion: 'neutral'
+        }));
+    });
+
+    it('handles invalid conclusion', async () => {
+        core.getInput.mockReturnValue('invalid');
+        await finalizeStatusCheck(octokit, 'owner', 'repo', 202, 'checkName');
+        expect(core.error).toHaveBeenCalledWith('Invalid conclusion: "invalid". Must be \'success\', \'failure\', or \'neutral\'.');
+        expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
+            conclusion: 'neutral'
+        }));
     });
 });

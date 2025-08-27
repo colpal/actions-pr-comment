@@ -23874,15 +23874,9 @@ var require_status_check = __commonJS({
     async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
       core.info(`Finalizing status check with ID: ${checkRunId}...`);
       const status = "completed";
-      let conclusion;
-      try {
-        conclusion = core.getInput("conclusion", { required: true });
-      } catch (error) {
-        core.setFailed(`Failed to get conclusion input: ${error.message}`);
-        return;
-      }
-      if (conclusion !== "success" && conclusion !== "failure") {
-        core.error(`Invalid conclusion: "${conclusion}". Must be 'success' or 'failure'.`);
+      let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
+      if (conclusion !== "success" && conclusion !== "failure" && conclusion !== "neutral") {
+        core.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
         conclusion = "neutral";
       }
       await octokit.rest.checks.update({
@@ -23955,6 +23949,9 @@ var require_util8 = __commonJS({
         throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
       }
       if (commentPath) {
+        if (!commentPath.endsWith(".md")) {
+          throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
+        }
         try {
           info(`Reading comment body from file: ${commentPath}`);
           let fileContent = readFileSync(commentPath, "utf8");

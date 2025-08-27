@@ -194,7 +194,10 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        await expect(commentWorkflow(token)).rejects.toThrow('finalize error');
+        core.info.mockClear();
+        await expect(commentWorkflow(token)).resolves.toBeUndefined();
+        expect(core.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: finalize error'));
+        expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });
 
     it('should call hideComment and postComment when update_mode is "create"', async () => {

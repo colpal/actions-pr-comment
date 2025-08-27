@@ -47,12 +47,11 @@ async function commentWorkflow(token) {
                 await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
             }
         }
+        await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
     } catch (error) {
         await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
         core.error(`Error occurred during comment workflow: ${error.message}`);
     }
-
-    await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
 }
 
 module.exports = { commentWorkflow };

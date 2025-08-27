@@ -1,6 +1,24 @@
 const { getInput, info } = require('@actions/core');
 const { readFileSync } = require('fs');
 
+
+/**
+ * Retrieves the comment body for a GitHub Action.
+ * 
+ * The comment body can be provided directly via the 'comment_body' input,
+ * or via a file specified by the 'comment_body_path' input. Only one of these
+ * inputs should be provided at a time.
+ * 
+ * If both inputs are provided, an error is thrown.
+ * If 'comment_body_path' is provided, reads the file content and removes BOM if present.
+ * If 'comment_body' is provided, returns its value directly.
+ * If neither input is provided, an error is thrown.
+ * 
+ * @throws {Error} If both 'comment_body' and 'comment_body_path' are provided.
+ * @throws {Error} If the file at 'comment_body_path' cannot be read.
+ * @throws {Error} If neither input is provided.
+ * @returns {string} The comment body to be used.
+ */
 function getCommentBody() {
     const directComment = getInput('comment_body');
     const commentPath = getInput('comment_body_path');

@@ -1,16 +1,16 @@
-const { main } = require('../src/index');
-const { commentWorkflow } = require('../src/comment-workflow');
 const core = require('@actions/core');
+const { main } = require('../src/index');
+const { commentWorkflow } = require('../src/comment/comment-workflow');
 
 jest.mock('@actions/core');
-jest.mock('../src/comment-workflow');
+jest.mock('../src/comment/comment-workflow');
 
 describe('main', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    it('calls setFailed if github_token is not provided', async () => {
+    it('should call core.setFailed if github_token is not provided', async () => {
         core.getInput.mockReturnValue('');
         await main();
         expect(core.setFailed).toHaveBeenCalledWith(
@@ -19,7 +19,7 @@ describe('main', () => {
         expect(commentWorkflow).not.toHaveBeenCalled();
     });
 
-    it('calls commentWorkflow if github_token is provided', async () => {
+    it('should call commentWorkflow if github_token is provided', async () => {
         core.getInput.mockReturnValue('fake-token');
         await main();
         expect(commentWorkflow).toHaveBeenCalledWith('fake-token');

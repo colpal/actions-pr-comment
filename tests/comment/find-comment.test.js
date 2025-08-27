@@ -1,9 +1,11 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const { findComment } = require('../src/find-comment');
-
 jest.mock('@actions/core');
 jest.mock('@actions/github');
+jest.mock('../../src/comment/hide-comment', () => ({ hideComment: jest.fn() }));
+jest.mock('../../src/comment/post-comment', () => ({ postComment: jest.fn() }));
+jest.mock('../../src/comment/update-comment', () => ({ updateComment: jest.fn() }));
+const core = require('@actions/core');
+const github = require('@actions/github');
+const { findComment } = require('../../src/comment/find-comment');
 
 describe('actions-pr-comment', () => {
     let octokit, owner, repo;

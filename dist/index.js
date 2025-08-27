@@ -23855,9 +23855,9 @@ var require_github = __commonJS({
   }
 });
 
-// src/status-check.js
+// src/status-check/status-check.js
 var require_status_check = __commonJS({
-  "src/status-check.js"(exports2, module2) {
+  "src/status-check/status-check.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
     async function initializeStatusCheck(octokit, owner, repo, checkName) {
@@ -23871,8 +23871,20 @@ var require_status_check = __commonJS({
       });
       return checkRun.id;
     }
-    async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion) {
+    async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
       core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      const status = "completed";
+      let conclusion;
+      try {
+        conclusion = core.getInput("conclusion", { required: true });
+      } catch (error) {
+        core.setFailed(`Failed to get conclusion input: ${error.message}`);
+        return;
+      }
+      if (conclusion !== "success" && conclusion !== "failure") {
+        core.error(`Invalid conclusion: "${conclusion}". Must be 'success' or 'failure'.`);
+        conclusion = "neutral";
+      }
       await octokit.rest.checks.update({
         owner,
         repo,
@@ -23889,9 +23901,9 @@ var require_status_check = __commonJS({
   }
 });
 
-// src/find-comment.js
+// src/comment/find-comment.js
 var require_find_comment = __commonJS({
-  "src/find-comment.js"(exports2, module2) {
+  "src/comment/find-comment.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
     async function findComment(octokit, owner, repo, commentIdentifier) {
@@ -23931,9 +23943,9 @@ var require_find_comment = __commonJS({
   }
 });
 
-// src/util.js
+// src/util/util.js
 var require_util8 = __commonJS({
-  "src/util.js"(exports2, module2) {
+  "src/util/util.js"(exports2, module2) {
     var { getInput: getInput2, info } = require_core();
     var { readFileSync } = require("fs");
     function getCommentBody() {
@@ -23963,9 +23975,9 @@ var require_util8 = __commonJS({
   }
 });
 
-// src/update-comment.js
+// src/comment/update-comment.js
 var require_update_comment = __commonJS({
-  "src/update-comment.js"(exports2, module2) {
+  "src/comment/update-comment.js"(exports2, module2) {
     var { getCommentBody } = require_util8();
     var core = require_core();
     var github = require_github();
@@ -23982,7 +23994,7 @@ var require_update_comment = __commonJS({
         switch (updateType) {
           case "replace":
             core.info("Replacing comment body.");
-            commentBody = commentIdentifier + newCommentBody;
+            commentBody = commentIdentifier + "\n" + newCommentBody;
             break;
           case "append": {
             core.info("Appending to comment body.");
@@ -24017,9 +24029,9 @@ var require_update_comment = __commonJS({
   }
 });
 
-// src/hide-comment.js
+// src/comment/hide-comment.js
 var require_hide_comment = __commonJS({
-  "src/hide-comment.js"(exports2, module2) {
+  "src/comment/hide-comment.js"(exports2, module2) {
     var { graphql } = require_dist_node6();
     var core = require_core();
     async function hideComment(token, comment, reason) {
@@ -24052,16 +24064,16 @@ var require_hide_comment = __commonJS({
   }
 });
 
-// src/post-comment.js
+// src/comment/post-comment.js
 var require_post_comment = __commonJS({
-  "src/post-comment.js"(exports2, module2) {
+  "src/comment/post-comment.js"(exports2, module2) {
     var { getCommentBody } = require_util8();
     var core = require_core();
     var github = require_github();
     async function postComment(octokit, owner, repo, commentIdentifier) {
       core.info("Starting to post a comment...");
       try {
-        const commentBody = commentIdentifier + getCommentBody();
+        const commentBody = commentIdentifier + "\n" + getCommentBody();
         const prNumber = github.context.payload.pull_request.number;
         if (!prNumber) {
           core.warning("Not a pull request, skipping review submission.");
@@ -24082,9 +24094,9 @@ var require_post_comment = __commonJS({
   }
 });
 
-// src/comment-workflow.js
+// src/comment/comment-workflow.js
 var require_comment_workflow = __commonJS({
-  "src/comment-workflow.js"(exports2, module2) {
+  "src/comment/comment-workflow.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
     var { initializeStatusCheck, finalizeStatusCheck } = require_status_check();
@@ -24113,9 +24125,7 @@ var require_comment_workflow = __commonJS({
           await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
         }
       }
-      const status = "completed";
-      const conclusion = core.getInput("conclusion", { required: true });
-      await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName, status, conclusion);
+      await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
     }
     module2.exports = { commentWorkflow: commentWorkflow2 };
   }

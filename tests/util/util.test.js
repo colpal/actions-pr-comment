@@ -1,4 +1,4 @@
-const { getCommentBody } = require('../src/util');
+const { getCommentBody } = require('../../src/util/util');
 const core = require('@actions/core');
 const fs = require('fs');
 
@@ -50,5 +50,30 @@ describe('getCommentBody', () => {
     it('throws error if neither comment_body nor comment_body_path is provided', () => {
         core.getInput.mockReturnValue('');
         expect(() => getCommentBody()).toThrow("Either a 'comment_body' or a 'comment_body_path' input must be supplied.");
+    });
+
+
+    it('removes BOM from file content if present', () => {
+        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'bomfile.txt' : '');
+        // 0xFEFF is BOM, followed by 'File comment'
+        const bomContent = '\uFEFFFile comment';
+        fs.readFileSync.mockReturnValue(bomContent);
+        expect(getCommentBody()).toBe('File comment');
+        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: bomfile.txt');
+        expect(fs.readFileSync).toHaveBeenCalledWith('bomfile.txt', 'utf8');
+    });
+
+    it('returns empty string when file is empty', () => {
+        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'emptyfile.txt' : '');
+        fs.readFileSync.mockReturnValue('');
+        expect(getCommentBody()).toBe('');
+        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: emptyfile.txt');
+        expect(fs.readFileSync).toHaveBeenCalledWith('emptyfile.txt', 'utf8');
+    });
+
+    it('throws error if file content is not a string', () => {
+        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'notstring.txt' : '');
+        fs.readFileSync.mockReturnValue(Buffer.from('not a string'));
+        expect(() => getCommentBody()).toThrow();
     });
 });

@@ -29,9 +29,9 @@ jobs:
           grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
           grep '^UPDATE_MODE=' ci/vars/test.env >> $GITHUB_ENV
 
-      - name: Action step
+      - name: Comment on PR
         uses: ./
-        id: hello
+        id: comment
         with:
           check_name: ${{ env.CHECK_NAME }}
           # comment_body: ${{ env.COMMENT_BODY }}

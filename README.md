@@ -2,8 +2,8 @@
 > Internal action for creating comments on pull requests
 
 ## Assumptions
-1. A message body is ready to be used as a comment.
-<!-- 2. You have a identifier to be placed inside your message. This is in the event the same author has multiple different comments, this action can target the correct one to update/delete -->
+1. A message body is ready to be used as a comment, either passed directly via `comment_body` or as a markdown file via `comment_body_path`
+2. The "result" of the job that generates the comment is known. Such that this job can be told whether to mark the commit as a `success` or `failure` (via the `conclusion` input)
 
 ## Usage
 ```yaml
@@ -55,7 +55,30 @@ A status check (see below for setup) will be emitted from the action run. When t
 The check supplied here should match the name provided in the `check_name` input field on the action. If the action has been triggered before, it **should** show up in the "Suggestions" tab as you type it. If not, then the name can be supplied and it **should** detect on the first run of the action
 
 ## Examples
----
+### Example: Basic Usage
 
-## Helpful Links
----
+```yaml
+- uses: colpal/action-pr-comment@v1
+  with:
+    check_name: "lint-check"
+    comment_body: "Linting passed successfully!"
+    conclusion: "success"
+    github_token: "${{ secrets.GITHUB_TOKEN }}"
+    update_mode: "create"
+```
+
+This example posts a comment to the pull request with the message "Linting passed successfully!" and sets the status check to `success`.
+
+### Example: Using a Markdown File
+
+```yaml
+- uses: colpal/action-pr-comment@v1
+  with:
+    check_name: "test-results"
+    comment_body_path: "./test-results.md"
+    conclusion: "failure"
+    github_token: "${{ secrets.GITHUB_TOKEN }}"
+    update_mode: "replace"
+```
+
+This example posts the contents of `./test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.

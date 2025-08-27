@@ -54,10 +54,8 @@ describe('postComment', () => {
     it('skips posting if not a pull request', async () => {
         github.context.payload.pull_request.number = undefined;
 
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
-
-        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
-        expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+        await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
+            .rejects.toThrow("No pull request number found in the context.");
     });
 
     it('handles errors and calls setFailed', async () => {
@@ -65,35 +63,28 @@ describe('postComment', () => {
             throw new Error('fail!');
         });
 
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
-
-        expect(core.setFailed).toHaveBeenCalledWith('fail!');
+        await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
+            .rejects.toThrow("fail!");
     });
 
     it('handles errors thrown by getCommentBody', async () => {
         getCommentBody.mockImplementationOnce(() => { throw new Error('body fail'); });
 
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
-
-        expect(core.setFailed).toHaveBeenCalledWith('body fail');
-        expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+        await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
+            .rejects.toThrow("body fail");
     });
 
     it('handles errors when prNumber is null', async () => {
         github.context.payload.pull_request.number = null;
 
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
-
-        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
-        expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+        await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
+            .rejects.toThrow("No pull request number found in the context.");
     });
 
     it('handles errors when prNumber is 0', async () => {
         github.context.payload.pull_request.number = 0;
 
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
-
-        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
-        expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+        await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
+            .rejects.toThrow("No pull request number found in the context.");
     });
 });

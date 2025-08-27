@@ -23891,7 +23891,23 @@ var require_status_check = __commonJS({
         }
       });
     }
-    module2.exports = { initializeStatusCheck, finalizeStatusCheck };
+    async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
+      core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      const status = "completed";
+      const conclusion = "failure";
+      await octokit.rest.checks.update({
+        owner,
+        repo,
+        check_run_id: checkRunId,
+        status,
+        conclusion,
+        output: {
+          summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
+          title: checkName
+        }
+      });
+    }
+    module2.exports = { initializeStatusCheck, finalizeStatusCheck, failStatusCheck };
   }
 });
 
@@ -23902,36 +23918,32 @@ var require_find_comment = __commonJS({
     var github = require_github();
     async function findComment(octokit, owner, repo, commentIdentifier) {
       core.info("Starting to find a comment...");
-      try {
-        const author = core.getInput("author", { required: false }) || "github-actions[bot]";
-        const prNumber = github.context.payload.pull_request?.number;
-        if (!prNumber) {
-          core.warning("Not a pull request, skipping operation.");
-          return;
-        }
-        const response = await octokit.rest.issues.listComments({
-          owner,
-          repo,
-          issue_number: prNumber
-        });
-        const comments = response.data;
-        const targetComment = comments.findLast(
-          (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
-        );
-        if (!targetComment) {
-          core.info("No comment matching the author and identifier was not found.");
-          return;
-        }
-        core.info("Matching comment found successfully.");
-        core.setOutput("comment_id", targetComment.id);
-        core.setOutput("comment_body", targetComment.body);
-        core.info(`Comment ID: ${targetComment.id} 
+      const author = core.getInput("author", { required: false }) || "github-actions[bot]";
+      const prNumber = github.context.payload.pull_request?.number;
+      if (!prNumber) {
+        core.warning("Not a pull request, skipping operation.");
+        throw new Error("No pull request number found in the context.");
+      }
+      const response = await octokit.rest.issues.listComments({
+        owner,
+        repo,
+        issue_number: prNumber
+      });
+      const comments = response.data;
+      const targetComment = comments.findLast(
+        (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
+      );
+      if (!targetComment) {
+        core.info("No comment matching the author and identifier was not found.");
+        return;
+      }
+      core.info("Matching comment found successfully.");
+      core.setOutput("comment_id", targetComment.id);
+      core.setOutput("comment_body", targetComment.body);
+      core.info(`Comment ID: ${targetComment.id} 
  Body: ${targetComment.body} 
  State: ${targetComment.state}.`);
-        return targetComment;
-      } catch (error) {
-        core.setFailed(error.message);
-      }
+      return targetComment;
     }
     module2.exports = { findComment };
   }
@@ -23940,11 +23952,11 @@ var require_find_comment = __commonJS({
 // src/util/util.js
 var require_util8 = __commonJS({
   "src/util/util.js"(exports2, module2) {
-    var { getInput: getInput2, info } = require_core();
+    var core = require_core();
     var { readFileSync } = require("fs");
     function getCommentBody() {
-      const directComment = getInput2("comment_body");
-      const commentPath = getInput2("comment_body_path");
+      const directComment = core.getInput("comment_body");
+      const commentPath = core.getInput("comment_body_path");
       if (directComment && commentPath) {
         throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
       }
@@ -23953,7 +23965,7 @@ var require_util8 = __commonJS({
           throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
         }
         try {
-          info(`Reading comment body from file: ${commentPath}`);
+          core.info(`Reading comment body from file: ${commentPath}`);
           let fileContent = readFileSync(commentPath, "utf8");
           if (fileContent.charCodeAt(0) === 65279) {
             fileContent = fileContent.slice(1);
@@ -23980,47 +23992,43 @@ var require_update_comment = __commonJS({
     var github = require_github();
     async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
       core.info("Starting to update a comment...");
-      try {
-        let newCommentBody = getCommentBody();
-        const prNumber = github.context.payload.pull_request.number;
-        if (!prNumber) {
-          core.warning("Not a pull request, skipping review submission.");
-          return;
-        }
-        let commentBody = "";
-        switch (updateType) {
-          case "replace":
-            core.info("Replacing comment body.");
-            commentBody = commentIdentifier + "\n" + newCommentBody;
-            break;
-          case "append": {
-            core.info("Appending to comment body.");
-            const timestamp = (/* @__PURE__ */ new Date()).toUTCString();
-            const divider = `
+      let newCommentBody = getCommentBody();
+      const prNumber = github.context.payload.pull_request.number;
+      if (!prNumber) {
+        core.warning("Not a pull request, skipping review submission.");
+        throw new Error("No pull request number found in the context.");
+      }
+      let commentBody = "";
+      switch (updateType) {
+        case "replace":
+          core.info("Replacing comment body.");
+          commentBody = commentIdentifier + "\n" + newCommentBody;
+          break;
+        case "append": {
+          core.info("Appending to comment body.");
+          const timestamp = (/* @__PURE__ */ new Date()).toUTCString();
+          const divider = `
 
 ---
 
 *Update posted on: ${timestamp}*
 
 `;
-            commentBody = comment.body + divider + newCommentBody;
-            break;
-          }
-          default: {
-            core.warning(`Unknown update type: ${updateType}`);
-            return;
-          }
+          commentBody = comment.body + divider + newCommentBody;
+          break;
         }
-        await octokit.rest.issues.updateComment({
-          owner,
-          repo,
-          comment_id: comment.id,
-          body: commentBody
-        });
-        core.info("Comment updated successfully.");
-      } catch (error) {
-        core.setFailed(error.message);
+        default: {
+          core.warning(`Unknown update type: ${updateType}`);
+          throw new Error(`Unknown update type: ${updateType}`);
+        }
       }
+      await octokit.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: comment.id,
+        body: commentBody
+      });
+      core.info("Comment updated successfully.");
     }
     module2.exports = { updateComment };
   }
@@ -24069,23 +24077,19 @@ var require_post_comment = __commonJS({
     var github = require_github();
     async function postComment(octokit, owner, repo, commentIdentifier) {
       core.info("Starting to post a comment...");
-      try {
-        const commentBody = commentIdentifier + "\n" + getCommentBody();
-        const prNumber = github.context.payload.pull_request.number;
-        if (!prNumber) {
-          core.warning("Not a pull request, skipping review submission.");
-          return;
-        }
-        await octokit.rest.issues.createComment({
-          owner,
-          repo,
-          issue_number: prNumber,
-          body: commentBody
-        });
-        core.info("Comment posted successfully.");
-      } catch (error) {
-        core.setFailed(error.message);
+      const commentBody = commentIdentifier + "\n" + getCommentBody();
+      const prNumber = github.context.payload.pull_request.number;
+      if (!prNumber) {
+        core.warning("Not a pull request, skipping review submission.");
+        throw new Error("No pull request number found in the context.");
       }
+      await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        body: commentBody
+      });
+      core.info("Comment posted successfully.");
     }
     module2.exports = { postComment };
   }
@@ -24096,7 +24100,7 @@ var require_comment_workflow = __commonJS({
   "src/comment/comment-workflow.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
-    var { initializeStatusCheck, finalizeStatusCheck } = require_status_check();
+    var { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require_status_check();
     var { findComment } = require_find_comment();
     var { updateComment } = require_update_comment();
     var { hideComment } = require_hide_comment();
@@ -24107,20 +24111,25 @@ var require_comment_workflow = __commonJS({
       const checkName = core.getInput("check_name", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
-      let comment = await findComment(octokit, owner, repo, commentIdentifier);
-      if (!comment) {
-        core.info("No existing comment found, posting a new comment.");
-        await postComment(octokit, owner, repo, commentIdentifier);
-      } else {
-        core.info(`Comment found: ${comment.body}`);
-        const updateMode = core.getInput("update_mode", { required: false }) || "create";
-        core.info(`Update mode is set to: ${updateMode}`);
-        if (updateMode === "create") {
-          await hideComment(token, comment, "OUTDATED");
+      try {
+        let comment = await findComment(octokit, owner, repo, commentIdentifier);
+        if (!comment) {
+          core.info("No existing comment found, posting a new comment.");
           await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-          await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+          core.info(`Comment found: ${comment.body}`);
+          const updateMode = core.getInput("update_mode", { required: false }) || "create";
+          core.info(`Update mode is set to: ${updateMode}`);
+          if (updateMode === "create") {
+            await hideComment(token, comment, "OUTDATED");
+            await postComment(octokit, owner, repo, commentIdentifier);
+          } else {
+            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+          }
         }
+      } catch (error) {
+        await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
+        core.error(`Error occurred during comment workflow: ${error.message}`);
       }
       await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
     }

@@ -23,20 +23,23 @@ async function initializeStatusCheck(octokit, owner, repo, checkName) {
     return checkRun.id;
 }
 
+
 /**
  * Finalizes a GitHub status check by updating its status and conclusion.
  *
- * Only accepts 'success' or 'failure' as valid conclusions.
+ * Retrieves the conclusion value from the GitHub Actions input, validates it,
+ * and updates the specified check run with the provided status and conclusion.
+ * If the conclusion is invalid, it defaults to 'neutral'.
+ *
+ * The conclusion value is expected to be set as either 'success' or 'failure'.
+ * If another value is provided, it will be set to 'neutral'.
  *
  * @param {import('@octokit/rest').Octokit} octokit - The authenticated Octokit instance.
  * @param {string} owner - The owner of the repository.
  * @param {string} repo - The name of the repository.
  * @param {number} checkRunId - The ID of the check run to update.
  * @param {string} checkName - The name of the status check.
- * @param {string} status - The status to set (should be 'completed').
- * @param {string} conclusion - The conclusion to set ('success' or 'failure').
- * @returns {Promise<void>}
- * @throws {Error} If conclusion is not 'success' or 'failure'.
+ * @returns {Promise<void>} Resolves when the status check is finalized.
  */
 async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
     core.info(`Finalizing status check with ID: ${checkRunId}...`);

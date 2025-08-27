@@ -84,9 +84,8 @@ describe('actions-pr-comment', () => {
         github.context.payload.pull_request = '';
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
 
-        await findComment(octokit, owner, repo, 'identifier');
-        expect(core.setFailed).not.toHaveBeenCalled();
-        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping operation.');
+        await expect(findComment(octokit, owner, repo, 'identifier'))
+            .rejects.toThrow("No pull request number found in the context.");
     });
 
     it('findComment: should fail if listComments API call fails', async () => {
@@ -95,13 +94,8 @@ describe('actions-pr-comment', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
         });
-        await findComment(octokit, owner, repo, 'identifier');
-        expect(octokit.rest.issues.listComments).toHaveBeenCalledWith({
-            owner,
-            repo,
-            issue_number: 123
-        });
-        expect(core.setFailed).toHaveBeenCalledWith('Resource not accessible by integration');
+        await expect(findComment(octokit, owner, repo, 'identifier'))
+            .rejects.toThrow("Resource not accessible by integration");
     });
 });
 

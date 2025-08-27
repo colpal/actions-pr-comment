@@ -71,23 +71,22 @@ describe('update-comment', () => {
         });
         const comment = { id: 3, body: 'Old', user: { login: 'bot' } };
         github.context.payload.pull_request = '';
-        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'append');
-        expect(core.setFailed).not.toHaveBeenCalled();
-        expect(core.warning).toHaveBeenCalledWith('Not a pull request, skipping review submission.');
+        await expect(updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace'))
+            .rejects.toThrow("No pull request number found in the context.");
     });
+
     it('should warn if updateType is unknown', async () => {
         const comment = { id: 4, body: 'Old', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'unknown');
-        expect(core.warning).toHaveBeenCalledWith('Unknown update type: unknown');
-        expect(octokit.rest.issues.updateComment).not.toHaveBeenCalled();
+        await expect(updateComment(octokit, owner, repo, comment, commentIdentifier, 'unknown'))
+            .rejects.toThrow("Unknown update type: unknown");
     });
 
     it('should call setFailed if updateComment API throws', async () => {
         const apiError = new Error('Resource not accessible by integration');
         octokit.rest.issues.updateComment.mockRejectedValue(apiError);
         const comment = { id: 5, body: 'Test comment', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace');
-        expect(core.setFailed).toHaveBeenCalledWith('Resource not accessible by integration');
+        await expect(updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace'))
+            .rejects.toThrow("Resource not accessible by integration");
     });
 
     it('should handle missing comment body gracefully for append', async () => {
@@ -101,23 +100,23 @@ describe('update-comment', () => {
 
     it('should not update comment if octokit is missing', async () => {
         const comment = { id: 7, body: 'Old', user: { login: 'bot' } };
-        await expect(updateComment(undefined, owner, repo, comment, commentIdentifier, 'replace')).resolves.toBeUndefined();
-        expect(core.setFailed).toHaveBeenCalled();
+        await expect(updateComment(undefined, owner, repo, comment, commentIdentifier, 'replace'))
+            .rejects.toThrow("Cannot read properties of undefined (reading 'rest')");
     });
 
     it('should not update comment if comment is missing', async () => {
-        await expect(updateComment(octokit, owner, repo, undefined, commentIdentifier, 'replace')).resolves.toBeUndefined();
-        expect(core.setFailed).toHaveBeenCalled();
+        await expect(updateComment(octokit, owner, repo, undefined, commentIdentifier, 'replace'))
+            .rejects.toThrow("Cannot read properties of undefined (reading 'id')");
     });
 
     it('should call setFailed if octokit is null', async () => {
         const comment = { id: 9, body: 'Old', user: { login: 'bot' } };
-        await updateComment(null, owner, repo, comment, commentIdentifier, 'replace');
-        expect(core.setFailed).toHaveBeenCalled();
+        await expect(updateComment(null, owner, repo, comment, commentIdentifier, 'replace'))
+            .rejects.toThrow("Cannot read properties of null (reading 'rest'");
     });
 
-    it('should call setFailed if comment is null', async () => {
-        await updateComment(octokit, owner, repo, null, commentIdentifier, 'replace');
-        expect(core.setFailed).toHaveBeenCalled();
+    it('should throw error if comment is null', async () => {
+        await expect(updateComment(octokit, owner, repo, null, commentIdentifier, 'replace'))
+            .rejects.toThrow("Cannot read properties of null (reading 'id'");
     });
 });

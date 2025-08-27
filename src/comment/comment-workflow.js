@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { initializeStatusCheck, finalizeStatusCheck } = require('../status-check/status-check.js');
+const { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require('../status-check/status-check.js');
 const { findComment } = require('./find-comment.js');
 const { updateComment } = require('./update-comment.js');
 const { hideComment } = require('./hide-comment.js');
@@ -30,25 +30,28 @@ async function commentWorkflow(token) {
     let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
 
     const commentIdentifier = `<!-- ` + checkName + ` -->`;
-
-    let comment = await findComment(octokit, owner, repo, commentIdentifier);
-    if (!comment) {
-        core.info("No existing comment found, posting a new comment.");
-        await postComment(octokit, owner, repo, commentIdentifier);
-    } else {
-        core.info(`Comment found: ${comment.body}`);
-        const updateMode = core.getInput('update_mode', { required: false }) || "create";
-        core.info(`Update mode is set to: ${updateMode}`);
-        if (updateMode === "create") {
-            await hideComment(token, comment, "OUTDATED");
+    try {
+        let comment = await findComment(octokit, owner, repo, commentIdentifier);
+        if (!comment) {
+            core.info("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
+        } else {
+            core.info(`Comment found: ${comment.body}`);
+            const updateMode = core.getInput('update_mode', { required: false }) || "create";
+            core.info(`Update mode is set to: ${updateMode}`);
+            if (updateMode === "create") {
+                await hideComment(token, comment, "OUTDATED");
+                await postComment(octokit, owner, repo, commentIdentifier);
+            }
+            else {
+                await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+            }
         }
-        else {
-            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
-        }
+        await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
+    } catch (error) {
+        await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
+        core.error(`Error occurred during comment workflow: ${error.message}`);
     }
-
-    await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
 }
 
 module.exports = { commentWorkflow };

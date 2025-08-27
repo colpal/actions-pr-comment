@@ -65,4 +65,34 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
     });
 }
 
-module.exports = { initializeStatusCheck, finalizeStatusCheck };
+/**
+ * Finalizes a GitHub status check by marking it as failed.
+ *
+ * Updates the specified check run with a 'completed' status and 'failure' conclusion.
+ *
+ * @param {import('@octokit/rest').Octokit} octokit - The authenticated Octokit instance.
+ * @param {string} owner - The owner of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {number} checkRunId - The ID of the check run to update.
+ * @param {string} checkName - The name of the status check.
+ * @returns {Promise<void>} Resolves when the status check is finalized as failed.
+ */
+async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
+    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    const status = "completed";
+    const conclusion = "failure"
+
+    await octokit.rest.checks.update({
+        owner: owner,
+        repo: repo,
+        check_run_id: checkRunId,
+        status: status,
+        conclusion: conclusion,
+        output: {
+            summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
+            title: checkName
+        }
+    });
+}
+
+module.exports = { initializeStatusCheck, finalizeStatusCheck, failStatusCheck };

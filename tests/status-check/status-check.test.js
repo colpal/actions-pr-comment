@@ -1,6 +1,7 @@
 const { initializeStatusCheck, finalizeStatusCheck } = require('../../src/status-check/status-check');
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { failStatusCheck } = require('../../src/status-check/status-check');
 
 jest.mock('@actions/core');
 jest.mock('@actions/github');
@@ -114,5 +115,36 @@ describe('finalizeStatusCheck', () => {
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
             conclusion: 'neutral'
         }));
+    });
+
+    describe('failStatusCheck', () => {
+        let octokit;
+
+        beforeEach(() => {
+            octokit = {
+                rest: {
+                    checks: {
+                        update: jest.fn()
+                    }
+                }
+            };
+            core.info.mockClear();
+        });
+
+        it('finalizes with failure conclusion', async () => {
+            await failStatusCheck(octokit, 'owner', 'repo', 555, 'failCheck');
+            expect(core.info).toHaveBeenCalledWith('Finalizing status check with ID: 555...');
+            expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
+                owner: 'owner',
+                repo: 'repo',
+                check_run_id: 555,
+                status: 'completed',
+                conclusion: 'failure',
+                output: expect.objectContaining({
+                    summary: expect.stringContaining('failure'),
+                    title: 'failCheck'
+                })
+            }));
+        });
     });
 });

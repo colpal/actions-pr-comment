@@ -1,4 +1,4 @@
-const { getInput, info } = require('@actions/core');
+const core = require('@actions/core');
 const { readFileSync } = require('fs');
 
 
@@ -20,8 +20,8 @@ const { readFileSync } = require('fs');
  * @returns {string} The comment body to be used.
  */
 function getCommentBody() {
-    const directComment = getInput('comment_body');
-    const commentPath = getInput('comment_body_path');
+    const directComment = core.getInput('comment_body');
+    const commentPath = core.getInput('comment_body_path');
 
     if (directComment && commentPath) {
         throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
@@ -32,7 +32,7 @@ function getCommentBody() {
             throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
         }
         try {
-            info(`Reading comment body from file: ${commentPath}`);
+            core.info(`Reading comment body from file: ${commentPath}`);
             let fileContent = readFileSync(commentPath, 'utf8');
             if (fileContent.charCodeAt(0) === 0xFEFF) {
                 fileContent = fileContent.slice(1);

@@ -1,6 +1,6 @@
 {
   "name": "actions-pr-comment",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Internal action for creating comments on pull requests",
   "main": "dist/index.js",
   "scripts": {

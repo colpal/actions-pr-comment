@@ -23875,12 +23875,6 @@ var require_status_check = __commonJS({
       core.info(`Finalizing status check with ID: ${checkRunId}...`);
       const status = "completed";
       let conclusion = "neutral";
-      try {
-        conclusion = core.getInput("conclusion", { required: true });
-      } catch (error) {
-        core.setFailed(`Failed to get conclusion input: ${error.message}`);
-        return;
-      }
       await octokit.rest.checks.update({
         owner,
         repo,

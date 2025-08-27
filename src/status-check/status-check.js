@@ -46,12 +46,12 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
     const status = "completed";
 
     let conclusion = "neutral";
-    try {
-        conclusion = core.getInput('conclusion', { required: true });
-    } catch (error) {
-        core.setFailed(`Failed to get conclusion input: ${error.message}`);
-        return;
-    }
+    // try {
+    //     conclusion = core.getInput('conclusion', { required: true });
+    // } catch (error) {
+    //     core.setFailed(`Failed to get conclusion input: ${error.message}`);
+    //     return;
+    // }
 
     // if (conclusion !== 'success' && conclusion !== 'failure') {
     //     core.error(`Invalid conclusion: "${conclusion}". Must be 'success' or 'failure'.`);

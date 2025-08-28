@@ -58,7 +58,7 @@ describe('comment-workflow', () => {
         findComment.mockResolvedValue(undefined);
         postComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -71,7 +71,7 @@ describe('comment-workflow', () => {
         findComment.mockResolvedValue(undefined);
         postComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -86,8 +86,8 @@ describe('comment-workflow', () => {
         updateComment.mockResolvedValue();
         hideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
-            if (key === 'update_mode') return 'replace';
+            if (key === 'check-name') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -100,7 +100,7 @@ describe('comment-workflow', () => {
     it('should handle error thrown by findComment', async () => {
         findComment.mockRejectedValue(new Error('findComment error'));
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -116,7 +116,7 @@ describe('comment-workflow', () => {
         findComment.mockResolvedValue(undefined);
         postComment.mockRejectedValue(new Error('postComment error'));
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -135,8 +135,8 @@ describe('comment-workflow', () => {
         updateComment.mockRejectedValue(new Error('updateComment error'));
         hideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
-            if (key === 'update_mode') return 'replace';
+            if (key === 'check-name') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -157,8 +157,8 @@ describe('comment-workflow', () => {
         hideComment.mockRejectedValue(new Error('hideComment error'));
         postComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
-            if (key === 'update_mode') return 'create';
+            if (key === 'check-name') return 'Test Check';
+            if (key === 'update-mode') return 'create';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -178,7 +178,7 @@ describe('comment-workflow', () => {
         findComment.mockResolvedValue(undefined);
         postComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -190,7 +190,7 @@ describe('comment-workflow', () => {
         postComment.mockResolvedValue();
         finalizeStatusCheck.mockRejectedValue(new Error('finalize error'));
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
+            if (key === 'check-name') return 'Test Check';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -200,15 +200,15 @@ describe('comment-workflow', () => {
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });
 
-    it('should call hideComment and postComment when update_mode is "create"', async () => {
+    it('should call hideComment and postComment when update-mode is "create"', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         hideComment.mockResolvedValue();
         postComment.mockResolvedValue();
         updateComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
-            if (key === 'update_mode') return 'create';
+            if (key === 'check-name') return 'Test Check';
+            if (key === 'update-mode') return 'create';
             if (key === 'conclusion') return 'success';
             return undefined;
         });
@@ -218,16 +218,16 @@ describe('comment-workflow', () => {
         expect(updateComment).not.toHaveBeenCalled();
     });
 
-    it('should default update_mode to "create" when getInput does not return a value', async () => {
+    it('should default update-mode to "create" when getInput does not return a value', async () => {
         const mockComment = { id: 2, body: 'Another comment' };
         findComment.mockResolvedValue(mockComment);
         hideComment.mockResolvedValue();
         postComment.mockResolvedValue();
         updateComment.mockResolvedValue();
-        // Simulate getInput not returning update_mode
+        // Simulate getInput not returning update-mode
         core.getInput.mockImplementation((key) => {
-            if (key === 'check_name') return 'Test Check';
-            if (key === 'update_mode') return undefined;
+            if (key === 'check-name') return 'Test Check';
+            if (key === 'update-mode') return undefined;
             if (key === 'conclusion') return 'success';
             return undefined;
         });

@@ -5,31 +5,31 @@ const { readFileSync } = require('fs');
 /**
  * Retrieves the comment body for a GitHub Action.
  * 
- * The comment body can be provided directly via the 'comment_body' input,
- * or via a file specified by the 'comment_body_path' input. Only one of these
+ * The comment body can be provided directly via the 'comment-body' input,
+ * or via a file specified by the 'comment-body-path' input. Only one of these
  * inputs should be provided at a time.
  * 
  * If both inputs are provided, an error is thrown.
- * If 'comment_body_path' is provided, reads the file content and removes BOM if present.
- * If 'comment_body' is provided, returns its value directly.
+ * If 'comment-body-path' is provided, reads the file content and removes BOM if present.
+ * If 'comment-body' is provided, returns its value directly.
  * If neither input is provided, an error is thrown.
  * 
- * @throws {Error} If both 'comment_body' and 'comment_body_path' are provided.
- * @throws {Error} If the file at 'comment_body_path' cannot be read.
+ * @throws {Error} If both 'comment-body' and 'comment-body-path' are provided.
+ * @throws {Error} If the file at 'comment-body-path' cannot be read.
  * @throws {Error} If neither input is provided.
  * @returns {string} The comment body to be used.
  */
 function getCommentBody() {
-    const directComment = core.getInput('comment_body');
-    const commentPath = core.getInput('comment_body_path');
+    const directComment = core.getInput('comment-body');
+    const commentPath = core.getInput('comment-body-path');
 
     if (directComment && commentPath) {
-        throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
+        throw new Error("Both 'comment-body' and 'comment-body-path' inputs were provided. Please use only one.");
     }
 
     if (commentPath) {
         if (!commentPath.endsWith('.md')) {
-            throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
+            throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
         try {
             core.info(`Reading comment body from file: ${commentPath}`);
@@ -47,7 +47,7 @@ function getCommentBody() {
         return directComment;
     }
 
-    throw new Error("Either a 'comment_body' or a 'comment_body_path' input must be supplied.");
+    throw new Error("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
 }
 
 module.exports = { getCommentBody };

@@ -25,7 +25,7 @@ const { postComment } = require('./post-comment.js');
 async function commentWorkflow(token) {
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
-    const checkName = core.getInput('check_name', { required: true });
+    const checkName = core.getInput('check-name', { required: true });
 
     let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
 
@@ -37,7 +37,7 @@ async function commentWorkflow(token) {
             await postComment(octokit, owner, repo, commentIdentifier);
         } else {
             core.info(`Comment found: ${comment.body}`);
-            const updateMode = core.getInput('update_mode', { required: false }) || "create";
+            const updateMode = core.getInput('update-mode', { required: false }) || "create";
             core.info(`Update mode is set to: ${updateMode}`);
             if (updateMode === "create") {
                 await hideComment(token, comment, "OUTDATED");

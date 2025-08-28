@@ -24108,7 +24108,7 @@ var require_comment_workflow = __commonJS({
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
-      const checkName = core.getInput("check-name", { required: true });
+      const checkName = core.getInput("comment-id", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
       try {

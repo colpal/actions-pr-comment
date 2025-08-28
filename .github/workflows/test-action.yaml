@@ -35,7 +35,7 @@ jobs:
         uses: ./
         id: comment-direct
         with:
-          check-name: ${{ env.CHECK_NAME_1 }}
+          comment-id: ${{ env.CHECK_NAME_1 }}
           comment-body: ${{ env.COMMENT_BODY }}
           conclusion: ${{ env.CONCLUSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
         uses: ./
         id: comment-file
         with:
-          check-name: ${{ env.CHECK_NAME_2 }}
+          comment-id: ${{ env.CHECK_NAME_2 }}
           comment-body-path: ${{ env.COMMENT_BODY_PATH }}
           conclusion: ${{ env.CONCLUSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -23938,7 +23938,7 @@ var require_find_comment = __commonJS({
         return;
       }
       core.info("Matching comment found successfully.");
-      core.setOutput("comment_id", targetComment.id);
+      core.setOutput("comment-id", targetComment.id);
       core.setOutput("comment-body", targetComment.body);
       core.info(`Comment ID: ${targetComment.id} 
  Body: ${targetComment.body} 
@@ -24108,7 +24108,7 @@ var require_comment_workflow = __commonJS({
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
-      const checkName = core.getInput("check-name", { required: true });
+      const checkName = core.getInput("comment-id", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
       try {

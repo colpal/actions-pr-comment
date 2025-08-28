@@ -2,7 +2,7 @@ name: Submit Comment
 description: Submit a comment on a pull request
 
 inputs:
-  check-name:
+  comment-id:
     description: Name of the check (to be used in the identifying comment)
     required: true
   comment-body:

@@ -44,7 +44,7 @@ describe('actions-pr-comment', () => {
         octokit.rest.issues.listComments.mockResolvedValue({ data: comments });
         const result = await findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
-        expect(core.setOutput).toHaveBeenCalledWith('comment_id', 2);
+        expect(core.setOutput).toHaveBeenCalledWith('comment-id', 2);
     });
 
     it('findComment: should use default author if none supplied', async () => {
@@ -59,7 +59,7 @@ describe('actions-pr-comment', () => {
         });
         const result = await findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
-        expect(core.setOutput).toHaveBeenCalledWith('comment_id', 2);
+        expect(core.setOutput).toHaveBeenCalledWith('comment-id', 2);
     });
 
     it('findComment: should return undefined if no matching comment', async () => {

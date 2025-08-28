@@ -23938,7 +23938,7 @@ var require_find_comment = __commonJS({
         return;
       }
       core.info("Matching comment found successfully.");
-      core.setOutput("comment_id", targetComment.id);
+      core.setOutput("comment-id", targetComment.id);
       core.setOutput("comment-body", targetComment.body);
       core.info(`Comment ID: ${targetComment.id} 
  Body: ${targetComment.body} 

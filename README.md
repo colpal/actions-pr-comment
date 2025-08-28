@@ -15,13 +15,11 @@
 
     # The contents of the text to be used as the message body
     # Optional - used instead of comment_body_path
-    # Default: "./"
-    comment_body: "example/custom-path"
+    comment_body: "My comment here"
 
     # The path where the markdown (.md) file is stored which holds the text to be used as the message body
     # Optional - used instead of comment_body
-    # Default: ""
-    comment_body_path: "My comment here"
+    comment_body_path: "example/comment-path"
     
     # Result of the workflows that are providing the comments to be posted. Will be set to "success" or "failure" such that this action can prevent merge whilst posting comments explaining the problem
     # Optional
@@ -34,7 +32,7 @@
     github_token: "${{ github.token }}"
 
     # How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)
-    # Required
+    # Optional
     # Default: "create"
     update_mode: "create"
 ```
@@ -76,10 +74,10 @@ This example posts a comment to the pull request with the message "Linting passe
 - uses: colpal/action-pr-comment@v1
   with:
     check_name: "test-results"
-    comment_body_path: "./test-results.md"
+    comment_body_path: "comment-path/test-results.md"
     conclusion: "failure"
     github_token: "${{ secrets.GITHUB_TOKEN }}"
     update_mode: "replace"
 ```
 
-This example posts the contents of `./test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.
+This example posts the contents of `comment-path/test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.

@@ -2,24 +2,24 @@ name: Submit Comment
 description: Submit a comment on a pull request
 
 inputs:
-  check_name:
+  check-name:
     description: Name of the check (to be used in the identifying comment)
     required: true
-  comment_body:
-    description: Body of the comment
+  comment-body:
+    description: Body of the comment (supply this or comment-body-path)
     required: false
-  comment_body_path:
-    description: Path to a file containing the body of the comment (overrides comment_body if both are provided)
+  comment-body-path:
+    description: Path to a file containing the body of the comment (supply this or comment-body)
     required: false
   conclusion:
     description: The conclusion status of the check (e.g., success, failure)
     required: false
     default: "neutral"
-  github_token:
+  github-token:
     description: The GitHub token used to create an authenticated client
     required: false
     default: ${{ github.token }}
-  update_mode:
+  update-mode:
     description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)."
     required: false
     default: "create"

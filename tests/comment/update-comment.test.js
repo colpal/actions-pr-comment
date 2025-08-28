@@ -67,7 +67,7 @@ describe('update-comment', () => {
 
     it('should fail if prNumber is missing', async () => {
         core.getInput.mockImplementation((key) => {
-            if (key === 'comment_body') return 'Appended';
+            if (key === 'comment-body') return 'Appended';
         });
         const comment = { id: 3, body: 'Old', user: { login: 'bot' } };
         github.context.payload.pull_request = '';

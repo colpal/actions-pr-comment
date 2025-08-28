@@ -19,42 +19,42 @@ describe('getCommentBody', () => {
         jest.clearAllMocks();
     });
 
-    it('returns direct comment when only comment_body is provided', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body' ? 'Direct comment' : '');
+    it('returns direct comment when only comment-body is provided', () => {
+        core.getInput.mockImplementation((key) => key === 'comment-body' ? 'Direct comment' : '');
         expect(getCommentBody()).toBe('Direct comment');
     });
 
-    it('reads comment body from file when only comment_body_path is provided', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'path/to/file.md' : '');
+    it('reads comment body from file when only comment-body-path is provided', () => {
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'path/to/file.md' : '');
         fs.readFileSync.mockReturnValue('File comment');
         expect(getCommentBody()).toBe('File comment');
         expect(core.info).toHaveBeenCalledWith('Reading comment body from file: path/to/file.md');
         expect(fs.readFileSync).toHaveBeenCalledWith('path/to/file.md', 'utf8');
     });
 
-    it('throws error if both comment_body and comment_body_path are provided', () => {
+    it('throws error if both comment-body and comment-body-path are provided', () => {
         core.getInput.mockImplementation((key) => {
-            if (key === 'comment_body') return 'Direct comment';
-            if (key === 'comment_body_path') return 'path/to/file.md';
+            if (key === 'comment-body') return 'Direct comment';
+            if (key === 'comment-body-path') return 'path/to/file.md';
             return '';
         });
-        expect(() => getCommentBody()).toThrow("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
+        expect(() => getCommentBody()).toThrow("Both 'comment-body' and 'comment-body-path' inputs were provided. Please use only one.");
     });
 
     it('throws error if file cannot be read', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'bad/path.md' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'bad/path.md' : '');
         fs.readFileSync.mockImplementation(() => { throw new Error('File not found'); });
         expect(() => getCommentBody()).toThrow("Could not read file at path: bad/path.md. Error: File not found");
     });
 
-    it('throws error if neither comment_body nor comment_body_path is provided', () => {
+    it('throws error if neither comment-body nor comment-body-path is provided', () => {
         core.getInput.mockReturnValue('');
-        expect(() => getCommentBody()).toThrow("Either a 'comment_body' or a 'comment_body_path' input must be supplied.");
+        expect(() => getCommentBody()).toThrow("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
     });
 
 
     it('removes BOM from file content if present', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'bomfile.md' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'bomfile.md' : '');
         // 0xFEFF is BOM, followed by 'File comment'
         const bomContent = '\uFEFFFile comment';
         fs.readFileSync.mockReturnValue(bomContent);
@@ -64,7 +64,7 @@ describe('getCommentBody', () => {
     });
 
     it('returns empty string when file is empty', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'emptyfile.md' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'emptyfile.md' : '');
         fs.readFileSync.mockReturnValue('');
         expect(getCommentBody()).toBe('');
         expect(core.info).toHaveBeenCalledWith('Reading comment body from file: emptyfile.md');
@@ -72,18 +72,18 @@ describe('getCommentBody', () => {
     });
 
     it('throws error if file content is not a string', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'notstring.md' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'notstring.md' : '');
         fs.readFileSync.mockReturnValue(Buffer.from('not a string'));
         expect(() => getCommentBody()).toThrow();
     });
 
-    it('throws error if comment_body_path does not end with .md', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'file.txt' : '');
-        expect(() => getCommentBody()).toThrow("The 'comment_body_path' must point to a markdown (.md) file.");
+    it('throws error if comment-body-path does not end with .md', () => {
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'file.txt' : '');
+        expect(() => getCommentBody()).toThrow("The 'comment-body-path' must point to a markdown (.md) file.");
     });
 
     it('handles file content with new lines correctly', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body_path' ? 'multiline.md' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'multiline.md' : '');
         const multilineContent = 'Line 1\nLine 2\nLine 3';
         fs.readFileSync.mockReturnValue(multilineContent);
         expect(getCommentBody()).toBe(multilineContent);
@@ -92,7 +92,7 @@ describe('getCommentBody', () => {
     });
 
     it('returns direct comment even if it contains new lines', () => {
-        core.getInput.mockImplementation((key) => key === 'comment_body' ? 'Line 1\nLine 2' : '');
+        core.getInput.mockImplementation((key) => key === 'comment-body' ? 'Line 1\nLine 2' : '');
         expect(getCommentBody()).toBe('Line 1\nLine 2');
     });
 });

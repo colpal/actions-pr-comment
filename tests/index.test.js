@@ -10,16 +10,16 @@ describe('main', () => {
         jest.clearAllMocks();
     });
 
-    it('should call core.setFailed if github_token is not provided', async () => {
+    it('should call core.setFailed if github-token is not provided', async () => {
         core.getInput.mockReturnValue('');
         await main();
         expect(core.setFailed).toHaveBeenCalledWith(
-            'GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.'
+            'github-token is not available. Ensure the workflow has proper permissions.'
         );
         expect(commentWorkflow).not.toHaveBeenCalled();
     });
 
-    it('should call commentWorkflow if github_token is provided', async () => {
+    it('should call commentWorkflow if github-token is provided', async () => {
         core.getInput.mockReturnValue('fake-token');
         await main();
         expect(commentWorkflow).toHaveBeenCalledWith('fake-token');

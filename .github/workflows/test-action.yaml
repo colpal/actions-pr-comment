@@ -28,24 +28,25 @@ jobs:
           grep '^COMMENT_BODY=' ci/vars/test.env >> $GITHUB_ENV
           grep '^COMMENT_BODY_PATH=' ci/vars/test.env >> $GITHUB_ENV
           grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
-          grep '^UPDATE_MODE=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^UPDATE_MODE_1=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^UPDATE_MODE_2=' ci/vars/test.env >> $GITHUB_ENV
 
       - name: Comment on PR with direct comment
         uses: ./
         id: comment-direct
         with:
-          check_name: ${{ env.CHECK_NAME_1 }}
-          comment_body: ${{ env.COMMENT_BODY }}
+          check-name: ${{ env.CHECK_NAME_1 }}
+          comment-body: ${{ env.COMMENT_BODY }}
           conclusion: ${{ env.CONCLUSION }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          update_mode: ${{ env.UPDATE_MODE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: ${{ env.UPDATE_MODE_1 }}
 
       - name: Comment on PR with markdown file path
         uses: ./
         id: comment-file
         with:
-          check_name: ${{ env.CHECK_NAME_2 }}
-          comment_body_path: ${{ env.COMMENT_BODY_PATH }}
+          check-name: ${{ env.CHECK_NAME_2 }}
+          comment-body-path: ${{ env.COMMENT_BODY_PATH }}
           conclusion: ${{ env.CONCLUSION }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          update_mode: ${{ env.UPDATE_MODE }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: ${{ env.UPDATE_MODE_2 }}

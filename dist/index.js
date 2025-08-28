@@ -23939,7 +23939,7 @@ var require_find_comment = __commonJS({
       }
       core.info("Matching comment found successfully.");
       core.setOutput("comment_id", targetComment.id);
-      core.setOutput("comment_body", targetComment.body);
+      core.setOutput("comment-body", targetComment.body);
       core.info(`Comment ID: ${targetComment.id} 
  Body: ${targetComment.body} 
  State: ${targetComment.state}.`);
@@ -23955,14 +23955,14 @@ var require_util8 = __commonJS({
     var core = require_core();
     var { readFileSync } = require("fs");
     function getCommentBody() {
-      const directComment = core.getInput("comment_body");
-      const commentPath = core.getInput("comment_body_path");
+      const directComment = core.getInput("comment-body");
+      const commentPath = core.getInput("comment-body-path");
       if (directComment && commentPath) {
-        throw new Error("Both 'comment_body' and 'comment_body_path' inputs were provided. Please use only one.");
+        throw new Error("Both 'comment-body' and 'comment-body-path' inputs were provided. Please use only one.");
       }
       if (commentPath) {
         if (!commentPath.endsWith(".md")) {
-          throw new Error("The 'comment_body_path' must point to a markdown (.md) file.");
+          throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
         try {
           core.info(`Reading comment body from file: ${commentPath}`);
@@ -23978,7 +23978,7 @@ var require_util8 = __commonJS({
       if (directComment) {
         return directComment;
       }
-      throw new Error("Either a 'comment_body' or a 'comment_body_path' input must be supplied.");
+      throw new Error("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
     }
     module2.exports = { getCommentBody };
   }
@@ -24108,7 +24108,7 @@ var require_comment_workflow = __commonJS({
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
-      const checkName = core.getInput("check_name", { required: true });
+      const checkName = core.getInput("check-name", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
       try {
@@ -24118,7 +24118,7 @@ var require_comment_workflow = __commonJS({
           await postComment(octokit, owner, repo, commentIdentifier);
         } else {
           core.info(`Comment found: ${comment.body}`);
-          const updateMode = core.getInput("update_mode", { required: false }) || "create";
+          const updateMode = core.getInput("update-mode", { required: false }) || "create";
           core.info(`Update mode is set to: ${updateMode}`);
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
@@ -24141,9 +24141,9 @@ var require_comment_workflow = __commonJS({
 var { commentWorkflow } = require_comment_workflow();
 var { getInput, setFailed } = require_core();
 async function main() {
-  const token = getInput("github_token", { required: true });
+  const token = getInput("github-token", { required: true });
   if (!token) {
-    setFailed("GITHUB_TOKEN is not available. Ensure the workflow has proper permissions.");
+    setFailed("github-token is not available. Ensure the workflow has proper permissions.");
   } else {
     await commentWorkflow(token);
   }

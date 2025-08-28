@@ -11,7 +11,7 @@
   with:
     # Name of the check. To be used in the identifying comment and as the display name of GitHub for this action
     # Required
-    check_name: "my-check"
+    check_name: "my check"
 
     # The contents of the text to be used as the message body
     # Optional - used instead of comment_body_path
@@ -59,7 +59,7 @@ The check supplied here should match the name provided in the `check_name` input
 ```yaml
 - uses: colpal/action-pr-comment@v1
   with:
-    check_name: "lint-check"
+    check_name: "lint check"
     comment_body: "Linting passed successfully!"
     conclusion: "success"
     github_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -73,7 +73,7 @@ This example posts a comment to the pull request with the message "Linting passe
 ```yaml
 - uses: colpal/action-pr-comment@v1
   with:
-    check_name: "test-results"
+    check_name: "test results"
     comment_body_path: "comment-path/test-results.md"
     conclusion: "failure"
     github_token: "${{ secrets.GITHUB_TOKEN }}"

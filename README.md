@@ -7,7 +7,7 @@
 
 ## Usage
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- uses: colpal/action-pr-comment@v0.1.0
   with:
     # Name of the check. To be used in the identifying comment and as the display name of GitHub for this action
     # Required
@@ -38,9 +38,9 @@
 ```
 
 ## Outputs
-A comment will be placed (or updated) in the pull request. The comment will be the supplied `body` (or contents of `body_path`) as well as a hidden identifier that is placed at the beginning of the body (`comment-id`).
+A comment will be placed (or updated) in the pull request. The comment will be the supplied `comment-body` (or contents of `comment-body-path`) as well as a hidden identifier that is placed at the beginning of the body via `comment-id`.
 
-A status check (see below for setup) will be emitted from the action run. When the job is triggered, it will create a status check and set the `status` to `in_progress`. Upon completion, the `status` will be updated to `completed` and the `conclusion` field will be populated with either `success` or `failure`. The `conclusion` field is determined via the contents of the message body. This is the way that this job will "prevent" merges. When the comment wants action from a user (e.g. there is a violation that needs remedying), then the `conclusion` will be `failure`. Assuming the repository has this job's status check as part of the ruleset, then it will prevent merge until the `conclusion` is set to `success`. 
+A status check (see below for setup) will be emitted from the action run. When the job is triggered, it will create a status check and set the `status` to `in_progress`. Upon completion, the `status` will be updated to `completed`. The `conclusion` field will be populated with either `success` or `failure` (or `neutral`). The `conclusion` field is received as an input and is a way to tell this job to prevent or allow merges. If the comment wants an action from a user (e.g. there is a violation that needs remedying), then the `conclusion` can be set to `failure` and since the status check has failed, merges should be prevented (if the ruleset is configured properly). If the comment is to notify the user that everything looks good, can set the `conclusion` to `success` and the commit is passed and a merge can be performed. 
 
 ## Status Check Setup
 ### Create New Ruleset
@@ -57,7 +57,7 @@ The check supplied here should match the name provided in the `comment-id` input
 ### Example: Basic Usage
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- uses: colpal/action-pr-comment@v0.1.0
   with:
     comment-id: "lint-check"
     comment-body: "Linting passed successfully!"
@@ -71,7 +71,7 @@ This example posts a comment to the pull request with the message "Linting passe
 ### Example: Using a Markdown File
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- uses: colpal/action-pr-comment@v0.1.0
   with:
     comment-id: "test-results"
     comment-body-path: "path/test-results.md"

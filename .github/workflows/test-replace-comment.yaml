@@ -18,6 +18,10 @@ jobs:
     env:
       ACTIONS_STEP_DEBUG: true
     steps:
+      - name: Verify Debug Variable
+        run: |
+          echo "The value in the runner is: ${{ env.ACTIONS_STEP_DEBUG }}"
+
       - name: Checkout Repo
         uses: actions/checkout@v4
 

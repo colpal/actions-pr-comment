@@ -1,0 +1,40 @@
+name: Test Comment Update Create Action
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test_action:
+    name: Test Comment Update Create Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+      - name: Update comment with create
+        uses: ./
+        id: comment-update-create
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"

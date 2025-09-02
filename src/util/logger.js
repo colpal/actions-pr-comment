@@ -86,4 +86,4 @@ class Logger {
 }
 
 // Export a single, shared instance of the Logger.
-module.exports = new Logger();
+module.exports = { logger: new Logger() };

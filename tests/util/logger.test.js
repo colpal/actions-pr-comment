@@ -1,11 +1,10 @@
 const core = require('@actions/core');
-const logger = require('../../src/util/logger');
+const { logger } = require('../../src/util/logger');
 jest.mock('@actions/core');
 
 describe('Logger', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-
         logger._resetForTesting();
     });
 
@@ -132,15 +131,12 @@ describe('Logger', () => {
 
     describe('_resetForTesting', () => {
         it('should reset internal state and allow re-initialization', () => {
-            // First, set verbose to true
             core.getInput.mockReturnValue('true');
             expect(logger.isVerbose).toBe(true);
             expect(core.getInput).toHaveBeenCalledTimes(1);
 
-            // Reset for testing
             logger._resetForTesting();
 
-            // Change mock return value and test again
             core.getInput.mockReturnValue('false');
             expect(logger.isVerbose).toBe(false);
             expect(core.getInput).toHaveBeenCalledTimes(2);
@@ -149,7 +145,6 @@ describe('Logger', () => {
 
     describe('lazy loading of core module', () => {
         it('should work correctly after reset', () => {
-            // Reset to simulate fresh import
             logger._resetForTesting();
 
             const message = 'Test after reset';

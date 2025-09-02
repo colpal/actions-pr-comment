@@ -23925,7 +23925,7 @@ var require_logger = __commonJS({
         this._isVerbose = null;
       }
     };
-    module2.exports = new Logger();
+    module2.exports = { logger: new Logger() };
   }
 });
 

@@ -24139,8 +24139,10 @@ var { commentWorkflow } = require_comment_workflow();
 var { getInput, setFailed } = require_core();
 var core = require_core();
 async function main() {
-  const isDebug = process.env["ACTIONS_STEP_DEBUG"] === "true";
-  core.info(`Debug mode is explicitly set to: ${isDebug}`);
+  const stepDebug = process.env["ACTIONS_STEP_DEBUG"] === "true";
+  const runnerDebug = process.env["ACTIONS_RUNNER_DEBUG"] === "true";
+  core.info(`Step debug mode is explicitly set to: ${stepDebug}`);
+  core.info(`Runner debug mode is explicitly set to: ${runnerDebug}`);
   const token = getInput("github-token", { required: true });
   if (!token) {
     setFailed("github-token is not available. Ensure the workflow has proper permissions.");

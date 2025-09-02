@@ -15,13 +15,16 @@ jobs:
       issues: write
       contents: write
       checks: write
-    env:
-      ACTIONS_STEP_DEBUG: true
-      ACTIONS_RUNNER_DEBUG: true
     steps:
+      - name: Force Enable Debug Logging
+        run: |
+          echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+          echo "ACTIONS_RUNNER_DEBUG=true" >> $GITHUB_ENV
+
       - name: Verify Debug Variable
         run: |
-          echo "The value in the runner is: ${{ env.ACTIONS_STEP_DEBUG }}"
+          echo "The value in the step is: ${{ env.ACTIONS_STEP_DEBUG }}"
+          echo "The value in the runner is: ${{ env.ACTIONS_RUNNER_DEBUG }}"
 
       - name: Checkout Repo
         uses: actions/checkout@v4

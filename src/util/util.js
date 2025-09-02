@@ -32,7 +32,7 @@ function getCommentBody() {
             throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
         try {
-            core.info(`Reading comment body from file: ${commentPath}`);
+            core.debug(`Reading comment body from file: ${commentPath}`);
             let fileContent = readFileSync(commentPath, 'utf8');
             if (fileContent.charCodeAt(0) === 0xFEFF) {
                 fileContent = fileContent.slice(1);

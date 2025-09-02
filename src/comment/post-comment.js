@@ -31,7 +31,7 @@ async function postComment(octokit, owner, repo, commentIdentifier) {
         issue_number: prNumber,
         body: commentBody,
     });
-    core.info("Comment posted successfully.");
+    core.debug("Comment posted successfully.");
 
 }
 

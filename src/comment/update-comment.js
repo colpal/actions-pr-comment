@@ -55,7 +55,7 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
         comment_id: comment.id,
         body: commentBody,
     });
-    core.info("Comment updated successfully.");
+    core.debug("Comment updated successfully.");
 
 }
 

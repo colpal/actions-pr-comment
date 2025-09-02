@@ -23872,7 +23872,7 @@ var require_status_check = __commonJS({
       return checkRun.id;
     }
     async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      core.info(`Finalizing completed status check with ID: ${checkRunId}...`);
       const status = "completed";
       let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
       if (conclusion !== "success" && conclusion !== "failure" && conclusion !== "neutral") {
@@ -23892,7 +23892,7 @@ var require_status_check = __commonJS({
       });
     }
     async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      core.info(`Finalizing failed status check with ID: ${checkRunId}...`);
       const status = "completed";
       const conclusion = "failure";
       await octokit.rest.checks.update({
@@ -23934,13 +23934,12 @@ var require_find_comment = __commonJS({
         (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
       );
       if (!targetComment) {
-        core.info("No comment matching the author and identifier was not found.");
+        core.debug("No comment matching the author and identifier was not found.");
         return;
       }
-      core.info("Matching comment found successfully.");
       core.setOutput("comment-id", targetComment.id);
       core.setOutput("comment-body", targetComment.body);
-      core.info(`Comment ID: ${targetComment.id} 
+      core.debug(`Matching comment found successfully. Comment ID: ${targetComment.id} 
  Body: ${targetComment.body} 
  State: ${targetComment.state}.`);
       return targetComment;
@@ -23965,7 +23964,7 @@ var require_util8 = __commonJS({
           throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
         try {
-          core.info(`Reading comment body from file: ${commentPath}`);
+          core.debug(`Reading comment body from file: ${commentPath}`);
           let fileContent = readFileSync(commentPath, "utf8");
           if (fileContent.charCodeAt(0) === 65279) {
             fileContent = fileContent.slice(1);
@@ -24001,11 +24000,11 @@ var require_update_comment = __commonJS({
       let commentBody = "";
       switch (updateType) {
         case "replace":
-          core.info("Replacing comment body.");
+          core.debug("Replacing comment body.");
           commentBody = commentIdentifier + "\n" + newCommentBody;
           break;
         case "append": {
-          core.info("Appending to comment body.");
+          core.debug("Appending to comment body.");
           const timestamp = (/* @__PURE__ */ new Date()).toUTCString();
           const divider = `
 
@@ -24028,7 +24027,7 @@ var require_update_comment = __commonJS({
         comment_id: comment.id,
         body: commentBody
       });
-      core.info("Comment updated successfully.");
+      core.debug("Comment updated successfully.");
     }
     module2.exports = { updateComment };
   }
@@ -24040,7 +24039,8 @@ var require_hide_comment = __commonJS({
     var { graphql } = require_dist_node6();
     var core = require_core();
     async function hideComment(token, comment, reason) {
-      core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+      core.info(`Hiding comment ${comment.id}...`);
+      core.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
       const graphqlWithAuth = graphql.defaults({
         headers: {
           authorization: `token ${token}`
@@ -24089,7 +24089,7 @@ var require_post_comment = __commonJS({
         issue_number: prNumber,
         body: commentBody
       });
-      core.info("Comment posted successfully.");
+      core.debug("Comment posted successfully.");
     }
     module2.exports = { postComment };
   }
@@ -24114,12 +24114,11 @@ var require_comment_workflow = __commonJS({
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
-          core.info("No existing comment found, posting a new comment.");
+          core.debug("No existing comment found, posting a new comment.");
           await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-          core.info(`Comment found: ${comment.body}`);
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
-          core.info(`Update mode is set to: ${updateMode}`);
+          core.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
             await postComment(octokit, owner, repo, commentIdentifier);

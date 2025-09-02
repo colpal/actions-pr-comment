@@ -42,7 +42,7 @@ async function initializeStatusCheck(octokit, owner, repo, checkName) {
  * @returns {Promise<void>} Resolves when the status check is finalized.
  */
 async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    core.info(`Finalizing completed status check with ID: ${checkRunId}...`);
     const status = "completed";
 
     let conclusion = core.getInput('conclusion', { required: false }) || "neutral";
@@ -78,7 +78,7 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
  * @returns {Promise<void>} Resolves when the status check is finalized as failed.
  */
 async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    core.info(`Finalizing failed status check with ID: ${checkRunId}...`);
     const status = "completed";
     const conclusion = "failure"
 

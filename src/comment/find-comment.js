@@ -35,14 +35,13 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
     );
 
     if (!targetComment) {
-        core.info('No comment matching the author and identifier was not found.');
+        core.debug('No comment matching the author and identifier was not found.');
         return;
     }
 
-    core.info(`Matching comment ${targetComment.id} found successfully.`);
     core.setOutput('comment-id', targetComment.id);
     core.setOutput('comment-body', targetComment.body);
-    core.debug(`Comment ID: ${targetComment.id} \n Body: ${targetComment.body} \n State: ${targetComment.state}.`);
+    core.debug(`Matching comment found successfully. Comment ID: ${targetComment.id} \n Body: ${targetComment.body} \n State: ${targetComment.state}.`);
     return targetComment;
 
 }

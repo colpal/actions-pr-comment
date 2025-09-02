@@ -17,6 +17,7 @@ jobs:
       checks: write
     env:
       ACTIONS_STEP_DEBUG: true
+      ACTIONS_RUNNER_DEBUG: true
     steps:
       - name: Verify Debug Variable
         run: |

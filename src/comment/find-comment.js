@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { logger } = require('../util/logger.js');
 
 /**
  * Finds the most recent comment on a pull request that matches the specified author and contains the given identifier in its body.
@@ -12,12 +13,13 @@ const github = require('@actions/github');
  * @returns {Promise<Object|undefined>} The matching comment object if found, otherwise undefined.
  */
 async function findComment(octokit, owner, repo, commentIdentifier) {
-    core.info("Starting to find a comment...");
+    logger.info("Starting to find a comment...");
+
     const author = core.getInput('author', { required: false }) || "github-actions[bot]";
     const prNumber = github.context.payload.pull_request?.number;
 
     if (!prNumber) {
-        core.warning('Not a pull request, skipping operation.');
+        logger.warning('Not a pull request, skipping operation.');
         throw new Error('No pull request number found in the context.');
     }
 
@@ -35,16 +37,14 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
     );
 
     if (!targetComment) {
-        core.info('No comment matching the author and identifier was not found.');
+        logger.debug('No comment matching the author and identifier was not found.');
         return;
     }
 
-    core.info("Matching comment found successfully.");
     core.setOutput('comment-id', targetComment.id);
     core.setOutput('comment-body', targetComment.body);
-    core.info(`Comment ID: ${targetComment.id} \n Body: ${targetComment.body} \n State: ${targetComment.state}.`);
+    logger.debug(`Matching comment found successfully. Comment ID: ${targetComment.id} Body: ${targetComment.body}`);
     return targetComment;
-
 }
 
 module.exports = { findComment };

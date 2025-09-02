@@ -1,6 +1,7 @@
 
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { logger } = require('../util/logger.js');
 
 /**
  * Initializes a GitHub status check with a pending state.
@@ -12,7 +13,7 @@ const github = require('@actions/github');
  * @returns {Promise<number>} The ID of the created check run.
  */
 async function initializeStatusCheck(octokit, owner, repo, checkName) {
-    core.info(`Creating a pending check named "${checkName}"...`);
+    logger.info(`Creating a pending check named "${checkName}"...`);
     const { data: checkRun } = await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
@@ -42,13 +43,13 @@ async function initializeStatusCheck(octokit, owner, repo, checkName) {
  * @returns {Promise<void>} Resolves when the status check is finalized.
  */
 async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    logger.info(`Finalizing completed status check with ID: ${checkRunId}...`);
     const status = "completed";
 
     let conclusion = core.getInput('conclusion', { required: false }) || "neutral";
 
     if (conclusion !== 'success' && conclusion !== 'failure' && conclusion !== 'neutral') {
-        core.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
         conclusion = 'neutral';
     }
 
@@ -78,7 +79,7 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
  * @returns {Promise<void>} Resolves when the status check is finalized as failed.
  */
 async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-    core.info(`Finalizing status check with ID: ${checkRunId}...`);
+    logger.info(`Finalizing failed status check with ID: ${checkRunId}...`);
     const status = "completed";
     const conclusion = "failure"
 

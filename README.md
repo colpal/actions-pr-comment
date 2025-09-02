@@ -31,6 +31,11 @@
     # Default: "${{ github.token }}"
     github-token: "${{ github.token }}"
 
+    # Verbose logging flag for more detailed information
+    # Optional
+    # Default: false
+    verbose-logging: false
+
     # How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)
     # Required
     # Default: "create"
@@ -52,6 +57,9 @@ A status check (see below for setup) will be emitted from the action run. When t
 ### Add Check
 ![addCheck](docs/addCheck.png)
 The check supplied here should match the name provided in the `comment-id` input field on the action. If the action has been triggered before, it **should** show up in the "Suggestions" tab as you type it. If not, then the name can be supplied and it **should** detect on the first run of the action
+
+## Logging
+To enable verbose logging to gather more information about the action as it is running, set the `verbose-logging` argument to `true`. Reference the [markdown file example](#example-using-a-markdown-file) below 
 
 ## Examples
 ### Example: Basic Usage
@@ -77,6 +85,7 @@ This example posts a comment to the pull request with the message "Linting passe
     comment-body-path: "path/test-results.md"
     conclusion: "failure"
     github-token: "${{ secrets.github-token }}"
+    verbose-logging: true
     update-mode: "replace"
 ```
 

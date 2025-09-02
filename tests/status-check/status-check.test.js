@@ -1,10 +1,20 @@
-const { initializeStatusCheck, finalizeStatusCheck } = require('../../src/status-check/status-check');
+const { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require('../../src/status-check/status-check');
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { failStatusCheck } = require('../../src/status-check/status-check');
+const { logger } = require('../../src/util/logger');
 
 jest.mock('@actions/core');
 jest.mock('@actions/github');
+jest.mock('../../src/util/logger', () => ({
+    logger: {
+        info: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        warning: jest.fn(),
+        isVerbose: false
+    }
+}));
+
 
 describe('initializeStatusCheck', () => {
     let octokit;
@@ -17,7 +27,6 @@ describe('initializeStatusCheck', () => {
                 }
             }
         };
-        core.info.mockClear();
         github.context.payload = {};
         github.context.sha = 'defaultsha';
     });
@@ -27,7 +36,7 @@ describe('initializeStatusCheck', () => {
         octokit.rest.checks.create.mockResolvedValue({ data: { id: 123 } });
 
         const id = await initializeStatusCheck(octokit, 'owner', 'repo', 'checkName');
-        expect(core.info).toHaveBeenCalledWith('Creating a pending check named "checkName"...');
+        expect(logger.info).toHaveBeenCalledWith('Creating a pending check named "checkName"...');
         expect(octokit.rest.checks.create).toHaveBeenCalledWith({
             owner: 'owner',
             repo: 'repo',
@@ -61,16 +70,15 @@ describe('finalizeStatusCheck', () => {
                 }
             }
         };
-        core.info.mockClear();
         core.getInput.mockClear();
         core.setFailed.mockClear();
-        core.error.mockClear();
+        logger.info.mockClear();
     });
 
     it('finalizes with success conclusion', async () => {
         core.getInput.mockReturnValue('success');
         await finalizeStatusCheck(octokit, 'owner', 'repo', 789, 'checkName');
-        expect(core.info).toHaveBeenCalledWith('Finalizing status check with ID: 789...');
+        expect(logger.info).toHaveBeenCalledWith('Finalizing completed status check with ID: 789...');
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
             owner: 'owner',
             repo: 'repo',
@@ -111,7 +119,7 @@ describe('finalizeStatusCheck', () => {
     it('handles invalid conclusion', async () => {
         core.getInput.mockReturnValue('invalid');
         await finalizeStatusCheck(octokit, 'owner', 'repo', 202, 'checkName');
-        expect(core.error).toHaveBeenCalledWith('Invalid conclusion: "invalid". Must be \'success\', \'failure\', or \'neutral\'.');
+        expect(logger.error).toHaveBeenCalledWith('Invalid conclusion: "invalid". Must be \'success\', \'failure\', or \'neutral\'.');
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
             conclusion: 'neutral'
         }));
@@ -128,12 +136,12 @@ describe('finalizeStatusCheck', () => {
                     }
                 }
             };
-            core.info.mockClear();
+            logger.info.mockClear();
         });
 
         it('finalizes with failure conclusion', async () => {
             await failStatusCheck(octokit, 'owner', 'repo', 555, 'failCheck');
-            expect(core.info).toHaveBeenCalledWith('Finalizing status check with ID: 555...');
+            expect(logger.info).toHaveBeenCalledWith('Finalizing failed status check with ID: 555...');
             expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
                 owner: 'owner',
                 repo: 'repo',

@@ -5,6 +5,7 @@ const { findComment } = require('./find-comment.js');
 const { updateComment } = require('./update-comment.js');
 const { hideComment } = require('./hide-comment.js');
 const { postComment } = require('./post-comment.js');
+const { logger } = require('../util/logger.js');
 
 
 /**
@@ -32,25 +33,30 @@ async function commentWorkflow(token) {
     const commentIdentifier = `<!-- ` + checkName + ` -->`;
     try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
+
         if (!comment) {
-            core.info("No existing comment found, posting a new comment.");
+            logger.debug("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-            core.info(`Comment found: ${comment.body}`);
             const updateMode = core.getInput('update-mode', { required: false }) || "create";
-            core.info(`Update mode is set to: ${updateMode}`);
+            logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
+
             if (updateMode === "create") {
                 await hideComment(token, comment, "OUTDATED");
+                logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
                 await postComment(octokit, owner, repo, commentIdentifier);
+                logger.debug("New comment posted successfully.");
             }
             else {
                 await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+                logger.debug("Existing comment updated successfully.");
             }
         }
+
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
     } catch (error) {
         await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
-        core.error(`Error occurred during comment workflow: ${error.message}`);
+        logger.error(`Error occurred during comment workflow: ${error.message}`);
     }
 }
 

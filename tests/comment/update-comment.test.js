@@ -1,14 +1,22 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { updateComment } = require('../../src/comment/update-comment');
+const { logger } = require('../../src/util/logger');
 
-// Mock getCommentBody from util/util
 jest.mock('../../src/util/util', () => ({
     getCommentBody: jest.fn(() => 'Mocked body')
 }));
-
 jest.mock('@actions/core');
 jest.mock('@actions/github');
+jest.mock('../../src/util/logger', () => ({
+    logger: {
+        info: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        warning: jest.fn(),
+        isVerbose: false
+    }
+}));
 
 describe('update-comment', () => {
     let octokit, owner, repo, commentIdentifier;
@@ -49,8 +57,8 @@ describe('update-comment', () => {
             comment_id: 1,
             body: commentIdentifier + "\n" + 'Mocked body'
         });
-        expect(core.info).toHaveBeenCalledWith("Replacing comment body.");
-        expect(core.info).toHaveBeenCalledWith("Comment updated successfully.");
+        expect(logger.debug).toHaveBeenCalledWith("Replacing comment body.");
+        expect(logger.debug).toHaveBeenCalledWith("Comment updated successfully.");
     });
 
     it('should append to comment body', async () => {
@@ -61,8 +69,8 @@ describe('update-comment', () => {
         expect(body).toContain('Mocked body');
         expect(body).toContain('Old');
         expect(body).toMatch(/\*Update posted on:/);
-        expect(core.info).toHaveBeenCalledWith("Appending to comment body.");
-        expect(core.info).toHaveBeenCalledWith("Comment updated successfully.");
+        expect(logger.debug).toHaveBeenCalledWith("Appending to comment body.");
+        expect(logger.debug).toHaveBeenCalledWith("Comment updated successfully.");
     });
 
     it('should fail if prNumber is missing', async () => {

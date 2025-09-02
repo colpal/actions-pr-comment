@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const { readFileSync } = require('fs');
+const { logger } = require('../util/logger.js');
 
 
 /**
@@ -28,19 +29,24 @@ function getCommentBody() {
     }
 
     if (commentPath) {
+
         if (!commentPath.endsWith('.md')) {
             throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
+
         try {
-            core.info(`Reading comment body from file: ${commentPath}`);
+            logger.debug(`Reading comment body from file: ${commentPath}`);
             let fileContent = readFileSync(commentPath, 'utf8');
+
             if (fileContent.charCodeAt(0) === 0xFEFF) {
                 fileContent = fileContent.slice(1);
             }
+
             return fileContent;
         } catch (error) {
             throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
         }
+
     }
 
     if (directComment) {

@@ -39,7 +39,7 @@ var require_utils = __commonJS({
 var require_command = __commonJS({
   "node_modules/@actions/core/lib/command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -48,13 +48,13 @@ var require_command = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -125,7 +125,7 @@ var require_command = __commonJS({
 var require_file_command = __commonJS({
   "node_modules/@actions/core/lib/file-command.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -134,13 +134,13 @@ var require_file_command = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -13706,7 +13706,7 @@ var require_fetch = __commonJS({
             fetchParams.controller.terminate(e);
           }
         };
-        requestBody = async function* () {
+        requestBody = (async function* () {
           try {
             for await (const bytes of request.body.stream) {
               yield* processBodyChunk(bytes);
@@ -13715,7 +13715,7 @@ var require_fetch = __commonJS({
           } catch (err) {
             processBodyError(err);
           }
-        }();
+        })();
       }
       try {
         const { body, status, statusText, headersList, socket } = await dispatch({ body: requestBody });
@@ -17266,7 +17266,7 @@ var require_undici = __commonJS({
 var require_lib = __commonJS({
   "node_modules/@actions/http-client/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -17275,13 +17275,13 @@ var require_lib = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -18381,7 +18381,7 @@ var require_summary = __commonJS({
 var require_path_utils = __commonJS({
   "node_modules/@actions/core/lib/path-utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -18390,13 +18390,13 @@ var require_path_utils = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -18430,18 +18430,18 @@ var require_path_utils = __commonJS({
 var require_io_util = __commonJS({
   "node_modules/@actions/io/lib/io-util.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -18603,18 +18603,18 @@ var require_io_util = __commonJS({
 var require_io = __commonJS({
   "node_modules/@actions/io/lib/io.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -18851,18 +18851,18 @@ var require_io = __commonJS({
 var require_toolrunner = __commonJS({
   "node_modules/@actions/exec/lib/toolrunner.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -19335,18 +19335,18 @@ var require_toolrunner = __commonJS({
 var require_exec = __commonJS({
   "node_modules/@actions/exec/lib/exec.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -19442,7 +19442,7 @@ var require_exec = __commonJS({
 var require_platform = __commonJS({
   "node_modules/@actions/core/lib/platform.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -19451,13 +19451,13 @@ var require_platform = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -19561,7 +19561,7 @@ var require_platform = __commonJS({
 var require_core = __commonJS({
   "node_modules/@actions/core/lib/core.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -19570,13 +19570,13 @@ var require_core = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -19849,7 +19849,7 @@ var require_context = __commonJS({
 var require_utils3 = __commonJS({
   "node_modules/@actions/github/lib/internal/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -19858,13 +19858,13 @@ var require_utils3 = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -23755,7 +23755,7 @@ var require_dist_node10 = __commonJS({
 var require_utils4 = __commonJS({
   "node_modules/@actions/github/lib/utils.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -23764,13 +23764,13 @@ var require_utils4 = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -23815,7 +23815,7 @@ var require_utils4 = __commonJS({
 var require_github = __commonJS({
   "node_modules/@actions/github/lib/github.js"(exports2) {
     "use strict";
-    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -23824,13 +23824,13 @@ var require_github = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar = exports2 && exports2.__importStar || function(mod) {
@@ -23855,13 +23855,88 @@ var require_github = __commonJS({
   }
 });
 
+// src/util/logger.js
+var require_logger = __commonJS({
+  "src/util/logger.js"(exports2, module2) {
+    var core;
+    var Logger = class {
+      constructor() {
+        this._isVerbose = null;
+      }
+      /**
+       * Lazily gets the core module, making the logger safe for test environments.
+       * @private
+       */
+      _getCore() {
+        if (!core) {
+          core = require_core();
+        }
+        return core;
+      }
+      /**
+       * Lazily gets the verbosity setting. It only calls core.getInput() once.
+       * @type {boolean}
+       */
+      get isVerbose() {
+        if (this._isVerbose === null) {
+          this._isVerbose = this._getCore().getInput("verbose-logging") === "true";
+        }
+        return this._isVerbose;
+      }
+      /**
+       * Logs a standard, always-visible informational message.
+       * This is a wrapper around core.info().
+       * @param {string} message The message to log.
+       */
+      info(message) {
+        this._getCore().info(message);
+      }
+      /**
+       * Logs a debug message only when verbose-logging is enabled in the workflow.
+       * The message is prefixed with [DEBUG] to make it easy to spot.
+       * @param {string} message The message to log.
+       */
+      debug(message) {
+        if (this.isVerbose) {
+          this._getCore().info(`[DEBUG] ${message}`);
+        }
+      }
+      /**
+       * Logs an error message.
+       * This is a wrapper around core.error().
+       * @param {string} message The error message to log.
+       */
+      error(message) {
+        this._getCore().error(message);
+      }
+      /**
+       * Logs a warning message.
+       * This is a wrapper around core.warning().
+       * @param {string} message The warning message to log.
+       */
+      warning(message) {
+        this._getCore().warning(message);
+      }
+      /**
+       * Resets the logger's internal state. Should only be used for testing.
+       */
+      _resetForTesting() {
+        core = null;
+        this._isVerbose = null;
+      }
+    };
+    module2.exports = { logger: new Logger() };
+  }
+});
+
 // src/status-check/status-check.js
 var require_status_check = __commonJS({
   "src/status-check/status-check.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
+    var { logger } = require_logger();
     async function initializeStatusCheck(octokit, owner, repo, checkName) {
-      core.info(`Creating a pending check named "${checkName}"...`);
+      logger.info(`Creating a pending check named "${checkName}"...`);
       const { data: checkRun } = await octokit.rest.checks.create({
         owner,
         repo,
@@ -23872,11 +23947,11 @@ var require_status_check = __commonJS({
       return checkRun.id;
     }
     async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      logger.info(`Finalizing completed status check with ID: ${checkRunId}...`);
       const status = "completed";
       let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
       if (conclusion !== "success" && conclusion !== "failure" && conclusion !== "neutral") {
-        core.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
         conclusion = "neutral";
       }
       await octokit.rest.checks.update({
@@ -23892,7 +23967,7 @@ var require_status_check = __commonJS({
       });
     }
     async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      core.info(`Finalizing status check with ID: ${checkRunId}...`);
+      logger.info(`Finalizing failed status check with ID: ${checkRunId}...`);
       const status = "completed";
       const conclusion = "failure";
       await octokit.rest.checks.update({
@@ -23916,12 +23991,13 @@ var require_find_comment = __commonJS({
   "src/comment/find-comment.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
+    var { logger } = require_logger();
     async function findComment(octokit, owner, repo, commentIdentifier) {
-      core.info("Starting to find a comment...");
+      logger.info("Starting to find a comment...");
       const author = core.getInput("author", { required: false }) || "github-actions[bot]";
       const prNumber = github.context.payload.pull_request?.number;
       if (!prNumber) {
-        core.warning("Not a pull request, skipping operation.");
+        logger.warning("Not a pull request, skipping operation.");
         throw new Error("No pull request number found in the context.");
       }
       const response = await octokit.rest.issues.listComments({
@@ -23934,15 +24010,12 @@ var require_find_comment = __commonJS({
         (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
       );
       if (!targetComment) {
-        core.info("No comment matching the author and identifier was not found.");
+        logger.debug("No comment matching the author and identifier was not found.");
         return;
       }
-      core.info("Matching comment found successfully.");
       core.setOutput("comment-id", targetComment.id);
       core.setOutput("comment-body", targetComment.body);
-      core.info(`Comment ID: ${targetComment.id} 
- Body: ${targetComment.body} 
- State: ${targetComment.state}.`);
+      logger.debug(`Matching comment found successfully. Comment ID: ${targetComment.id} Body: ${targetComment.body}`);
       return targetComment;
     }
     module2.exports = { findComment };
@@ -23954,6 +24027,7 @@ var require_util8 = __commonJS({
   "src/util/util.js"(exports2, module2) {
     var core = require_core();
     var { readFileSync } = require("fs");
+    var { logger } = require_logger();
     function getCommentBody() {
       const directComment = core.getInput("comment-body");
       const commentPath = core.getInput("comment-body-path");
@@ -23965,7 +24039,7 @@ var require_util8 = __commonJS({
           throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
         }
         try {
-          core.info(`Reading comment body from file: ${commentPath}`);
+          logger.debug(`Reading comment body from file: ${commentPath}`);
           let fileContent = readFileSync(commentPath, "utf8");
           if (fileContent.charCodeAt(0) === 65279) {
             fileContent = fileContent.slice(1);
@@ -23988,24 +24062,24 @@ var require_util8 = __commonJS({
 var require_update_comment = __commonJS({
   "src/comment/update-comment.js"(exports2, module2) {
     var { getCommentBody } = require_util8();
-    var core = require_core();
     var github = require_github();
+    var { logger } = require_logger();
     async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
-      core.info("Starting to update a comment...");
+      logger.info("Starting to update a comment...");
       let newCommentBody = getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
-        core.warning("Not a pull request, skipping review submission.");
+        logger.warning("Not a pull request, skipping review submission.");
         throw new Error("No pull request number found in the context.");
       }
       let commentBody = "";
       switch (updateType) {
         case "replace":
-          core.info("Replacing comment body.");
+          logger.debug("Replacing comment body.");
           commentBody = commentIdentifier + "\n" + newCommentBody;
           break;
         case "append": {
-          core.info("Appending to comment body.");
+          logger.debug("Appending to comment body.");
           const timestamp = (/* @__PURE__ */ new Date()).toUTCString();
           const divider = `
 
@@ -24018,7 +24092,7 @@ var require_update_comment = __commonJS({
           break;
         }
         default: {
-          core.warning(`Unknown update type: ${updateType}`);
+          logger.warning(`Unknown update type: ${updateType}`);
           throw new Error(`Unknown update type: ${updateType}`);
         }
       }
@@ -24028,7 +24102,7 @@ var require_update_comment = __commonJS({
         comment_id: comment.id,
         body: commentBody
       });
-      core.info("Comment updated successfully.");
+      logger.debug("Comment updated successfully.");
     }
     module2.exports = { updateComment };
   }
@@ -24038,9 +24112,10 @@ var require_update_comment = __commonJS({
 var require_hide_comment = __commonJS({
   "src/comment/hide-comment.js"(exports2, module2) {
     var { graphql } = require_dist_node6();
-    var core = require_core();
+    var { logger } = require_logger();
     async function hideComment(token, comment, reason) {
-      core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+      logger.info(`Hiding comment ${comment.id}...`);
+      logger.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
       const graphqlWithAuth = graphql.defaults({
         headers: {
           authorization: `token ${token}`
@@ -24073,14 +24148,14 @@ var require_hide_comment = __commonJS({
 var require_post_comment = __commonJS({
   "src/comment/post-comment.js"(exports2, module2) {
     var { getCommentBody } = require_util8();
-    var core = require_core();
     var github = require_github();
+    var { logger } = require_logger();
     async function postComment(octokit, owner, repo, commentIdentifier) {
-      core.info("Starting to post a comment...");
+      logger.info("Starting to post a comment...");
       const commentBody = commentIdentifier + "\n" + getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
-        core.warning("Not a pull request, skipping review submission.");
+        logger.warning("Not a pull request, skipping review submission.");
         throw new Error("No pull request number found in the context.");
       }
       await octokit.rest.issues.createComment({
@@ -24089,7 +24164,7 @@ var require_post_comment = __commonJS({
         issue_number: prNumber,
         body: commentBody
       });
-      core.info("Comment posted successfully.");
+      logger.debug("Comment posted successfully.");
     }
     module2.exports = { postComment };
   }
@@ -24105,6 +24180,7 @@ var require_comment_workflow = __commonJS({
     var { updateComment } = require_update_comment();
     var { hideComment } = require_hide_comment();
     var { postComment } = require_post_comment();
+    var { logger } = require_logger();
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
@@ -24114,23 +24190,25 @@ var require_comment_workflow = __commonJS({
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
-          core.info("No existing comment found, posting a new comment.");
+          logger.debug("No existing comment found, posting a new comment.");
           await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-          core.info(`Comment found: ${comment.body}`);
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
-          core.info(`Update mode is set to: ${updateMode}`);
+          logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
+            logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
+            logger.debug("New comment posted successfully.");
           } else {
             await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+            logger.debug("Existing comment updated successfully.");
           }
         }
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
       } catch (error) {
         await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
-        core.error(`Error occurred during comment workflow: ${error.message}`);
+        logger.error(`Error occurred during comment workflow: ${error.message}`);
       }
     }
     module2.exports = { commentWorkflow: commentWorkflow2 };

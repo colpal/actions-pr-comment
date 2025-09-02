@@ -1,5 +1,5 @@
 const { graphql } = require("@octokit/graphql");
-const core = require('@actions/core');
+const { logger } = require('../util/logger.js');
 
 /**
  * Hides a GitHub comment by minimizing it using the GraphQL API.
@@ -10,7 +10,8 @@ const core = require('@actions/core');
  * @returns {Promise<void>} Resolves when the comment has been minimized.
  */
 async function hideComment(token, comment, reason) {
-    core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    logger.info(`Hiding comment ${comment.id}...`);
+    logger.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
     const graphqlWithAuth = graphql.defaults({
         headers: {
             authorization: `token ${token}`,

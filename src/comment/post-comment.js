@@ -1,7 +1,7 @@
 const { getCommentBody } = require("../util/util");
 
-const core = require("@actions/core");
 const github = require("@actions/github");
+const { logger } = require('../util/logger.js');
 
 /**
  * Posts a comment to a pull request using the provided Octokit instance.
@@ -15,13 +15,13 @@ const github = require("@actions/github");
  * @returns {Promise<void>} Resolves when the comment is posted or skipped if not a pull request.
  */
 async function postComment(octokit, owner, repo, commentIdentifier) {
-    core.info("Starting to post a comment...");
+    logger.info("Starting to post a comment...");
     const commentBody = commentIdentifier + "\n" + getCommentBody();
 
     const prNumber = github.context.payload.pull_request.number;
 
     if (!prNumber) {
-        core.warning('Not a pull request, skipping review submission.');
+        logger.warning('Not a pull request, skipping review submission.');
         throw new Error('No pull request number found in the context.');
     }
 
@@ -31,9 +31,7 @@ async function postComment(octokit, owner, repo, commentIdentifier) {
         issue_number: prNumber,
         body: commentBody,
     });
-    core.debug("Comment posted successfully.");
-
+    logger.debug("Comment posted successfully.");
 }
-
 
 module.exports = { postComment };

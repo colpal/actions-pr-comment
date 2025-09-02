@@ -1,15 +1,19 @@
 const { postComment } = require('../../src/comment/post-comment');
-const core = require('@actions/core');
 const github = require('@actions/github');
 const { getCommentBody } = require('../../src/util/util');
+const { logger } = require('../../src/util/logger');
 
 jest.mock('../../src/util/util', () => ({
     getCommentBody: jest.fn(() => 'mocked body')
 }));
-jest.mock('@actions/core', () => ({
-    info: jest.fn(),
-    warning: jest.fn(),
-    setFailed: jest.fn()
+jest.mock('../../src/util/logger', () => ({
+    logger: {
+        info: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        warning: jest.fn(),
+        isVerbose: false
+    }
 }));
 jest.mock('@actions/github', () => ({
     context: {
@@ -33,14 +37,13 @@ describe('postComment', () => {
             }
         };
         jest.clearAllMocks();
-        // Reset PR number for each test
         github.context.payload.pull_request.number = 42;
     });
 
     it('posts a comment successfully', async () => {
         await postComment(octokit, 'owner', 'repo', 'identifier: ');
 
-        expect(core.info).toHaveBeenCalledWith("Starting to post a comment...");
+        expect(logger.info).toHaveBeenCalledWith("Starting to post a comment...");
         expect(getCommentBody).toHaveBeenCalled();
         expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
             owner: 'owner',
@@ -48,7 +51,7 @@ describe('postComment', () => {
             issue_number: 42,
             body: 'identifier: \nmocked body'
         });
-        expect(core.info).toHaveBeenCalledWith("Comment posted successfully.");
+        expect(logger.debug).toHaveBeenCalledWith("Comment posted successfully.");
     });
 
     it('skips posting if not a pull request', async () => {

@@ -1,6 +1,7 @@
 const { getCommentBody } = require('../../src/util/util');
 const core = require('@actions/core');
 const fs = require('fs');
+const { logger } = require('../../src/util/logger');
 
 jest.mock('@actions/core');
 jest.mock('fs', () => ({
@@ -13,6 +14,16 @@ jest.mock('fs', () => ({
         O_RDONLY: 0
     }
 }));
+jest.mock('../../src/util/logger', () => ({
+    logger: {
+        info: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        warning: jest.fn(),
+        isVerbose: false
+    }
+}));
+
 
 describe('getCommentBody', () => {
     beforeEach(() => {
@@ -28,7 +39,7 @@ describe('getCommentBody', () => {
         core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'path/to/file.md' : '');
         fs.readFileSync.mockReturnValue('File comment');
         expect(getCommentBody()).toBe('File comment');
-        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: path/to/file.md');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: path/to/file.md');
         expect(fs.readFileSync).toHaveBeenCalledWith('path/to/file.md', 'utf8');
     });
 
@@ -59,7 +70,7 @@ describe('getCommentBody', () => {
         const bomContent = '\uFEFFFile comment';
         fs.readFileSync.mockReturnValue(bomContent);
         expect(getCommentBody()).toBe('File comment');
-        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: bomfile.md');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: bomfile.md');
         expect(fs.readFileSync).toHaveBeenCalledWith('bomfile.md', 'utf8');
     });
 
@@ -67,7 +78,7 @@ describe('getCommentBody', () => {
         core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'emptyfile.md' : '');
         fs.readFileSync.mockReturnValue('');
         expect(getCommentBody()).toBe('');
-        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: emptyfile.md');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: emptyfile.md');
         expect(fs.readFileSync).toHaveBeenCalledWith('emptyfile.md', 'utf8');
     });
 
@@ -87,7 +98,7 @@ describe('getCommentBody', () => {
         const multilineContent = 'Line 1\nLine 2\nLine 3';
         fs.readFileSync.mockReturnValue(multilineContent);
         expect(getCommentBody()).toBe(multilineContent);
-        expect(core.info).toHaveBeenCalledWith('Reading comment body from file: multiline.md');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: multiline.md');
         expect(fs.readFileSync).toHaveBeenCalledWith('multiline.md', 'utf8');
     });
 

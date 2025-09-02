@@ -1,13 +1,20 @@
 jest.mock('@actions/core');
 jest.mock('@actions/github');
-jest.mock('../../src/comment/hide-comment', () => ({ hideComment: jest.fn() }));
-jest.mock('../../src/comment/post-comment', () => ({ postComment: jest.fn() }));
-jest.mock('../../src/comment/update-comment', () => ({ updateComment: jest.fn() }));
+jest.mock('../../src/util/logger', () => ({
+    logger: {
+        info: jest.fn(),
+        debug: jest.fn(),
+        error: jest.fn(),
+        warning: jest.fn(),
+        isVerbose: false
+    }
+}));
+
 const core = require('@actions/core');
 const github = require('@actions/github');
 const { findComment } = require('../../src/comment/find-comment');
 
-describe('actions-pr-comment', () => {
+describe('findComment', () => {
     let octokit, owner, repo;
     beforeEach(() => {
         jest.clearAllMocks();
@@ -31,11 +38,14 @@ describe('actions-pr-comment', () => {
             }
         };
         github.getOctokit.mockReturnValue(octokit);
+        core.getInput.mockReturnValue('');
+        core.setOutput.mockReturnValue('');
     });
 
-    it('findComment: should find the correct comment', async () => {
+    it('should find the correct comment', async () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
+            return '';
         });
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' },
@@ -47,7 +57,7 @@ describe('actions-pr-comment', () => {
         expect(core.setOutput).toHaveBeenCalledWith('comment-id', 2);
     });
 
-    it('findComment: should use default author if none supplied', async () => {
+    it('should use default author if none supplied', async () => {
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' },
             { id: 2, user: { login: 'github-actions[bot]' }, body: 'identifier' }
@@ -56,15 +66,17 @@ describe('actions-pr-comment', () => {
 
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return undefined;
+            return '';
         });
         const result = await findComment(octokit, owner, repo, 'identifier');
         expect(result).toEqual(comments[1]);
         expect(core.setOutput).toHaveBeenCalledWith('comment-id', 2);
     });
 
-    it('findComment: should return undefined if no matching comment', async () => {
+    it('should return undefined if no matching comment', async () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
+            return '';
         });
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' }
@@ -74,9 +86,10 @@ describe('actions-pr-comment', () => {
         expect(result).toBeUndefined();
     });
 
-    it('findComment: should fail if prNumber is missing', async () => {
+    it('should fail if prNumber is missing', async () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
+            return '';
         });
         const comments = [
             { id: 1, user: { login: 'github-actions[bot]' }, body: 'nope' }
@@ -88,15 +101,15 @@ describe('actions-pr-comment', () => {
             .rejects.toThrow("No pull request number found in the context.");
     });
 
-    it('findComment: should fail if listComments API call fails', async () => {
+    it('should fail if listComments API call fails', async () => {
         const apiError = new Error('Resource not accessible by integration');
         octokit.rest.issues.listComments.mockRejectedValue(apiError);
         core.getInput.mockImplementation((key) => {
             if (key === 'author') return 'github-actions[bot]';
+            return '';
         });
         await expect(findComment(octokit, owner, repo, 'identifier'))
             .rejects.toThrow("Resource not accessible by integration");
     });
 });
-
 

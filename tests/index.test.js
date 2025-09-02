@@ -1,7 +1,6 @@
 const core = require('@actions/core');
 const { main } = require('../src/index');
 const { commentWorkflow } = require('../src/comment/comment-workflow');
-
 jest.mock('@actions/core');
 jest.mock('../src/comment/comment-workflow');
 

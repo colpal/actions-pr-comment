@@ -10,7 +10,8 @@ const core = require('@actions/core');
  * @returns {Promise<void>} Resolves when the comment has been minimized.
  */
 async function hideComment(token, comment, reason) {
-    core.info(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
+    core.info(`Hiding comment ${comment.id}...`);
+    core.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
     const graphqlWithAuth = graphql.defaults({
         headers: {
             authorization: `token ${token}`,

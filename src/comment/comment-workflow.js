@@ -33,12 +33,11 @@ async function commentWorkflow(token) {
     try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
-            core.info("No existing comment found, posting a new comment.");
+            core.debug("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier);
         } else {
-            core.info(`Comment found: ${comment.body}`);
             const updateMode = core.getInput('update-mode', { required: false }) || "create";
-            core.info(`Update mode is set to: ${updateMode}`);
+            core.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
             if (updateMode === "create") {
                 await hideComment(token, comment, "OUTDATED");
                 await postComment(octokit, owner, repo, commentIdentifier);

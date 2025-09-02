@@ -39,10 +39,10 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
         return;
     }
 
-    core.info("Matching comment found successfully.");
+    core.info(`Matching comment ${targetComment.id} found successfully.`);
     core.setOutput('comment-id', targetComment.id);
     core.setOutput('comment-body', targetComment.body);
-    core.info(`Comment ID: ${targetComment.id} \n Body: ${targetComment.body} \n State: ${targetComment.state}.`);
+    core.debug(`Comment ID: ${targetComment.id} \n Body: ${targetComment.body} \n State: ${targetComment.state}.`);
     return targetComment;
 
 }

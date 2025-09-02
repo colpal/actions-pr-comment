@@ -33,11 +33,11 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
     let commentBody = ""
     switch (updateType) {
         case "replace":
-            core.info("Replacing comment body.");
+            core.debug("Replacing comment body.");
             commentBody = commentIdentifier + "\n" + newCommentBody;
             break;
         case "append": {
-            core.info("Appending to comment body.");
+            core.debug("Appending to comment body.");
             const timestamp = new Date().toUTCString();
             const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
             commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment

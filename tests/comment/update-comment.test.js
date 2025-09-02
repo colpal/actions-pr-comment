@@ -49,7 +49,7 @@ describe('update-comment', () => {
             comment_id: 1,
             body: commentIdentifier + "\n" + 'Mocked body'
         });
-        expect(core.info).toHaveBeenCalledWith("Replacing comment body.");
+        expect(core.debug).toHaveBeenCalledWith("Replacing comment body.");
         expect(core.info).toHaveBeenCalledWith("Comment updated successfully.");
     });
 
@@ -61,7 +61,7 @@ describe('update-comment', () => {
         expect(body).toContain('Mocked body');
         expect(body).toContain('Old');
         expect(body).toMatch(/\*Update posted on:/);
-        expect(core.info).toHaveBeenCalledWith("Appending to comment body.");
+        expect(core.debug).toHaveBeenCalledWith("Appending to comment body.");
         expect(core.info).toHaveBeenCalledWith("Comment updated successfully.");
     });
 

@@ -75,9 +75,9 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
+        core.debug.mockClear();
         await commentWorkflow(token);
-        expect(core.info).toHaveBeenCalledWith("No existing comment found, posting a new comment.");
+        expect(core.debug).toHaveBeenCalledWith("No existing comment found, posting a new comment.");
     });
 
     it('should log info when existing comment is found', async () => {
@@ -91,10 +91,9 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
+        core.debug.mockClear();
         await commentWorkflow(token);
-        expect(core.info).toHaveBeenCalledWith(`Comment found: ${mockComment.body}`);
-        expect(core.info).toHaveBeenCalledWith(`Update mode is set to: replace`);
+        expect(core.debug).toHaveBeenCalledWith(expect.stringContaining('Comment found. ID: 1. Update Mode: replace'));
     });
 
     it('should handle error thrown by findComment', async () => {
@@ -104,7 +103,6 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
         expect(failStatusCheck).toHaveBeenCalled();
         expect(findComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
@@ -120,10 +118,10 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
+        core.debug.mockClear();
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
         expect(failStatusCheck).toHaveBeenCalled();
-        expect(core.info).toHaveBeenCalledWith(expect.stringContaining('No existing comment found, posting a new comment.'));
+        expect(core.debug).toHaveBeenCalledWith(expect.stringContaining('No existing comment found, posting a new comment.'));
         expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
         expect(core.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: postComment error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
@@ -140,11 +138,10 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
+        core.debug.mockClear();
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
         expect(failStatusCheck).toHaveBeenCalled();
-        expect(core.info).toHaveBeenCalledWith(expect.stringContaining('Comment found: Existing comment'));
-        expect(core.info).toHaveBeenCalledWith(expect.stringContaining('Update mode is set to: replace'));
+        expect(core.debug).toHaveBeenCalledWith(expect.stringContaining('Comment found. ID: 1. Update Mode: replace'));
         expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, commentIdentifier, 'replace');
         expect(core.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: updateComment error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
@@ -162,11 +159,10 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
+        core.debug.mockClear();
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
         expect(failStatusCheck).toHaveBeenCalled();
-        expect(core.info).toHaveBeenCalledWith(expect.stringContaining('Comment found: Existing comment'));
-        expect(core.info).toHaveBeenCalledWith(expect.stringContaining('Update mode is set to: create'));
+        expect(core.debug).toHaveBeenCalledWith(expect.stringContaining('Comment found. ID: 1. Update Mode: create'));
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
         expect(core.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: hideComment error'));
         expect(postComment).not.toHaveBeenCalled();
@@ -194,7 +190,6 @@ describe('comment-workflow', () => {
             if (key === 'conclusion') return 'success';
             return undefined;
         });
-        core.info.mockClear();
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
         expect(core.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: finalize error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
@@ -236,6 +231,5 @@ describe('comment-workflow', () => {
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
         expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
         expect(updateComment).not.toHaveBeenCalled();
-        expect(core.info).toHaveBeenCalledWith('Update mode is set to: create');
     });
 });

@@ -24138,7 +24138,8 @@ var require_comment_workflow = __commonJS({
 
 // src/index.js
 var { commentWorkflow } = require_comment_workflow();
-var { getInput, setFailed, core } = require_core();
+var { getInput, setFailed } = require_core();
+var core = require_core();
 async function main() {
   const isDebug = process.env["ACTIONS_STEP_DEBUG"] === "true";
   core.info(`Debug mode is explicitly set to: ${isDebug}`);

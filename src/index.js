@@ -1,6 +1,8 @@
 const { commentWorkflow } = require('./comment/comment-workflow.js');
 
-const { getInput, setFailed, core } = require("@actions/core");
+const { getInput, setFailed } = require("@actions/core");
+const core = require('@actions/core');
+
 
 async function main() {
 

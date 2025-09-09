@@ -24125,7 +24125,9 @@ var require_comment_visibility = __commonJS({
       await graphqlWithAuth(
         `
             mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) { }
+                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
+                    clientMutationId
+                }
             }
         `,
         {
@@ -24145,7 +24147,9 @@ var require_comment_visibility = __commonJS({
       await graphqlWithAuth(
         `
             mutation unminimizeComment($subjectId: ID!) {
-                unminimizeComment(input: { subjectId: $subjectId }) { }
+                unminimizeComment(input: { subjectId: $subjectId }) {
+                    clientMutationId
+                }
             }
         `,
         {

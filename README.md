@@ -15,18 +15,18 @@
 
     # The contents of the text to be used as the message body
     # Optional - used instead of comment-body-path
-    comment-body: "example/custom-path"
+    comment-body: "My comment here"
 
     # The path where the markdown (.md) file is stored which holds the text to be used as the message body
     # Optional - used instead of comment-body
-    comment-body-path: "My comment here"
+    comment-body-path: "example/custom-path"
     
     # Result of the workflows that are providing the comments to be posted. Will be set to "success" or "failure" such that this action can prevent merge whilst posting comments explaining the problem
     # Optional
     # Default: "neutral"
     conclusion: "success"
 
-    # The path where the markdown (.md) file is stored which holds the text to be used as the message body
+    # The GitHub token used for authentication
     # Optional
     # Default: "${{ github.token }}"
     github-token: "${{ github.token }}"
@@ -41,7 +41,7 @@
     # Default: "create"
     update-mode: "create"
 
-    # Flag to control whether to hide the comment when the conclusion now a 'success' and update-mode is 'replace' or 'append'
+    # Determines whether to hide a previous failure comment when the conclusion changes to 'success' and update-mode is 'replace' or 'append'
     # Optional
     # Default: false
     on-resolution-hide: false

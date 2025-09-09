@@ -24064,7 +24064,7 @@ var require_update_comment = __commonJS({
     var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
-    async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
+    async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
       logger.info("Starting to update a comment...");
       let newCommentBody = getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
@@ -24076,7 +24076,7 @@ var require_update_comment = __commonJS({
       switch (updateType) {
         case "replace":
           logger.debug("Replacing comment body.");
-          commentBody = commentIdentifier + "\n" + newCommentBody;
+          commentBody = commentIdentifier + "\n" + newCommentBody + "\n" + conclusionIdentifier;
           break;
         case "append": {
           logger.debug("Appending to comment body.");
@@ -24088,7 +24088,8 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
-          commentBody = comment.body + divider + newCommentBody;
+          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, "");
+          commentBody = comment.body + divider + newCommentBody + "\n" + conclusionIdentifier;
           break;
         }
         default: {
@@ -24150,9 +24151,9 @@ var require_post_comment = __commonJS({
     var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
-    async function postComment(octokit, owner, repo, commentIdentifier) {
+    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
       logger.info("Starting to post a comment...");
-      const commentBody = commentIdentifier + "\n" + getCommentBody();
+      const commentBody = commentIdentifier + "\n" + getCommentBody() + "\n" + conclusionIdentifier;
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
         logger.warning("Not a pull request, skipping review submission.");
@@ -24185,23 +24186,25 @@ var require_comment_workflow = __commonJS({
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
       const checkName = core.getInput("comment-id", { required: true });
+      const conclusion = core.getInput("conclusion", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
+      const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
           logger.debug("No existing comment found, posting a new comment.");
-          await postComment(octokit, owner, repo, commentIdentifier);
+          await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
           logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier);
+            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
             logger.debug("New comment posted successfully.");
           } else {
-            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");
           }
         }

@@ -27,16 +27,19 @@ async function commentWorkflow(token) {
     const octokit = github.getOctokit(token);
     const { owner, repo } = github.context.repo;
     const checkName = core.getInput('comment-id', { required: true });
+    const conclusion = core.getInput('conclusion', { required: true });
 
     let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
 
     const commentIdentifier = `<!-- ` + checkName + ` -->`;
+    const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
+
     try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
 
         if (!comment) {
             logger.debug("No existing comment found, posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier);
+            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
             const updateMode = core.getInput('update-mode', { required: false }) || "create";
             logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
@@ -44,11 +47,11 @@ async function commentWorkflow(token) {
             if (updateMode === "create") {
                 await hideComment(token, comment, "OUTDATED");
                 logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-                await postComment(octokit, owner, repo, commentIdentifier);
+                await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
                 logger.debug("New comment posted successfully.");
             }
             else {
-                await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+                await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
                 logger.debug("Existing comment updated successfully.");
             }
         }

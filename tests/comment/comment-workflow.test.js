@@ -26,7 +26,7 @@ const { hideComment } = require('../../src/comment/hide-comment.js');
 const { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require('../../src/status-check/status-check.js');
 
 describe('comment-workflow', () => {
-    let token, octokit, owner, repo, commentIdentifier;
+    let token, octokit, owner, repo, commentIdentifier, conclusionIdentifier;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -34,6 +34,7 @@ describe('comment-workflow', () => {
         owner = 'owner';
         repo = 'repo';
         commentIdentifier = "<!-- Test Check -->";
+        conclusionIdentifier = "<!-- CONCLUSION: success -->";
         github.context = {
             payload: {
                 pull_request: {
@@ -125,7 +126,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
 
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -145,7 +146,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
 
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->');
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -179,7 +180,7 @@ describe('comment-workflow', () => {
 
         expect(failStatusCheck).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('No existing comment found, posting a new comment.'));
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier);
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: postComment error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });
@@ -200,7 +201,7 @@ describe('comment-workflow', () => {
 
         expect(failStatusCheck).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('Comment found. ID: 1. Update Mode: replace'));
-        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, commentIdentifier, 'replace');
+        expect(updateComment).toHaveBeenCalledWith(octokit, owner, repo, mockComment, commentIdentifier, 'replace', conclusionIdentifier);
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: updateComment error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });

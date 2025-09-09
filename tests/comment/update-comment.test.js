@@ -50,12 +50,12 @@ describe('update-comment', () => {
 
     it('should replace comment body', async () => {
         const comment = { id: 1, body: 'Old', user: { login: 'bot' } };
-        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace');
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'replace', 'conlcusion: success');
         expect(octokit.rest.issues.updateComment).toHaveBeenCalledWith({
             owner,
             repo,
             comment_id: 1,
-            body: commentIdentifier + "\n" + 'Mocked body'
+            body: commentIdentifier + "\n" + 'Mocked body' + "\n" + 'conlcusion: success'
         });
         expect(logger.debug).toHaveBeenCalledWith("Replacing comment body.");
         expect(logger.debug).toHaveBeenCalledWith("Comment updated successfully.");

@@ -8,7 +8,7 @@ on:
 
 jobs:
   test_action:
-    name: Test Comment Hide On Resolution Action
+    name: Test Comment Reopen Action
     runs-on: [self-hosted, org]
     permissions:
       pull-requests: write

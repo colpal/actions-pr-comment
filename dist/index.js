@@ -24109,9 +24109,9 @@ var require_update_comment = __commonJS({
   }
 });
 
-// src/comment/hide-comment.js
-var require_hide_comment = __commonJS({
-  "src/comment/hide-comment.js"(exports2, module2) {
+// src/comment/comment-visibility.js
+var require_comment_visibility = __commonJS({
+  "src/comment/comment-visibility.js"(exports2, module2) {
     var { graphql } = require_dist_node6();
     var { logger } = require_logger();
     async function hideComment(token, comment, reason) {
@@ -24124,16 +24124,9 @@ var require_hide_comment = __commonJS({
       });
       await graphqlWithAuth(
         `
-        mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
-                clientMutationId
-                minimizedComment {
-                    isMinimized
-                    minimizedReason
-                    viewerCanMinimize
-                }
+            mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) { }
             }
-        }
         `,
         {
           subjectId: comment.node_id,
@@ -24141,7 +24134,26 @@ var require_hide_comment = __commonJS({
         }
       );
     }
-    module2.exports = { hideComment };
+    async function unhideComment(token, comment) {
+      logger.info(`Unhiding comment ${comment.id}...`);
+      logger.debug(`Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`);
+      const graphqlWithAuth = graphql.defaults({
+        headers: {
+          authorization: `token ${token}`
+        }
+      });
+      await graphqlWithAuth(
+        `
+            mutation unminimizeComment($subjectId: ID!) {
+                unminimizeComment(input: { subjectId: $subjectId }) { }
+            }
+        `,
+        {
+          subjectId: comment.node_id
+        }
+      );
+    }
+    module2.exports = { hideComment, unhideComment };
   }
 });
 
@@ -24179,7 +24191,7 @@ var require_comment_workflow = __commonJS({
     var { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require_status_check();
     var { findComment } = require_find_comment();
     var { updateComment } = require_update_comment();
-    var { hideComment } = require_hide_comment();
+    var { hideComment, unhideComment } = require_comment_visibility();
     var { postComment } = require_post_comment();
     var { logger } = require_logger();
     async function commentWorkflow2(token) {
@@ -24206,9 +24218,15 @@ var require_comment_workflow = __commonJS({
           } else {
             await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");
-            if (core.getInput("on-resolution-hide", { required: false }) === "true" && conclusion === "success") {
-              await hideComment(token, comment, "RESOLVED");
-              logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+            if (core.getInput("on-resolution-hide", { required: false }) === "true") {
+              if (conclusion === "success") {
+                await hideComment(token, comment, "RESOLVED");
+                logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+              }
+              if (conclusion === "failure") {
+                await unhideComment(token, comment);
+                logger.debug("Existing comment unhidden due to failure conclusion.");
+              }
             }
           }
         }

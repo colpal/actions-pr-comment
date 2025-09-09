@@ -3,7 +3,7 @@ const github = require('@actions/github');
 const { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require('../status-check/status-check.js');
 const { findComment } = require('./find-comment.js');
 const { updateComment } = require('./update-comment.js');
-const { hideComment } = require('./hide-comment.js');
+const { hideComment, unhideComment } = require('./comment-visibility.js');
 const { postComment } = require('./post-comment.js');
 const { logger } = require('../util/logger.js');
 
@@ -54,9 +54,15 @@ async function commentWorkflow(token) {
                 await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
                 logger.debug("Existing comment updated successfully.");
 
-                if (core.getInput('on-resolution-hide', { required: false }) === 'true' && conclusion === 'success') {
-                    await hideComment(token, comment, "RESOLVED");
-                    logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+                if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
+                    if (conclusion === 'success') {
+                        await hideComment(token, comment, "RESOLVED");
+                        logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+                    }
+                    if (conclusion === 'failure') {
+                        await unhideComment(token, comment);
+                        logger.debug("Existing comment unhidden due to failure conclusion.");
+                    }
                 }
             }
         }

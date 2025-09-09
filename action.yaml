@@ -27,6 +27,10 @@ inputs:
     description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)."
     required: false
     default: "create"
+  on-resolution-hide:
+    description: "If true, hide the comment when the conclusion is now 'success' from previous 'failure'."
+    required: false
+    default: false
 
 runs:
   using: node20

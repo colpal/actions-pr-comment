@@ -127,4 +127,16 @@ describe('update-comment', () => {
         await expect(updateComment(octokit, owner, repo, null, commentIdentifier, 'replace'))
             .rejects.toThrow("Cannot read properties of null (reading 'id'");
     });
+
+    it('should ensure only one <!-- CONCLUSION... value exists in the body when appending', async () => {
+        const comment = { id: 10, body: 'Old <!-- CONCLUSION: failure -->', user: { login: 'bot' } };
+        await updateComment(octokit, owner, repo, comment, commentIdentifier, 'append', '<!-- CONCLUSION: success -->');
+        expect(octokit.rest.issues.updateComment).toHaveBeenCalled();
+        const body = octokit.rest.issues.updateComment.mock.calls[0][0].body;
+        expect(body).toContain('Mocked body');
+        expect(body).toContain('Old');
+        expect(body).toContain('<!-- CONCLUSION: success -->');
+        expect(body).not.toContain('<!-- CONCLUSION: failure -->');
+        expect((body.match(/<!-- CONCLUSION:/g) || []).length).toBe(1);
+    });
 });

@@ -1,40 +1,40 @@
-# name: Test Comment Update Append Action
+name: Test Comment Update Append Action
 
-# on:
-#   pull_request:
-#     types:
-#       - opened
-#       - synchronize
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
 
-# jobs:
-#   test_action:
-#     name: Test Comment Update Append Action
-#     runs-on: [self-hosted, org]
-#     permissions:
-#       pull-requests: write
-#       issues: write
-#       contents: write
-#       checks: write
-#     steps:
-#       - name: Checkout Repo
-#         uses: actions/checkout@v4
+jobs:
+  test_action:
+    name: Test Comment Update Append Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-#       - name: Comment on PR with direct comment
-#         uses: ./
-#         id: comment-direct
-#         with:
-#           comment-id: "test-append"
-#           comment-body: "test append - initial comment"
-#           conclusion: "success"
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           update-mode: "append"
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
 
-#       - name: Update comment with append
-#         uses: ./
-#         id: comment-update-append
-#         with:
-#           comment-id: "test-append"
-#           comment-body: "test append - updated comment"
-#           conclusion: "success"
-#           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           update-mode: "append"
+      - name: Update comment with append
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"

@@ -40,6 +40,11 @@
     # Required
     # Default: "create"
     update-mode: "create"
+
+    # Flag to control whether to hide the comment when the conclusion now a 'success' and update-mode is 'replace' or 'append'
+    # Optional
+    # Default: false
+    on-resolution-hide: false
 ```
 
 ## Outputs
@@ -72,6 +77,7 @@ To enable verbose logging to gather more information about the action as it is r
     conclusion: "success"
     github-token: "${{ secrets.github-token }}"
     update-mode: "create"
+    on-resolution-hide: true
 ```
 
 This example posts a comment to the pull request with the message "Linting passed successfully!" and sets the status check to `success`.
@@ -87,6 +93,7 @@ This example posts a comment to the pull request with the message "Linting passe
     github-token: "${{ secrets.github-token }}"
     verbose-logging: true
     update-mode: "replace"
+    on-resolution-hide: false
 ```
 
 This example posts the contents of `path/test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.

@@ -257,4 +257,61 @@ describe('comment-workflow', () => {
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: finalize error'));
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });
+
+    it('should hide comment as HIDDEN when on-resolution-hide is true and conclusion is success', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        updateComment.mockResolvedValue();
+        hideComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'conclusion') return 'success';
+            if (key === 'on-resolution-hide') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).toHaveBeenCalledWith(token, mockComment, "HIDDEN");
+        expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+    });
+
+    it('should not hide comment as HIDDEN when on-resolution-hide is false', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        updateComment.mockResolvedValue();
+        hideComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'conclusion') return 'success';
+            if (key === 'on-resolution-hide') return 'false';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "HIDDEN");
+        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+    });
+
+    it('should not hide comment as HIDDEN when conclusion is not success', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        updateComment.mockResolvedValue();
+        hideComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'conclusion') return 'failure';
+            if (key === 'on-resolution-hide') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "HIDDEN");
+        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+    });
 });

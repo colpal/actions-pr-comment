@@ -24206,6 +24206,10 @@ var require_comment_workflow = __commonJS({
           } else {
             await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");
+            if (core.getInput("on-resolution-hide", { required: false }) === "true" && conclusion === "success") {
+              await hideComment(token, comment, "HIDDEN");
+              logger.debug("Existing comment hidden as HIDDEN due to success conclusion.");
+            }
           }
         }
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);

@@ -54,7 +54,7 @@ jobs:
 
       - name: Update comment with append (and reopen again)
         uses: ./
-        id: comment-update-append-unhide
+        id: comment-update-append-unhide-again
         with:
           comment-id: "test-resolution-reopen-again"
           comment-body: "test resolution reopen - updated comment to reopen again"

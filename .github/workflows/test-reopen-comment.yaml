@@ -31,7 +31,7 @@ jobs:
 
       - name: Update comment with append (and hide)
         uses: ./
-        id: comment-update-append
+        id: comment-update-append-hide
         with:
           comment-id: "test-resolution-reopen"
           comment-body: "test resolution reopen - updated comment"
@@ -42,7 +42,7 @@ jobs:
 
       - name: Update comment with append (and reopen)
         uses: ./
-        id: comment-update-append
+        id: comment-update-append-unhide
         with:
           comment-id: "test-resolution-reopen"
           comment-body: "test resolution reopen - updated comment to reopen"

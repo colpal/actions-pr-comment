@@ -258,7 +258,7 @@ describe('comment-workflow', () => {
         expect(failStatusCheck).toHaveBeenCalledWith(octokit, owner, repo, expect.anything(), 'Test Check');
     });
 
-    it('should hide comment as HIDDEN when on-resolution-hide is true and conclusion is success', async () => {
+    it('should hide comment as RESOLVED when on-resolution-hide is true and conclusion is success', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -273,11 +273,11 @@ describe('comment-workflow', () => {
 
         await commentWorkflow(token);
 
-        expect(hideComment).toHaveBeenCalledWith(token, mockComment, "HIDDEN");
-        expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+        expect(hideComment).toHaveBeenCalledWith(token, mockComment, "RESOLVED");
+        expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as RESOLVED due to success conclusion.");
     });
 
-    it('should not hide comment as HIDDEN when on-resolution-hide is false', async () => {
+    it('should not hide comment as RESOLVED when on-resolution-hide is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -292,11 +292,11 @@ describe('comment-workflow', () => {
 
         await commentWorkflow(token);
 
-        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "HIDDEN");
-        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "RESOLVED");
+        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as RESOLVED due to success conclusion.");
     });
 
-    it('should not hide comment as HIDDEN when conclusion is not success', async () => {
+    it('should not hide comment as RESOLVED when conclusion is not success', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -311,7 +311,7 @@ describe('comment-workflow', () => {
 
         await commentWorkflow(token);
 
-        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "HIDDEN");
-        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as HIDDEN due to success conclusion.");
+        expect(hideComment).not.toHaveBeenCalledWith(token, mockComment, "RESOLVED");
+        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as RESOLVED due to success conclusion.");
     });
 });

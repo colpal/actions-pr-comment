@@ -239,6 +239,17 @@ jobs:
           update-mode: "append"
           on-resolution-hide: true
 
+      - name: Neutral step to remove failure
+        uses: ./
+        id: comment-update-append-unhide-neutral
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment to set status to neutral"
+          conclusion: "neutral"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: false
+
   test_replace_comment:
     name: Test Comment Update Replace Action
     runs-on: [self-hosted, org]
@@ -327,6 +338,17 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: true
+
+      - name: Update comment with append (and reopen again)
+        uses: ./
+        id: comment-update-append-unhide-again-neutral
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to set status to neutral"
+          conclusion: "neutral"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: false
 
   test_verbose_logging:
     name: Test Verbose Logging On Comment
@@ -451,7 +473,7 @@ jobs:
         with:
           comment-id: "test-conclusion-skipped-resolution-true"
           comment-body: "test conclusion type skipped resolution true - initial comment"
-          conclusion: "skipped"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           on-resolution-hide: true
@@ -486,7 +508,7 @@ jobs:
         with:
           comment-id: "test-conclusion-skipped-resolution-false"
           comment-body: "test conclusion type skipped resolution false - initial comment"
-          conclusion: "skipped"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           on-resolution-hide: false

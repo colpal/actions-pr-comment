@@ -17,7 +17,7 @@ const { logger } = require('../util/logger.js');
  */
 async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
     logger.info("Starting to post a comment...");
-    const commentBody = commentIdentifier + "\n" + getCommentBody() + "\n" + conclusionIdentifier;
+    const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
 
     const prNumber = github.context.payload.pull_request.number;
 

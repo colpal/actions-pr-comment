@@ -35,16 +35,16 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
     switch (updateType) {
         case "replace":
             logger.debug("Replacing comment body.");
-            commentBody = commentIdentifier + "\n" + newCommentBody + "\n" + conclusionIdentifier;
+            commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
             break;
         case "append": {
             logger.debug("Appending to comment body.");
             const timestamp = new Date().toUTCString();
             const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
 
-            comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, ""); //remove any existing conclusion identifier
+            comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, conclusionIdentifier); //remove any existing conclusion identifier
 
-            commentBody = comment.body + divider + newCommentBody + "\n" + conclusionIdentifier; // dont need comment identifier here since it is already on the comment
+            commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment
             break;
         }
         default: {

@@ -1,0 +1,353 @@
+name: Test Comment
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test_comment_update_append_action:
+    name: Test Comment Update Append Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+      - name: Update comment with append
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+  test_comment_from_markdown_file:
+    name: Test Comment From Markdown File
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Load environment variables from .env file
+        run: |
+          grep '^CHECK_NAME_1=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_BODY_PATH_1=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_BODY_PATH_2=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^CONCLUSION=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^UPDATE_MODE_1=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^UPDATE_MODE_2=' ci/vars/test.env >> $GITHUB_ENV
+
+      - name: Comment on PR with markdown file comment
+        uses: ./
+        id: comment-file
+        with:
+          comment-id: ${{ env.CHECK_NAME_1 }}
+          comment-body-path: ${{ env.COMMENT_BODY_PATH_1 }}
+          conclusion: ${{ env.CONCLUSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: ${{ env.UPDATE_MODE_1 }}
+
+      - name: Update comment on PR with markdown file comment
+        uses: ./
+        id: comment-file-update
+        with:
+          comment-id: ${{ env.CHECK_NAME_1 }}
+          comment-body-path: ${{ env.COMMENT_BODY_PATH_2 }}
+          conclusion: ${{ env.CONCLUSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: ${{ env.UPDATE_MODE_2 }}
+
+  test_comment_update_create_action:
+    name: Test Comment Update Create Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+      - name: Update comment with create
+        uses: ./
+        id: comment-update-create
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+  test_hide_already_hidden_comment:
+    name: Test Hide Hidden Comment Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - initial comment"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+
+      - name: Update comment with replace (and hide)
+        uses: ./
+        id: comment-update-replace-hide
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+          on-resolution-hide: true
+
+      - name: Update comment with replace (and 'hide' again)
+        uses: ./
+        id: comment-update-replace-hide-again
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - updated comment - to hide again"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+          on-resolution-hide: true
+
+  test_hide_on_resolutions:
+    name: Test Comment Hide On Resolution Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution"
+          comment-body: "test resolution - initial comment"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-resolution"
+          comment-body: "test resolution - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+  test_reopen_comment:
+    name: Test Comment Reopen Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - initial comment"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append-hide
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+      - name: Update comment with append (and reopen)
+        uses: ./
+        id: comment-update-append-unhide
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment to reopen"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+  test_replace_comment:
+    name: Test Comment Update Replace Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-replace"
+          comment-body: "test replace - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+
+      - name: Update comment with replace
+        uses: ./
+        id: comment-update-replace
+        with:
+          comment-id: "test-replace"
+          comment-body: "test replace - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+
+  test_unhide_on_revealed_comment:
+    name: Test Unhide Revealed Comment Action
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - initial comment"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append-hide
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+      - name: Update comment with append (and reopen)
+        uses: ./
+        id: comment-update-append-unhide
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to reopen"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+      - name: Update comment with append (and reopen again)
+        uses: ./
+        id: comment-update-append-unhide-again
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to reopen again"
+          conclusion: "failure"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
+  test_verbose_logging:
+    name: Test Verbose Logging On Comment
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with verbose logging
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "verbose-logging"
+          comment-body: "test comment using verbose logging - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          verbose-logging: true
+          update-mode: "create"

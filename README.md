@@ -50,7 +50,9 @@
 ## Outputs
 A comment will be placed (or updated) in the pull request. The comment will be the supplied `comment-body` (or contents of `comment-body-path`) as well as a hidden identifier that is placed at the beginning of the body via `comment-id`.
 
-A status check (see below for setup) will be emitted from the action run. When the job is triggered, it will create a status check and set the `status` to `in_progress`. Upon completion, the `status` will be updated to `completed`. The `conclusion` field will be populated with either `success` or `failure` (or `neutral`). The `conclusion` field is received as an input and is a way to tell this job to prevent or allow merges. If the comment wants an action from a user (e.g. there is a violation that needs remedying), then the `conclusion` can be set to `failure` and since the status check has failed, merges should be prevented (if the ruleset is configured properly). If the comment is to notify the user that everything looks good, can set the `conclusion` to `success` and the commit is passed and a merge can be performed. 
+A status check (see below for setup) will be emitted from the action run. When the job is triggered, it will create a status check and set the `status` to `in_progress`. Upon completion, the `status` will be updated to `completed`. The `conclusion` field will be populated with either `success` or `failure` (or `neutral`). The `conclusion` field is received as an input and is a way to tell this job to prevent or allow merges.
+
+If the comment wants an action from a user (e.g. there is a violation that needs remedying), then the `conclusion` can be set to `failure` and since the status check has failed, merges should be prevented (if the ruleset is configured properly). If the comment is to notify the user that everything looks good, can set the `conclusion` to `success` and the commit is passed and a merge can be performed.
 
 ## Status Check Setup
 ### Create New Ruleset
@@ -62,9 +64,16 @@ A status check (see below for setup) will be emitted from the action run. When t
 ### Add Check
 ![addCheck](docs/addCheck.png)
 The check supplied here should match the name provided in the `comment-id` input field on the action. If the action has been triggered before, it **should** show up in the "Suggestions" tab as you type it. If not, then the name can be supplied and it **should** detect on the first run of the action
+#### Annoying Known Issue
+Checks seemingly cannot be attached to a specific actions. Since this action is a composite action, it is not standalone and is called upon by other actions. One would think that the status check would then be associated with the calling action in the GitHub UI, yet it is not. Meaning that if, for example, the `actions-terraform` action called upon the `actions-pr-comment` action, then the failed status check should be attached to the `actions-terraform` action. However it does not. Nor is there a way to assign an action to attach the status check to. GitHub seemingly places it on some other condition, that does not necessarily align with calling action. 
+
+**As a result, it is recommended that your `comment-id` is a meaningful name that includes the action that is utilizing the `actions-pr-comment`.** For instance, in `actions-terraform`, the `comment-id` when calling `actions-pr-comment` is "Terraform Actions: OPA Conftest Validation". Therefore even when the status check is saying it belongs to another action, the user can look at the specific check itself and see that it should belong to `actions-terraform` instead.
 
 ## Logging
 To enable verbose logging to gather more information about the action as it is running, set the `verbose-logging` argument to `true`. Reference the [markdown file example](#example-using-a-markdown-file) below 
+
+## On-Resolution-Hide
+This flag is designed for when users do not care about the specifics of their successful runs. When this value is set to `true`, if the supplied `conclusion` is `success`, then a comment will not be visible. If this is the first comment, it will still be created, but will be hidden by instantly and automatically. If there was an already existing comment that was either `failure` or `neutral`, then when the comment body is updated in accordance to the `update-mode`, it will also then be hidden. This way, in the event of a future failure, or the user wants to unhide and see the comment, the content is correct and updated. Similarly, **if there is a future comment generated on that pull request that is no longer a `success`, the comment will update and unhide itself** in accordance with the `update-mode`.    
 
 ## Examples
 ### Example: Basic Usage

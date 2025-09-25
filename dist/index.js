@@ -24076,7 +24076,7 @@ var require_update_comment = __commonJS({
       switch (updateType) {
         case "replace":
           logger.debug("Replacing comment body.");
-          commentBody = commentIdentifier + "\n" + newCommentBody + "\n" + conclusionIdentifier;
+          commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
           break;
         case "append": {
           logger.debug("Appending to comment body.");
@@ -24088,8 +24088,8 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
-          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, "");
-          commentBody = comment.body + divider + newCommentBody + "\n" + conclusionIdentifier;
+          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, conclusionIdentifier);
+          commentBody = comment.body + divider + newCommentBody;
           break;
         }
         default: {
@@ -24169,7 +24169,7 @@ var require_post_comment = __commonJS({
     var { logger } = require_logger();
     async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
       logger.info("Starting to post a comment...");
-      const commentBody = commentIdentifier + "\n" + getCommentBody() + "\n" + conclusionIdentifier;
+      const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
         logger.warning("Not a pull request, skipping review submission.");

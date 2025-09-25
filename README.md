@@ -47,6 +47,17 @@
     on-resolution-hide: false
 ```
 
+## Permissions
+For this composite action to do its job to the fulliest, it will require some permissions. In the workflow file that is calling this action, there should be a permission block. This is for the permissions the `secrets.GITHUB_TOKEN` has. That requires the following permissions:
+```yaml
+permissions:
+  checks: write
+  pull-requests: write
+```
+- `checks: write` -> this is to create and update the [status check](#add-check) 
+- `pull-requests: write` -> this is to create and update comments on a pull-request
+  - `write` permissions come with `read` permissions which is required to find all comments on a pull-request in order to find previous comments to update.
+
 ## Outputs
 A comment will be placed (or updated) in the pull request. The comment will be the supplied `comment-body` (or contents of `comment-body-path`) as well as a hidden identifier that is placed at the beginning of the body via `comment-id`.
 
@@ -106,3 +117,23 @@ This example posts a comment to the pull request with the message "Linting passe
 ```
 
 This example posts the contents of `path/test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.
+
+## Changelog
+
+#### [2025-09-25] On-Resolution-Hide Input - 0.2.0
+- `on-resolution-hide` input added (default is `false` (off))
+  - When enabled, will hide comments automatically once its conclusion is `success`
+
+### [2025-09-02] Initial Release - 0.1.0
+- Create and update comments on a pull request
+- Find previous comments to update on
+- Create and update status checks
+- Hide and unhide comments
+- Supports comment contents being supplied directly or via a file.
+
+<!--
+Repeat format:
+#### [YYYY-MM-DD] <Release Title>
+- <Change 1>
+- <Change 2>
+-->

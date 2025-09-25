@@ -24219,6 +24219,8 @@ var require_comment_workflow = __commonJS({
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
             logger.debug("New comment posted successfully.");
+          } else if (updateMode === "none") {
+            logger.debug("Update mode is 'none', skipping comment update.");
           } else {
             await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");

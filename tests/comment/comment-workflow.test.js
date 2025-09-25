@@ -447,4 +447,25 @@ describe('comment-workflow', () => {
         expect(unhideComment).not.toHaveBeenCalled();
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
+
+    it('should call hideComment and postComment when update-mode is "create"', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'none';
+            if (key === 'conclusion') return 'success';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).not.toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Update mode is 'none', skipping comment update.");
+    });
 });

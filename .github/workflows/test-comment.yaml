@@ -467,7 +467,7 @@ jobs:
           update-mode: "none"
           on-resolution-hide: true
 
-    test_conclusion_type_skipped_resolution_true:
+    test_conclusion_type_skipped_resolution_false:
       name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
       runs-on: [self-hosted, org]
       permissions:

@@ -17,9 +17,10 @@ const { logger } = require('../util/logger.js');
  * @param {object} comment - The existing comment object to update.
  * @param {string} commentIdentifier - A string used to identify the comment (used in "replace" mode).
  * @param {string} updateType - The type of update ("replace" or "append").
+ * @param {string} conclusionIdentifier - A string to identify the conclusion, appended to the comment body.
  * @returns {Promise<void>} Resolves when the comment is updated or skips if not a pull request.
  */
-async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
+async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
     logger.info("Starting to update a comment...");
     let newCommentBody = getCommentBody();
 
@@ -34,12 +35,15 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
     switch (updateType) {
         case "replace":
             logger.debug("Replacing comment body.");
-            commentBody = commentIdentifier + "\n" + newCommentBody;
+            commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
             break;
         case "append": {
             logger.debug("Appending to comment body.");
             const timestamp = new Date().toUTCString();
             const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
+
+            comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, conclusionIdentifier); //remove any existing conclusion identifier
+
             commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment
             break;
         }

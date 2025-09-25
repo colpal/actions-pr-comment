@@ -24064,7 +24064,7 @@ var require_update_comment = __commonJS({
     var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
-    async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType) {
+    async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
       logger.info("Starting to update a comment...");
       let newCommentBody = getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
@@ -24076,7 +24076,7 @@ var require_update_comment = __commonJS({
       switch (updateType) {
         case "replace":
           logger.debug("Replacing comment body.");
-          commentBody = commentIdentifier + "\n" + newCommentBody;
+          commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
           break;
         case "append": {
           logger.debug("Appending to comment body.");
@@ -24088,6 +24088,7 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
+          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, conclusionIdentifier);
           commentBody = comment.body + divider + newCommentBody;
           break;
         }
@@ -24108,9 +24109,9 @@ var require_update_comment = __commonJS({
   }
 });
 
-// src/comment/hide-comment.js
-var require_hide_comment = __commonJS({
-  "src/comment/hide-comment.js"(exports2, module2) {
+// src/comment/comment-visibility.js
+var require_comment_visibility = __commonJS({
+  "src/comment/comment-visibility.js"(exports2, module2) {
     var { graphql } = require_dist_node6();
     var { logger } = require_logger();
     async function hideComment(token, comment, reason) {
@@ -24123,16 +24124,11 @@ var require_hide_comment = __commonJS({
       });
       await graphqlWithAuth(
         `
-        mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-            minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
-                clientMutationId
-                minimizedComment {
-                    isMinimized
-                    minimizedReason
-                    viewerCanMinimize
+            mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
+                    clientMutationId
                 }
             }
-        }
         `,
         {
           subjectId: comment.node_id,
@@ -24140,7 +24136,28 @@ var require_hide_comment = __commonJS({
         }
       );
     }
-    module2.exports = { hideComment };
+    async function unhideComment(token, comment) {
+      logger.info(`Unhiding comment ${comment.id}...`);
+      logger.debug(`Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`);
+      const graphqlWithAuth = graphql.defaults({
+        headers: {
+          authorization: `token ${token}`
+        }
+      });
+      await graphqlWithAuth(
+        `
+            mutation unminimizeComment($subjectId: ID!) {
+                unminimizeComment(input: { subjectId: $subjectId }) {
+                    clientMutationId
+                }
+            }
+        `,
+        {
+          subjectId: comment.node_id
+        }
+      );
+    }
+    module2.exports = { hideComment, unhideComment };
   }
 });
 
@@ -24150,9 +24167,9 @@ var require_post_comment = __commonJS({
     var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
-    async function postComment(octokit, owner, repo, commentIdentifier) {
+    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
       logger.info("Starting to post a comment...");
-      const commentBody = commentIdentifier + "\n" + getCommentBody();
+      const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
         logger.warning("Not a pull request, skipping review submission.");
@@ -24178,31 +24195,43 @@ var require_comment_workflow = __commonJS({
     var { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require_status_check();
     var { findComment } = require_find_comment();
     var { updateComment } = require_update_comment();
-    var { hideComment } = require_hide_comment();
+    var { hideComment, unhideComment } = require_comment_visibility();
     var { postComment } = require_post_comment();
     var { logger } = require_logger();
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
       const checkName = core.getInput("comment-id", { required: true });
+      const conclusion = core.getInput("conclusion", { required: true });
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
+      const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
           logger.debug("No existing comment found, posting a new comment.");
-          await postComment(octokit, owner, repo, commentIdentifier);
+          await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
           logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier);
+            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
             logger.debug("New comment posted successfully.");
           } else {
-            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode);
+            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");
+            if (core.getInput("on-resolution-hide", { required: false }) === "true") {
+              if (conclusion === "success") {
+                await hideComment(token, comment, "RESOLVED");
+                logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+              }
+              if (conclusion === "failure") {
+                await unhideComment(token, comment);
+                logger.debug("Existing comment unhidden due to failure conclusion.");
+              }
+            }
           }
         }
         await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);

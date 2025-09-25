@@ -41,7 +41,7 @@ describe('postComment', () => {
     });
 
     it('posts a comment successfully', async () => {
-        await postComment(octokit, 'owner', 'repo', 'identifier: ');
+        await postComment(octokit, 'owner', 'repo', 'identifier: ', 'conlcusion: success');
 
         expect(logger.info).toHaveBeenCalledWith("Starting to post a comment...");
         expect(getCommentBody).toHaveBeenCalled();
@@ -49,7 +49,7 @@ describe('postComment', () => {
             owner: 'owner',
             repo: 'repo',
             issue_number: 42,
-            body: 'identifier: \nmocked body'
+            body: 'identifier: \nconlcusion: success\nmocked body'
         });
         expect(logger.debug).toHaveBeenCalledWith("Comment posted successfully.");
     });

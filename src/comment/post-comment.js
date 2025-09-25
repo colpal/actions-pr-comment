@@ -12,11 +12,12 @@ const { logger } = require('../util/logger.js');
  * @param {string} owner - The owner of the repository.
  * @param {string} repo - The name of the repository.
  * @param {string} commentIdentifier - A string to identify the comment, prepended to the comment body.
+ * @param {string} conclusionIdentifier - A string to identify the conclusion, appended to the comment body.
  * @returns {Promise<void>} Resolves when the comment is posted or skipped if not a pull request.
  */
-async function postComment(octokit, owner, repo, commentIdentifier) {
+async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
     logger.info("Starting to post a comment...");
-    const commentBody = commentIdentifier + "\n" + getCommentBody();
+    const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
 
     const prNumber = github.context.payload.pull_request.number;
 

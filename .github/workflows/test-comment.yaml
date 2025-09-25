@@ -384,3 +384,26 @@ jobs:
           conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
+
+  test_conclusion_type_cancelled:
+    name: Test Conclusion Type Cancelled On Comment
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-conclusion-cancelled"
+          comment-body: "test conclusion type cancelled - initial comment"
+          conclusion: "cancelled"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"

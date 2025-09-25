@@ -29,6 +29,11 @@ async function commentWorkflow(token) {
     const checkName = core.getInput('comment-id', { required: true });
     const conclusion = core.getInput('conclusion', { required: true });
 
+    if (conclusion === 'cancelled') {
+        logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
+        return;
+    }
+
     let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
 
     const commentIdentifier = `<!-- ` + checkName + ` -->`;

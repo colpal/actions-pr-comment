@@ -468,4 +468,28 @@ describe('comment-workflow', () => {
         expect(updateComment).not.toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalledWith("Update mode is 'none', skipping comment update.");
     });
+
+    it('should call nothing when conclusion is "cancelled"', async () => {
+        findComment.mockResolvedValue();
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'none';
+            if (key === 'conclusion') return 'cancelled';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).not.toHaveBeenCalled();
+        expect(findComment).not.toHaveBeenCalled();
+        expect(initializeStatusCheck).not.toHaveBeenCalled();
+        expect(finalizeStatusCheck).not.toHaveBeenCalled();
+        expect(failStatusCheck).not.toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'cancelled', skipping comment workflow.");
+    });
 });

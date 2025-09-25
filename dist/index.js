@@ -24203,6 +24203,10 @@ var require_comment_workflow = __commonJS({
       const { owner, repo } = github.context.repo;
       const checkName = core.getInput("comment-id", { required: true });
       const conclusion = core.getInput("conclusion", { required: true });
+      if (conclusion === "cancelled") {
+        logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
+        return;
+      }
       let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
       const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;

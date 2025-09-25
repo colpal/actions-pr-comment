@@ -93,10 +93,10 @@ Sets the status check conclusion to `success`, indicating the check passed. This
 Sets the status check conclusion to `failure`, indicating the check failed. This will block merges when branch protection rules require this check to pass.
 
 ### Skipped
-Sets the status check conclusion to `skipped`, indicating the check was not run due to conditions not being met. Typically doesn't block merges.
+Sets the status check conclusion to `skipped`, indicating the check was not run due to conditions not being met. No new commment will be created or updated. Will hide existing comment if `on-resolution-hide: true`. If `on-resolution-hide: false`, then existing comment remains. Typically doesn't block merges.
 
 ### Cancelled
-Sets the status check conclusion to `cancelled`, indicating the check was cancelled before completion. Typically doesn't block merges.
+Sets the status check conclusion to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran. Typically doesn't block merges.
 
 ## Update Mode
 The `update-mode` input controls how the action handles existing comments with the same `comment-id`.

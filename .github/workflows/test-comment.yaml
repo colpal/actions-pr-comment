@@ -407,3 +407,97 @@ jobs:
           conclusion: "cancelled"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
+
+  test_conclusion_type_skipped_first_comment:
+    name: Test Conclusion Type Skipped On First Comment
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-conclusion-skipped-first-comment"
+          comment-body: "test conclusion type skipped - initial comment"
+          conclusion: "skipped"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"
+          on-resolution-hide: true
+
+  test_conclusion_type_skipped_resolution_true:
+    name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide True
+    runs-on: [self-hosted, org]
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: write
+      checks: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-conclusion-skipped-resolution-true"
+          comment-body: "test conclusion type skipped resolution true - initial comment"
+          conclusion: "skipped"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"
+          on-resolution-hide: true
+
+      - name: Comment shouldn't update and old hidden
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-conclusion-skipped-resolution-true"
+          comment-body: "test conclusion type skipped resolution true - updated comment"
+          conclusion: "skipped"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"
+          on-resolution-hide: true
+
+    test_conclusion_type_skipped_resolution_true:
+      name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
+      runs-on: [self-hosted, org]
+      permissions:
+        pull-requests: write
+        issues: write
+        contents: write
+        checks: write
+      continue-on-error: true
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v4
+
+        - name: Comment on PR with direct comment
+          uses: ./
+          id: comment-direct
+          with:
+            comment-id: "test-conclusion-skipped-resolution-false"
+            comment-body: "test conclusion type skipped resolution false - initial comment"
+            conclusion: "skipped"
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            update-mode: "none"
+            on-resolution-hide: false
+
+        - name: Comment shouldn't update and old visible
+          uses: ./
+          id: comment-update-append
+          with:
+            comment-id: "test-conclusion-skipped-resolution-false"
+            comment-body: "test conclusion type skipped resolution false - updated comment"
+            conclusion: "skipped"
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            update-mode: "none"
+            on-resolution-hide: false

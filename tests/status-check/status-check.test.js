@@ -100,6 +100,23 @@ describe('finalizeStatusCheck', () => {
         }));
     });
 
+    it('finalizes with success conclusion if skipped supplied', async () => {
+        core.getInput.mockReturnValue('skipped');
+        await finalizeStatusCheck(octokit, 'owner', 'repo', 102, 'checkName');
+        expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
+            conclusion: 'success'
+        }));
+    });
+
+    it('finalizes with neutral conclusion if cancelled supplied', async () => {
+        core.getInput.mockReturnValue('cancelled');
+        await finalizeStatusCheck(octokit, 'owner', 'repo', 102, 'checkName');
+        expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
+            conclusion: 'neutral'
+        }));
+    });
+
+
     it('finalizes with neutral conclusion', async () => {
         core.getInput.mockReturnValue('neutral');
         await finalizeStatusCheck(octokit, 'owner', 'repo', 102, 'checkName');
@@ -119,7 +136,7 @@ describe('finalizeStatusCheck', () => {
     it('handles invalid conclusion', async () => {
         core.getInput.mockReturnValue('invalid');
         await finalizeStatusCheck(octokit, 'owner', 'repo', 202, 'checkName');
-        expect(logger.error).toHaveBeenCalledWith('Invalid conclusion: "invalid". Must be \'success\', \'failure\', or \'neutral\'.');
+        expect(logger.error).toHaveBeenCalledWith('Invalid conclusion: \"invalid\". Must be \'success\', \'failure\', \'neutral\', \'skipped\', or \'cancelled\'.');
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
             conclusion: 'neutral'
         }));

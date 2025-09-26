@@ -21,7 +21,7 @@
     # Optional - used instead of comment-body
     comment-body-path: "example/custom-path"
     
-    # Result of the workflows that are providing the comments to be posted. Will be set to "success" or "failure" such that this action can prevent merge whilst posting comments explaining the problem
+    # Result of the workflows that are providing the comments to be posted. Will be set to "success", "skipped", "cancelled", "neutral", or "failure" such that this action can prevent merge whilst posting comments explaining the problem
     # Optional
     # Default: "neutral"
     conclusion: "success"
@@ -31,12 +31,7 @@
     # Default: "${{ github.token }}"
     github-token: "${{ github.token }}"
 
-    # Verbose logging flag for more detailed information
-    # Optional
-    # Default: false
-    verbose-logging: false
-
-    # How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)
+    # How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment), 'none' (does not create a new comment or update an existing one)
     # Required
     # Default: "create"
     update-mode: "create"
@@ -45,6 +40,11 @@
     # Optional
     # Default: false
     on-resolution-hide: false
+
+    # Verbose logging flag for more detailed information
+    # Optional
+    # Default: false
+    verbose-logging: false
 ```
 
 ## Permissions
@@ -80,11 +80,44 @@ Checks seemingly cannot be attached to a specific actions. Since this action is 
 
 **As a result, it is recommended that your `comment-id` is a meaningful name that includes the action that is utilizing the `actions-pr-comment`.** For instance, in `actions-terraform`, the `comment-id` when calling `actions-pr-comment` is "Terraform Actions: OPA Conftest Validation". Therefore even when the status check is saying it belongs to another action, the user can look at the specific check itself and see that it should belong to `actions-terraform` instead.
 
-## Logging
-To enable verbose logging to gather more information about the action as it is running, set the `verbose-logging` argument to `true`. Reference the [markdown file example](#example-using-a-markdown-file) below 
+## Conclusion
+The `conclusion` input determines the outcome of the status check that will be created or updated. This affects whether pull requests can be merged when branch protection rules are configured.
+
+### Neutral
+Sets the status check conclusion to `neutral`. This is the default value and typically indicates that the check completed but doesn't affect merge requirements.
+
+### Success
+Sets the status check conclusion to `success`, indicating the check passed. This allows merges to proceed when branch protection rules require this check.
+
+### Failure
+Sets the status check conclusion to `failure`, indicating the check failed. This will block merges when branch protection rules require this check to pass.
+
+### Skipped
+Sets the status check conclusion to `skipped`, indicating the check was not run due to conditions not being met. No new commment will be created or updated. Will hide existing comment if `on-resolution-hide: true`. If `on-resolution-hide: false`, then existing comment remains. Typically doesn't block merges.
+
+### Cancelled
+Sets the status check conclusion to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran. Typically doesn't block merges.
+
+## Update Mode
+The `update-mode` input controls how the action handles existing comments with the same `comment-id`.
+
+### Replace
+Overwrites the content of an existing comment entirely with the new comment body. If no existing comment is found, creates a new one.
+
+### Append
+Adds the new comment body to the end of an existing comment. Divider between comments are makred by a timestamp. If no existing comment is found, creates a new one.
+
+### Create
+Always creates a new comment, regardless of whether previous comments with the same `comment-id` exist. This can result in multiple comments for the same check, however outdated ones get hidden on GitHub UI.
+
+### None
+Does not create a new comment or update existing comments. Only updates the status check. Useful for scenarios where you only want to set the check status without adding commentary.
 
 ## On-Resolution-Hide
 This flag is designed for when users do not care about the specifics of their successful runs. When this value is set to `true`, if the supplied `conclusion` is `success`, then a comment will not be visible. If this is the first comment, it will still be created, but will be hidden by instantly and automatically. If there was an already existing comment that was either `failure` or `neutral`, then when the comment body is updated in accordance to the `update-mode`, it will also then be hidden. This way, in the event of a future failure, or the user wants to unhide and see the comment, the content is correct and updated. Similarly, **if there is a future comment generated on that pull request that is no longer a `success`, the comment will update and unhide itself** in accordance with the `update-mode`.    
+
+## Logging
+To enable verbose logging to gather more information about the action as it is running, set the `verbose-logging` argument to `true`. Reference the [markdown file example](#example-using-a-markdown-file) below 
 
 ## Examples
 ### Example: Basic Usage
@@ -120,7 +153,13 @@ This example posts the contents of `path/test-results.md` as the comment body an
 
 ## Changelog
 
-#### [2025-09-25] On-Resolution-Hide Input - 0.2.0
+### [2025-09-26] Update-Mode `none`, Conclusion `skipped` and `cancelled` - 0.3.0
+- `update-mode` supports `"none"` type
+  - This is intended for uses like one-time checklists to be commented on the top of pull requests
+- `conclusion` supports `"skipped"` and `"cancelled"` types
+  - This is intended for uses that allign with this common `conclusion` use case `conclusion: ${{ steps.previous-step.outcome }}`  
+
+### [2025-09-25] On-Resolution-Hide Input - 0.2.0
 - `on-resolution-hide` input added (default is `false` (off))
   - When enabled, will hide comments automatically once its conclusion is `success`
 

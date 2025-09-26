@@ -23950,8 +23950,12 @@ var require_status_check = __commonJS({
       logger.info(`Finalizing completed status check with ID: ${checkRunId}...`);
       const status = "completed";
       let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
-      if (conclusion !== "success" && conclusion !== "failure" && conclusion !== "neutral") {
-        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+      if (conclusion === "neutral" || conclusion === "cancelled") {
+        conclusion = "neutral";
+      } else if (conclusion === "skipped") {
+        conclusion = "success";
+      } else if (!(conclusion === "success" || conclusion === "failure")) {
+        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', 'neutral', 'skipped', or 'cancelled'.`);
         conclusion = "neutral";
       }
       await octokit.rest.checks.update({
@@ -24201,17 +24205,38 @@ var require_comment_workflow = __commonJS({
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
-      const checkName = core.getInput("comment-id", { required: true });
       const conclusion = core.getInput("conclusion", { required: true });
-      let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
-      const commentIdentifier = `<!-- ` + checkName + ` -->`;
+      if (conclusion === "cancelled") {
+        logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
+        return;
+      }
       const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
+      const checkName = core.getInput("comment-id", { required: true });
+      const commentIdentifier = `<!-- ` + checkName + ` -->`;
+      let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
+          if (conclusion === "skipped") {
+            logger.debug("No existing comment found and conclusion is 'skipped', skipping comment posting.");
+            await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
+            return;
+          }
           logger.debug("No existing comment found, posting a new comment.");
           await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
+          if (conclusion === "skipped") {
+            if (core.getInput("on-resolution-hide", { required: false }) === "true") {
+              logger.debug("Existing comment found and conclusion is 'skipped' with 'on-resolution-hide' enabled, hiding existing comment as RESOLVED and skipping update.");
+              await hideComment(token, comment, "RESOLVED");
+              await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
+              return;
+            } else {
+              logger.debug("Existing comment found but conclusion is 'skipped' with 'on-resolution-hide' disabled, skipping comment update.");
+              await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
+              return;
+            }
+          }
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
           logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
@@ -24219,6 +24244,8 @@ var require_comment_workflow = __commonJS({
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
             logger.debug("New comment posted successfully.");
+          } else if (updateMode === "none") {
+            logger.debug("Update mode is 'none', skipping comment update.");
           } else {
             await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");

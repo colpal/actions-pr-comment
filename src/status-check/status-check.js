@@ -48,8 +48,14 @@ async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) 
 
     let conclusion = core.getInput('conclusion', { required: false }) || "neutral";
 
-    if (conclusion !== 'success' && conclusion !== 'failure' && conclusion !== 'neutral') {
-        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', or 'neutral'.`);
+    if (conclusion === 'neutral' || conclusion === 'cancelled') {
+        conclusion = 'neutral';
+    }
+    else if (conclusion === 'skipped') {
+        conclusion = 'success';
+    }
+    else if (!(conclusion === 'success' || conclusion === 'failure')) {
+        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', 'neutral', 'skipped', or 'cancelled'.`);
         conclusion = 'neutral';
     }
 

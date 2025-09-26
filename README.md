@@ -130,6 +130,8 @@ This example posts the contents of `path/test-results.md` as the comment body an
 - Due to the annoying issue where the status check is typically not associated with the correct calling action. As a result, have made the decision to remove the status checks as a whole. To prevent merges or give approvals, the user is responsible for creating their own step either before or after this one
 - `conclusion`now only accepts `success`, `failure`, or `cancelled`
   - Expected to be supplied by `${{ job.status }}`
+- Adding pagination support on finding comments
+  - Resolves an issue where if there were more than 100 comments on a pull request, this action may have trouble finding a previous one to hide or update
 
 ### [2025-09-26] Update-Mode `none`, Conclusion `skipped` and `cancelled` - 0.3.0
 - `update-mode` supports `"none"` type

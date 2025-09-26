@@ -42,10 +42,6 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
         page++;
     }
 
-    logger.debug(`Found ${comments.length} comments on the pull request.`);
-    logger.debug(`Searching for comments by author: ${author} containing identifier: ${commentIdentifier}`);
-    logger.debug(`Comments: ${JSON.stringify(comments)}`);
-
     const targetComment = comments.findLast(comment =>
         comment.user.login === author &&
         comment.body?.includes(commentIdentifier)

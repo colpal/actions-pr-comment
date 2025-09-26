@@ -23958,9 +23958,6 @@ var require_find_comment = __commonJS({
         hasMorePages = response.data.length === 100;
         page++;
       }
-      logger.debug(`Found ${comments.length} comments on the pull request.`);
-      logger.debug(`Searching for comments by author: ${author} containing identifier: ${commentIdentifier}`);
-      logger.debug(`Comments: ${JSON.stringify(comments)}`);
       const targetComment = comments.findLast(
         (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
       );

@@ -23943,12 +23943,21 @@ var require_find_comment = __commonJS({
         logger.warning("Not a pull request, skipping operation.");
         throw new Error("No pull request number found in the context.");
       }
-      const response = await octokit.rest.issues.listComments({
-        owner,
-        repo,
-        issue_number: prNumber
-      });
-      const comments = response.data;
+      const comments = [];
+      let page = 1;
+      let hasMorePages = true;
+      while (hasMorePages) {
+        const response = await octokit.rest.issues.listComments({
+          owner,
+          repo,
+          issue_number: prNumber,
+          per_page: 100,
+          page
+        });
+        comments.push(...response.data);
+        hasMorePages = response.data.length === 100;
+        page++;
+      }
       logger.debug(`Found ${comments.length} comments on the pull request.`);
       logger.debug(`Searching for comments by author: ${author} containing identifier: ${commentIdentifier}`);
       logger.debug(`Comments: ${JSON.stringify(comments)}`);

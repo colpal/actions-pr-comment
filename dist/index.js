@@ -23929,67 +23929,6 @@ var require_logger = __commonJS({
   }
 });
 
-// src/status-check/status-check.js
-var require_status_check = __commonJS({
-  "src/status-check/status-check.js"(exports2, module2) {
-    var core = require_core();
-    var github = require_github();
-    var { logger } = require_logger();
-    async function initializeStatusCheck(octokit, owner, repo, checkName) {
-      logger.info(`Creating a pending check named "${checkName}"...`);
-      const { data: checkRun } = await octokit.rest.checks.create({
-        owner,
-        repo,
-        name: checkName,
-        head_sha: github.context.payload.pull_request?.head.sha || github.context.sha,
-        status: "in_progress"
-      });
-      return checkRun.id;
-    }
-    async function finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      logger.info(`Finalizing completed status check with ID: ${checkRunId}...`);
-      const status = "completed";
-      let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
-      if (conclusion === "neutral" || conclusion === "cancelled") {
-        conclusion = "neutral";
-      } else if (conclusion === "skipped") {
-        conclusion = "success";
-      } else if (!(conclusion === "success" || conclusion === "failure")) {
-        logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', 'neutral', 'skipped', or 'cancelled'.`);
-        conclusion = "neutral";
-      }
-      await octokit.rest.checks.update({
-        owner,
-        repo,
-        check_run_id: checkRunId,
-        status,
-        conclusion,
-        output: {
-          summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
-          title: checkName
-        }
-      });
-    }
-    async function failStatusCheck(octokit, owner, repo, checkRunId, checkName) {
-      logger.info(`Finalizing failed status check with ID: ${checkRunId}...`);
-      const status = "completed";
-      const conclusion = "failure";
-      await octokit.rest.checks.update({
-        owner,
-        repo,
-        check_run_id: checkRunId,
-        status,
-        conclusion,
-        output: {
-          summary: `Status check concluded with status: ${status}, conclusion: ${conclusion}`,
-          title: checkName
-        }
-      });
-    }
-    module2.exports = { initializeStatusCheck, finalizeStatusCheck, failStatusCheck };
-  }
-});
-
 // src/comment/find-comment.js
 var require_find_comment = __commonJS({
   "src/comment/find-comment.js"(exports2, module2) {
@@ -24092,7 +24031,7 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
-          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|neutral) -->$/, conclusionIdentifier);
+          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|cancelled) -->$/, conclusionIdentifier);
           commentBody = comment.body + divider + newCommentBody;
           break;
         }
@@ -24196,7 +24135,6 @@ var require_comment_workflow = __commonJS({
   "src/comment/comment-workflow.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
-    var { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require_status_check();
     var { findComment } = require_find_comment();
     var { updateComment } = require_update_comment();
     var { hideComment, unhideComment } = require_comment_visibility();
@@ -24213,30 +24151,12 @@ var require_comment_workflow = __commonJS({
       const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
       const checkName = core.getInput("comment-id", { required: true });
       const commentIdentifier = `<!-- ` + checkName + ` -->`;
-      let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
-          if (conclusion === "skipped") {
-            logger.debug("No existing comment found and conclusion is 'skipped', skipping comment posting.");
-            await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-            return;
-          }
           logger.debug("No existing comment found, posting a new comment.");
           await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
-          if (conclusion === "skipped") {
-            if (core.getInput("on-resolution-hide", { required: false }) === "true") {
-              logger.debug("Existing comment found and conclusion is 'skipped' with 'on-resolution-hide' enabled, hiding existing comment as RESOLVED and skipping update.");
-              await hideComment(token, comment, "RESOLVED");
-              await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-              return;
-            } else {
-              logger.debug("Existing comment found but conclusion is 'skipped' with 'on-resolution-hide' disabled, skipping comment update.");
-              await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-              return;
-            }
-          }
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
           logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
           if (updateMode === "create") {
@@ -24261,9 +24181,7 @@ var require_comment_workflow = __commonJS({
             }
           }
         }
-        await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
       } catch (error) {
-        await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
         logger.error(`Error occurred during comment workflow: ${error.message}`);
       }
     }

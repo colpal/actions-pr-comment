@@ -3,11 +3,10 @@
 
 ## Assumptions
 1. A message body is ready to be used as a comment, either passed directly via `comment-body` or as a markdown file via `comment-body-path`
-2. The "result" of the job that generates the comment is known. Such that this job can be told whether to mark the commit as a `success` or `failure` (via the `conclusion` input)
 
 ## Usage
 ```yaml
-- uses: colpal/action-pr-comment@v0.1.0
+- uses: colpal/action-pr-comment@v0.4.0
   with:
     # Name of the check. To be used in the identifying comment and as the display name of GitHub for this action
     # Required
@@ -21,9 +20,8 @@
     # Optional - used instead of comment-body
     comment-body-path: "example/custom-path"
     
-    # Result of the workflows that are providing the comments to be posted. Will be set to "success", "skipped", "cancelled", "neutral", or "failure" such that this action can prevent merge whilst posting comments explaining the problem
-    # Optional
-    # Default: "neutral"
+    # Result of the workflows that are providing the comments to be posted. Will be set to "success", "failure", or "cancelled"
+    # Required
     conclusion: "success"
 
     # The GitHub token used for authentication
@@ -51,52 +49,27 @@
 For this composite action to do its job to the fulliest, it will require some permissions. In the workflow file that is calling this action, there should be a permission block. This is for the permissions the `secrets.GITHUB_TOKEN` has. That requires the following permissions:
 ```yaml
 permissions:
-  checks: write
   pull-requests: write
 ```
-- `checks: write` -> this is to create and update the [status check](#add-check) 
 - `pull-requests: write` -> this is to create and update comments on a pull-request
   - `write` permissions come with `read` permissions which is required to find all comments on a pull-request in order to find previous comments to update.
 
 ## Outputs
 A comment will be placed (or updated) in the pull request. The comment will be the supplied `comment-body` (or contents of `comment-body-path`) as well as a hidden identifier that is placed at the beginning of the body via `comment-id`.
 
-A status check (see below for setup) will be emitted from the action run. When the job is triggered, it will create a status check and set the `status` to `in_progress`. Upon completion, the `status` will be updated to `completed`. The `conclusion` field will be populated with either `success` or `failure` (or `neutral`). The `conclusion` field is received as an input and is a way to tell this job to prevent or allow merges.
-
-If the comment wants an action from a user (e.g. there is a violation that needs remedying), then the `conclusion` can be set to `failure` and since the status check has failed, merges should be prevented (if the ruleset is configured properly). If the comment is to notify the user that everything looks good, can set the `conclusion` to `success` and the commit is passed and a merge can be performed.
-
-## Status Check Setup
-### Create New Ruleset
-![createRuleset](docs/createRuleset.png)
-
-### Choose Target Branch(es)
-![targetBranchSelection](docs/targetBranchSelection.png)
-
-### Add Check
-![addCheck](docs/addCheck.png)
-The check supplied here should match the name provided in the `comment-id` input field on the action. If the action has been triggered before, it **should** show up in the "Suggestions" tab as you type it. If not, then the name can be supplied and it **should** detect on the first run of the action
-#### Annoying Known Issue
-Checks seemingly cannot be attached to a specific actions. Since this action is a composite action, it is not standalone and is called upon by other actions. One would think that the status check would then be associated with the calling action in the GitHub UI, yet it is not. Meaning that if, for example, the `actions-terraform` action called upon the `actions-pr-comment` action, then the failed status check should be attached to the `actions-terraform` action. However it does not. Nor is there a way to assign an action to attach the status check to. GitHub seemingly places it on some other condition, that does not necessarily align with calling action. 
-
-**As a result, it is recommended that your `comment-id` is a meaningful name that includes the action that is utilizing the `actions-pr-comment`.** For instance, in `actions-terraform`, the `comment-id` when calling `actions-pr-comment` is "Terraform Actions: OPA Conftest Validation". Therefore even when the status check is saying it belongs to another action, the user can look at the specific check itself and see that it should belong to `actions-terraform` instead.
+From the conclusion input, a hidden identifier is also placed int he beginning of the comment. This is to aid with the hiding of comments via the [`on-resolution-hide`](#on-resolution-hide) input.
 
 ## Conclusion
-The `conclusion` input determines the outcome of the status check that will be created or updated. This affects whether pull requests can be merged when branch protection rules are configured.
-
-### Neutral
-Sets the status check conclusion to `neutral`. This is the default value and typically indicates that the check completed but doesn't affect merge requirements.
+The `conclusion` input is utilized as a hidden identifier to maintain the status of the current run. This works alongside [`on-resolution-hide`](#on-resolution-hide) to ensure that, when desired, `succcess` messages are hidden. Without `conclusion`, there wouldn't be a mechanism to know when to hide certain message or not.
 
 ### Success
-Sets the status check conclusion to `success`, indicating the check passed. This allows merges to proceed when branch protection rules require this check.
+Sets the status check conclusion to `success`, indicating the check passed. 
 
 ### Failure
-Sets the status check conclusion to `failure`, indicating the check failed. This will block merges when branch protection rules require this check to pass.
-
-### Skipped
-Sets the status check conclusion to `skipped`, indicating the check was not run due to conditions not being met. No new commment will be created or updated. Will hide existing comment if `on-resolution-hide: true`. If `on-resolution-hide: false`, then existing comment remains. Typically doesn't block merges.
+Sets the status check conclusion to `failure`, indicating the check failed.
 
 ### Cancelled
-Sets the status check conclusion to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran. Typically doesn't block merges.
+Sets the status check conclusion to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran.
 
 ## Update Mode
 The `update-mode` input controls how the action handles existing comments with the same `comment-id`.
@@ -127,7 +100,7 @@ To enable verbose logging to gather more information about the action as it is r
   with:
     comment-id: "lint-check"
     comment-body: "Linting passed successfully!"
-    conclusion: "success"
+    conclusion: "${{ job.status }}"
     github-token: "${{ secrets.github-token }}"
     update-mode: "create"
     on-resolution-hide: true
@@ -142,7 +115,7 @@ This example posts a comment to the pull request with the message "Linting passe
   with:
     comment-id: "test-results"
     comment-body-path: "path/test-results.md"
-    conclusion: "failure"
+    conclusion: "${{ job.status }}"
     github-token: "${{ secrets.github-token }}"
     verbose-logging: true
     update-mode: "replace"
@@ -152,6 +125,11 @@ This example posts a comment to the pull request with the message "Linting passe
 This example posts the contents of `path/test-results.md` as the comment body and sets the status check to `failure`, replacing any previous comment for the same check.
 
 ## Changelog
+
+### [2025-09-xx] Removing status checks - 0.4.0
+- Due to the annoying issue where the status check is typically not associated with the correct calling action. As a result, have made the decision to remove the status checks as a whole. To prevent merges or give approvals, the user is responsible for creating their own step either before or after this one
+- `conclusion`now only accepts `success`, `failure`, or `cancelled`
+  - Expected to be supplied by `${{ job.status }}`
 
 ### [2025-09-26] Update-Mode `none`, Conclusion `skipped` and `cancelled` - 0.3.0
 - `update-mode` supports `"none"` type

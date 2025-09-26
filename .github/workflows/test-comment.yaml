@@ -239,13 +239,13 @@ jobs:
           update-mode: "append"
           on-resolution-hide: true
 
-      - name: Neutral step to remove failure
+      - name: Success step to remove failure
         uses: ./
-        id: comment-update-append-unhide-neutral
+        id: comment-update-append-unhide-succcess
         with:
           comment-id: "test-resolution-reopen"
-          comment-body: "test resolution reopen - updated comment to set status to neutral"
-          conclusion: "neutral"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: false
@@ -341,11 +341,11 @@ jobs:
 
       - name: Update comment with append (and reopen again)
         uses: ./
-        id: comment-update-append-unhide-again-neutral
+        id: comment-update-append-unhide-again-success
         with:
           comment-id: "test-resolution-reopen-again"
-          comment-body: "test resolution reopen - updated comment to set status to neutral"
-          conclusion: "neutral"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: false
@@ -429,97 +429,3 @@ jobs:
           conclusion: "cancelled"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
-
-  test_conclusion_type_skipped_first_comment:
-    name: Test Conclusion Type Skipped On First Comment
-    runs-on: [self-hosted, org]
-    permissions:
-      pull-requests: write
-      issues: write
-      contents: write
-      checks: write
-    continue-on-error: true
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Comment on PR with direct comment
-        uses: ./
-        id: comment-direct
-        with:
-          comment-id: "test-conclusion-skipped-first-comment"
-          comment-body: "test conclusion type skipped - initial comment"
-          conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          update-mode: "none"
-          on-resolution-hide: true
-
-  test_conclusion_type_skipped_resolution_true:
-    name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide True
-    runs-on: [self-hosted, org]
-    permissions:
-      pull-requests: write
-      issues: write
-      contents: write
-      checks: write
-    continue-on-error: true
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Comment on PR with direct comment
-        uses: ./
-        id: comment-direct
-        with:
-          comment-id: "test-conclusion-skipped-resolution-true"
-          comment-body: "test conclusion type skipped resolution true - initial comment"
-          conclusion: "success"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          update-mode: "none"
-          on-resolution-hide: true
-
-      - name: Comment shouldn't update and old hidden
-        uses: ./
-        id: comment-update-append
-        with:
-          comment-id: "test-conclusion-skipped-resolution-true"
-          comment-body: "test conclusion type skipped resolution true - updated comment"
-          conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          update-mode: "none"
-          on-resolution-hide: true
-
-  test_conclusion_type_skipped_resolution_false:
-    name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
-    runs-on: [self-hosted, org]
-    permissions:
-      pull-requests: write
-      issues: write
-      contents: write
-      checks: write
-    continue-on-error: true
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
-
-      - name: Comment on PR with direct comment
-        uses: ./
-        id: comment-direct
-        with:
-          comment-id: "test-conclusion-skipped-resolution-false"
-          comment-body: "test conclusion type skipped resolution false - initial comment"
-          conclusion: "success"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          update-mode: "none"
-          on-resolution-hide: false
-
-      - name: Comment shouldn't update and old visible
-        uses: ./
-        id: comment-update-append
-        with:
-          comment-id: "test-conclusion-skipped-resolution-false"
-          comment-body: "test conclusion type skipped resolution false - updated comment"
-          conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          update-mode: "none"
-          on-resolution-hide: false

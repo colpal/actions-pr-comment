@@ -1,6 +1,5 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { initializeStatusCheck, finalizeStatusCheck, failStatusCheck } = require('../status-check/status-check.js');
 const { findComment } = require('./find-comment.js');
 const { updateComment } = require('./update-comment.js');
 const { hideComment, unhideComment } = require('./comment-visibility.js');
@@ -9,15 +8,14 @@ const { logger } = require('../util/logger.js');
 
 
 /**
- * Executes the workflow for managing pull request comments and status checks.
- * 
- * This function initializes a status check, finds or creates a PR comment identified by the check name,
+ * Executes the workflow for managing pull request comments.
+ *
+ * This function finds or creates a PR comment identified by the check name,
  * and then determines how to handle the comment based on its existence and the update mode:
  *   - If no existing comment is found, a new comment is posted.
  *   - If a comment exists:
  *       - If update mode is "create", the existing comment is hidden as "OUTDATED" and a new comment is posted.
  *       - Otherwise, the existing comment is updated according to the specified update mode.
- * Finally, the status check is finalized with the provided conclusion.
  *
  * @async
  * @param {string} token - GitHub authentication token.
@@ -37,37 +35,13 @@ async function commentWorkflow(token) {
     const checkName = core.getInput('comment-id', { required: true });
     const commentIdentifier = `<!-- ` + checkName + ` -->`;
 
-    let checkRunId = await initializeStatusCheck(octokit, owner, repo, checkName);
-
     try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
 
         if (!comment) {
-
-            if (conclusion === 'skipped') {
-                logger.debug("No existing comment found and conclusion is 'skipped', skipping comment posting.");
-                await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-                return;
-            }
-
             logger.debug("No existing comment found, posting a new comment.");
             await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
         } else {
-
-            if (conclusion === 'skipped') {
-                if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
-                    logger.debug("Existing comment found and conclusion is 'skipped' with 'on-resolution-hide' enabled, hiding existing comment as RESOLVED and skipping update.");
-                    await hideComment(token, comment, "RESOLVED");
-                    await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-                    return;
-                }
-                else {
-                    logger.debug("Existing comment found but conclusion is 'skipped' with 'on-resolution-hide' disabled, skipping comment update.");
-                    await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
-                    return;
-                }
-            }
-
             const updateMode = core.getInput('update-mode', { required: false }) || "create";
             logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
 
@@ -97,9 +71,7 @@ async function commentWorkflow(token) {
             }
         }
 
-        await finalizeStatusCheck(octokit, owner, repo, checkRunId, checkName);
     } catch (error) {
-        await failStatusCheck(octokit, owner, repo, checkRunId, checkName);
         logger.error(`Error occurred during comment workflow: ${error.message}`);
     }
 }

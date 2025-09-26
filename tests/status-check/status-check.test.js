@@ -100,11 +100,11 @@ describe('finalizeStatusCheck', () => {
         }));
     });
 
-    it('finalizes with neutral conclusion if skipped supplied', async () => {
+    it('finalizes with success conclusion if skipped supplied', async () => {
         core.getInput.mockReturnValue('skipped');
         await finalizeStatusCheck(octokit, 'owner', 'repo', 102, 'checkName');
         expect(octokit.rest.checks.update).toHaveBeenCalledWith(expect.objectContaining({
-            conclusion: 'neutral'
+            conclusion: 'success'
         }));
     });
 

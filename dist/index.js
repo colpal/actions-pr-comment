@@ -23950,8 +23950,10 @@ var require_status_check = __commonJS({
       logger.info(`Finalizing completed status check with ID: ${checkRunId}...`);
       const status = "completed";
       let conclusion = core.getInput("conclusion", { required: false }) || "neutral";
-      if (conclusion === "neutral" || conclusion === "skipped" || conclusion === "cancelled") {
+      if (conclusion === "neutral" || conclusion === "cancelled") {
         conclusion = "neutral";
+      } else if (conclusion === "skipped") {
+        conclusion = "success";
       } else if (!(conclusion === "success" || conclusion === "failure")) {
         logger.error(`Invalid conclusion: "${conclusion}". Must be 'success', 'failure', 'neutral', 'skipped', or 'cancelled'.`);
         conclusion = "neutral";

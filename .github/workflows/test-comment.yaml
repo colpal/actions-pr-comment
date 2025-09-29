@@ -9,7 +9,7 @@ on:
 jobs:
   test_comment_update_append_action:
     name: Test Comment Update Append Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -42,7 +42,7 @@ jobs:
 
   test_comment_from_markdown_file:
     name: Test Comment From Markdown File
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -84,7 +84,7 @@ jobs:
 
   test_comment_update_create_action:
     name: Test Comment Update Create Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -117,7 +117,7 @@ jobs:
 
   test_hide_already_hidden_comment:
     name: Test Hide Hidden Comment Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -162,7 +162,7 @@ jobs:
 
   test_hide_on_resolutions:
     name: Test Comment Hide On Resolution Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -196,7 +196,7 @@ jobs:
 
   test_reopen_comment:
     name: Test Comment Reopen Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -252,7 +252,7 @@ jobs:
 
   test_replace_comment:
     name: Test Comment Update Replace Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -285,7 +285,7 @@ jobs:
 
   test_unhide_on_revealed_comment:
     name: Test Unhide Revealed Comment Action
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -352,7 +352,7 @@ jobs:
 
   test_verbose_logging:
     name: Test Verbose Logging On Comment
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -376,7 +376,7 @@ jobs:
 
   test_update_mode_none:
     name: Test Update Mode None On Comment
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -409,7 +409,7 @@ jobs:
 
   test_conclusion_type_cancelled:
     name: Test Conclusion Type Cancelled On Comment
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -432,7 +432,7 @@ jobs:
 
   test_conclusion_type_skipped_first_comment:
     name: Test Conclusion Type Skipped On First Comment
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -456,7 +456,7 @@ jobs:
 
   test_conclusion_type_skipped_resolution_true:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide True
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write
@@ -491,7 +491,7 @@ jobs:
 
   test_conclusion_type_skipped_resolution_false:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       pull-requests: write
       issues: write

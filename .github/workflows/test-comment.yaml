@@ -11,6 +11,7 @@ jobs:
     name: Test Comment Update Append Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:

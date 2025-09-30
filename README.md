@@ -1,5 +1,5 @@
 # actions-pr-comment
-> Internal action for creating comments on pull requests
+> Internal action for creating, updating, and hiding comments on pull requests
 
 ## Assumptions
 1. A message body is ready to be used as a comment, either passed directly via `comment-body` or as a markdown file via `comment-body-path`
@@ -20,9 +20,9 @@
     # Optional - used instead of comment-body
     comment-body-path: "example/custom-path"
     
-    # Result of the workflows that are providing the comments to be posted. Will be set to "success", "failure", or "cancelled"
+    # Result of the workflows that are providing the comments to be posted. Will be set to "success", "failure", "skipped", or "cancelled". Expected to be supplied by steps.<step_id>.outcome where the step_id is the step that needs commenting on (usually previous step).
     # Required
-    conclusion: "success"
+    conclusion: "${{ steps.<step_id>.outcome }}"
 
     # The GitHub token used for authentication
     # Optional
@@ -60,16 +60,19 @@ A comment will be placed (or updated) in the pull request. The comment will be t
 From the conclusion input, a hidden identifier is also placed int he beginning of the comment. This is to aid with the hiding of comments via the [`on-resolution-hide`](#on-resolution-hide) input.
 
 ## Conclusion
-The `conclusion` input is utilized as a hidden identifier to maintain the status of the current run. This works alongside [`on-resolution-hide`](#on-resolution-hide) to ensure that, when desired, `succcess` messages are hidden. Without `conclusion`, there wouldn't be a mechanism to know when to hide certain message or not.
+The `conclusion` input is utilized as a hidden identifier to maintain the status of the current run. This works alongside [`on-resolution-hide`](#on-resolution-hide) to ensure that, when desired, `succcess` messages are hidden. Without `conclusion`, there wouldn't be a mechanism to know when to hide certain message or not. The input for this field should look something like `steps.<step_id>.outcome` where `step_id` is the step that is generating the comment. The possible values for this action are limited to what the [steps context outputs](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#steps-context).
 
 ### Success
-Sets the status check conclusion to `success`, indicating the check passed. 
+Sets the hidden conclusion identifier in the message to `success`, indicating the `<step-id>` step also succeeded. 
 
 ### Failure
-Sets the status check conclusion to `failure`, indicating the check failed.
+Sets the hidden conclusion identifier in the message to `failure`, indicating the `<step-id>` step also failed. 
+
+### Skipped
+Sets the hidden conclusion identifier in the message to `skipped`, indicating the `<step-id>` step was also skipped. No new commment will be created or updated. Will hide existing comment if `on-resolution-hide: true`. If `on-resolution-hide: false`, then existing comment remains.
 
 ### Cancelled
-Sets the status check conclusion to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran.
+Sets the hidden conclusion identifier in the message to `cancelled`, indicating there was an upstream cancellation before completion. No new comment will be created or updated as this job is never ran.
 
 ## Update Mode
 The `update-mode` input controls how the action handles existing comments with the same `comment-id`.
@@ -100,7 +103,7 @@ To enable verbose logging to gather more information about the action as it is r
   with:
     comment-id: "lint-check"
     comment-body: "Linting passed successfully!"
-    conclusion: "${{ job.status }}"
+    conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
     update-mode: "create"
     on-resolution-hide: true
@@ -115,7 +118,7 @@ This example posts a comment to the pull request with the message "Linting passe
   with:
     comment-id: "test-results"
     comment-body-path: "path/test-results.md"
-    conclusion: "${{ job.status }}"
+    conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
     verbose-logging: true
     update-mode: "replace"
@@ -126,12 +129,12 @@ This example posts the contents of `path/test-results.md` as the comment body an
 
 ## Changelog
 
-### [2025-09-xx] Removing status checks - 0.4.0
+### [2025-09-30] Removing status checks - 0.4.0
 - Due to the annoying issue where the status check is typically not associated with the correct calling action. As a result, have made the decision to remove the status checks as a whole. To prevent merges or give approvals, the user is responsible for creating their own step either before or after this one
-- `conclusion`now only accepts `success`, `failure`, or `cancelled`
-  - Expected to be supplied by `${{ job.status }}`
 - Adding pagination support on finding comments
   - Resolves an issue where if there were more than 100 comments on a pull request, this action may have trouble finding a previous one to hide or update
+- `conclusion` no longer supports `"neutral"` type
+  - This was used with status checks, which are no longer supported. `"neutral"` is not an output of `steps` and therefore not an accepted `conclusion` input here
 
 ### [2025-09-26] Update-Mode `none`, Conclusion `skipped` and `cancelled` - 0.3.0
 - `update-mode` supports `"none"` type

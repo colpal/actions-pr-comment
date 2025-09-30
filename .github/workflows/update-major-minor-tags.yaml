@@ -13,11 +13,11 @@ on:
 jobs:
   update_major_minor_tags:
     name: Make sure major and minor tags are up to date on a patch release
-    runs-on: [self-hosted, org]
+    runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
       - name: Update Major Minor Tags
         run: |
           set -x

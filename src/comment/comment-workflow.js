@@ -30,6 +30,7 @@ async function commentWorkflow(token) {
         logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
         return;
     }
+
     const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
 
     const checkName = core.getInput('comment-id', { required: true });
@@ -39,11 +40,29 @@ async function commentWorkflow(token) {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
 
         if (!comment) {
-            logger.debug("No existing comment found, posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+
+            if (conclusion === 'skipped') {
+                logger.debug("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
+                return;
+            } else {
+                logger.debug("No existing comment found, posting a new comment.");
+                await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+            }
+
         } else {
             const updateMode = core.getInput('update-mode', { required: false }) || "create";
             logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
+
+            if (conclusion === 'skipped') {
+                logger.debug("Conclusion is 'skipped', skipping comment update.");
+
+                if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
+                    logger.debug("Existing comment hidden as OUTDATED due to skip conclusion.");
+                    await hideComment(token, comment, "OUTDATED");
+                }
+
+                return;
+            }
 
             if (updateMode === "create") {
                 await hideComment(token, comment, "OUTDATED");
@@ -59,14 +78,17 @@ async function commentWorkflow(token) {
                 logger.debug("Existing comment updated successfully.");
 
                 if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
+
                     if (conclusion === 'success') {
                         await hideComment(token, comment, "RESOLVED");
                         logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
                     }
+
                     if (conclusion === 'failure') {
                         await unhideComment(token, comment);
                         logger.debug("Existing comment unhidden due to failure conclusion.");
                     }
+
                 }
             }
         }

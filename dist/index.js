@@ -24163,11 +24163,24 @@ var require_comment_workflow = __commonJS({
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
-          logger.debug("No existing comment found, posting a new comment.");
-          await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+          if (conclusion === "skipped") {
+            logger.debug("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
+            return;
+          } else {
+            logger.debug("No existing comment found, posting a new comment.");
+            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+          }
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
           logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
+          if (conclusion === "skipped") {
+            logger.debug("Conclusion is 'skipped', skipping comment update.");
+            if (core.getInput("on-resolution-hide", { required: false }) === "true") {
+              logger.debug("Existing comment hidden as OUTDATED due to skip conclusion.");
+              await hideComment(token, comment, "OUTDATED");
+            }
+            return;
+          }
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");

@@ -434,4 +434,71 @@ describe('comment-workflow', () => {
         expect(findComment).not.toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'cancelled', skipping comment workflow.");
     });
+
+    it('should exit early when conclusion is "skipped" and no comment found', async () => {
+        findComment.mockResolvedValue();
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'none';
+            if (key === 'conclusion') return 'skipped';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).not.toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
+    });
+
+    it('should exit early and not hide previous comment when conclusion is "skipped" and on-resolution-hide is false', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'none';
+            if (key === 'conclusion') return 'skipped';
+            if (key === 'on-resolution-hide') return 'false';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).not.toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'skipped', skipping comment update.");
+    });
+
+    it('should exit early and not hide previous comment when conclusion is "skipped" and on-resolution-hide is true', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue();
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'none';
+            if (key === 'conclusion') return 'skipped';
+            if (key === 'on-resolution-hide') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).not.toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as OUTDATED due to skip conclusion.");
+    });
 });

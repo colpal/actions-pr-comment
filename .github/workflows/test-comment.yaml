@@ -42,6 +42,7 @@ jobs:
     name: Test Comment From Markdown File
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -81,6 +82,7 @@ jobs:
     name: Test Comment Update Create Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -111,6 +113,7 @@ jobs:
     name: Test Hide Hidden Comment Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -153,6 +156,7 @@ jobs:
     name: Test Comment Hide On Resolution Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -184,6 +188,7 @@ jobs:
     name: Test Comment Reopen Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -237,6 +242,7 @@ jobs:
     name: Test Comment Update Replace Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -267,6 +273,7 @@ jobs:
     name: Test Unhide Revealed Comment Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -331,6 +338,7 @@ jobs:
     name: Test Verbose Logging On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -352,6 +360,7 @@ jobs:
     name: Test Update Mode None On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -382,6 +391,7 @@ jobs:
     name: Test Conclusion Type Cancelled On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -402,6 +412,7 @@ jobs:
     name: Test Conclusion Type Skipped On First Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -423,6 +434,7 @@ jobs:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide True
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:
@@ -455,6 +467,7 @@ jobs:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
     continue-on-error: true
     steps:

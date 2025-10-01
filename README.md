@@ -32,13 +32,13 @@ All inputs for this action are summarized below for quick reference:
     verbose-logging: "false"
 ```
 
-### Why use if: ${{ !cancelled() }}?
+### Why use `if: ${{ !cancelled() }}`?
 
 To ensure this action runs after a workflow step, even if that step fails, use `if: ${{ !cancelled() }}`. This lets the comment action run unless the workflow is cancelled.
 
 Avoid using `continue-on-error: true` on the previous step. While it allows the comment action to run after a failure, it also marks the workflow as successful, which can be misleading.
 
-**Use if: ${{ !cancelled() }} on this action to run it after any step, regardless of success or failure, while keeping the workflow status accurate.**
+**Use `if: ${{ !cancelled() }}` on this action to run it after any step, regardless of success or failure, while keeping the workflow status accurate.**
 
 ## Permissions
 For this action to do its job to the fullest, it will require some permissions. In the workflow file that is calling this action, there should be a permission block. The following permissions are required for `secrets.GITHUB_TOKEN` in the workflow:

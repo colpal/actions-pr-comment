@@ -24040,7 +24040,7 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
-          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success|cancelled) -->$/, conclusionIdentifier);
+          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success) -->$/, conclusionIdentifier);
           commentBody = comment.body + divider + newCommentBody;
           break;
         }

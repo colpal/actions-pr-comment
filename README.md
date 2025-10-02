@@ -15,8 +15,8 @@ All inputs for this action are summarized below for quick reference:
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
 | `update-mode`       | string | `create`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
-| `on-resolution-hide`| string   | `"false"`                | No        | Hide previous failure comment when resolved.                                       |
-| `verbose-logging`   | string   | `"false"`                | No        | Enable verbose logging.                                                            |
+| `on-resolution-hide`| string (`"true"`/`"false"`) | `"false"`                | No        | Hide previous failure comment when resolved.                                       |
+| `verbose-logging`   | string (`"true"`/`"false"`) | `"false"`                | No        | Enable verbose logging.                                                            |
 
 ### Example Usage
 ```yaml
@@ -73,9 +73,9 @@ The `update-mode` input controls how the action handles existing comments with t
 
 | Option    | Description                                                                                   |
 |-----------|----------------------------------------------------------------------------------------------|
+| `create`  | Always creates a new comment, regardless of whether previous comments with the same `comment-id` exist. This can result in multiple comments for the same check; outdated ones are hidden in the GitHub UI. |
 | `replace` | Overwrites the content of an existing comment entirely with the new comment body. If no existing comment is found, creates a new one. |
 | `append`  | Adds the new comment body to the end of an existing comment, separated by a timestamp. If no existing comment is found, creates a new one. |
-| `create`  | Always creates a new comment, regardless of whether previous comments with the same `comment-id` exist. This can result in multiple comments for the same check; outdated ones are hidden in the GitHub UI. |
 | `none`    | Does not create a new comment or update existing comments after the initial one. Will create the initial comment when no matching `comment-id` is found, but will not perform any updates after. |
 
 ## On-Resolution-Hide
@@ -102,8 +102,8 @@ Posts a comment to the pull request with the message "Linting passed successfull
     comment-body: "Linting passed successfully!"
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
-  update-mode: "create"
-  on-resolution-hide: "true"
+    update-mode: "create"
+    on-resolution-hide: "true"
 ```
 
 ### Example: Using a Markdown File
@@ -117,12 +117,12 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     comment-body-path: "path/test-results.md"
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
-  verbose-logging: "true"
-  update-mode: "replace"
-  on-resolution-hide: "false"
+    verbose-logging: "true"
+    update-mode: "replace"
+    on-resolution-hide: "false"
 ```
 
-This example posts the contents of `path/test-results.md` as the comment body and sets the conclusion to `failure`, replacing any previous comment for the same check.
+This example posts the contents of `path/test-results.md` as the comment body.
 
 ## Changelog
 

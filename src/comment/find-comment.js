@@ -23,13 +23,24 @@ async function findComment(octokit, owner, repo, commentIdentifier) {
         throw new Error('No pull request number found in the context.');
     }
 
-    const response = await octokit.rest.issues.listComments({
-        owner: owner,
-        repo: repo,
-        issue_number: prNumber
-    });
+    // Fetch all comments using pagination
+    const comments = [];
+    let page = 1;
+    let hasMorePages = true;
 
-    const comments = response.data;
+    while (hasMorePages) {
+        const response = await octokit.rest.issues.listComments({
+            owner: owner,
+            repo: repo,
+            issue_number: prNumber,
+            per_page: 100,
+            page: page
+        });
+
+        comments.push(...response.data);
+        hasMorePages = response.data.length === 100;
+        page++;
+    }
 
     const targetComment = comments.findLast(comment =>
         comment.user.login === author &&

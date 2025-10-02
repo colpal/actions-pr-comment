@@ -11,14 +11,12 @@ jobs:
     name: Test Comment Update Append Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -44,14 +42,12 @@ jobs:
     name: Test Comment From Markdown File
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Load environment variables from .env file
         run: |
@@ -86,14 +82,12 @@ jobs:
     name: Test Comment Update Create Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -119,14 +113,12 @@ jobs:
     name: Test Hide Hidden Comment Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -164,14 +156,12 @@ jobs:
     name: Test Comment Hide On Resolution Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -198,14 +188,12 @@ jobs:
     name: Test Comment Reopen Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -239,13 +227,13 @@ jobs:
           update-mode: "append"
           on-resolution-hide: true
 
-      - name: Neutral step to remove failure
+      - name: Success step to remove failure
         uses: ./
-        id: comment-update-append-unhide-neutral
+        id: comment-update-append-unhide-succcess
         with:
           comment-id: "test-resolution-reopen"
-          comment-body: "test resolution reopen - updated comment to set status to neutral"
-          conclusion: "neutral"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: false
@@ -254,14 +242,12 @@ jobs:
     name: Test Comment Update Replace Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -287,14 +273,12 @@ jobs:
     name: Test Unhide Revealed Comment Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -341,11 +325,11 @@ jobs:
 
       - name: Update comment with append (and reopen again)
         uses: ./
-        id: comment-update-append-unhide-again-neutral
+        id: comment-update-append-unhide-again-success
         with:
           comment-id: "test-resolution-reopen-again"
-          comment-body: "test resolution reopen - updated comment to set status to neutral"
-          conclusion: "neutral"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: false
@@ -354,14 +338,12 @@ jobs:
     name: Test Verbose Logging On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with verbose logging
         uses: ./
@@ -378,14 +360,12 @@ jobs:
     name: Test Update Mode None On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -411,14 +391,12 @@ jobs:
     name: Test Conclusion Type Cancelled On Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -434,14 +412,12 @@ jobs:
     name: Test Conclusion Type Skipped On First Comment
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -458,14 +434,12 @@ jobs:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide True
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./
@@ -493,14 +467,12 @@ jobs:
     name: Test Conclusion Type Skipped On Comment With On-Resolution-Hide False
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
+      contents: read
       pull-requests: write
-      issues: write
-      contents: write
-      checks: write
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
       - name: Comment on PR with direct comment
         uses: ./

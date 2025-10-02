@@ -12,9 +12,8 @@ inputs:
     description: Path to a file containing the body of the comment (supply this or comment-body)
     required: false
   conclusion:
-    description: The conclusion status of the check (e.g., success, failure)
-    required: false
-    default: "neutral"
+    description: The conclusion status of the check (can be success, failure, cancelled)
+    required: true
   github-token:
     description: The GitHub token used to create an authenticated client
     required: false

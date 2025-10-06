@@ -24127,13 +24127,14 @@ var require_post_comment = __commonJS({
         logger.warning("Not a pull request, skipping review submission.");
         throw new Error("No pull request number found in the context.");
       }
-      await octokit.rest.issues.createComment({
+      const response = await octokit.rest.issues.createComment({
         owner,
         repo,
         issue_number: prNumber,
         body: commentBody
       });
       logger.debug("Comment posted successfully.");
+      return response?.data;
     }
     module2.exports = { postComment };
   }
@@ -24168,7 +24169,11 @@ var require_comment_workflow = __commonJS({
             return;
           } else {
             logger.debug("No existing comment found, posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+            comment = await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+            if (core.getInput("on-resolution-hide", { required: false }) === "true" && conclusion === "success") {
+              logger.debug("New comment hidden as RESOLVED due to success conclusion.");
+              await hideComment(token, comment, "RESOLVED");
+            }
           }
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";

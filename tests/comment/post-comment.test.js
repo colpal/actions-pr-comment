@@ -32,7 +32,13 @@ describe('postComment', () => {
         octokit = {
             rest: {
                 issues: {
-                    createComment: jest.fn()
+                    createComment: jest.fn().mockResolvedValue({
+                        data: {
+                            id: 101,
+                            node_id: 'MDU6SXNzdWUxMDI=',
+                            body: 'identifier: \nconlcusion: success\nmocked body'
+                        }
+                    })
                 }
             }
         };
@@ -41,7 +47,7 @@ describe('postComment', () => {
     });
 
     it('posts a comment successfully', async () => {
-        await postComment(octokit, 'owner', 'repo', 'identifier: ', 'conlcusion: success');
+        const comment = await postComment(octokit, 'owner', 'repo', 'identifier: ', 'conlcusion: success');
 
         expect(logger.info).toHaveBeenCalledWith("Starting to post a comment...");
         expect(getCommentBody).toHaveBeenCalled();
@@ -52,6 +58,11 @@ describe('postComment', () => {
             body: 'identifier: \nconlcusion: success\nmocked body'
         });
         expect(logger.debug).toHaveBeenCalledWith("Comment posted successfully.");
+        expect(comment).toEqual({
+            id: 101,
+            node_id: 'MDU6SXNzdWUxMDI=',
+            body: 'identifier: \nconlcusion: success\nmocked body'
+        });
     });
 
     it('skips posting if not a pull request', async () => {

@@ -79,7 +79,7 @@ The `update-mode` input controls how the action handles existing comments with t
 | `none`    | Does not create a new comment or update existing comments after the initial one. Will create the initial comment when no matching `comment-id` is found, but will not perform any updates after. |
 
 ## On-Resolution-Hide
-This flag controls whether successful comments are hidden automatically. When set to `true`:
+This flag controls whether successful comments are hidden automatically. When set to `"true"`:
 
 - If `conclusion` is `success`, the comment is hidden (even if it's the first comment).
 - If updating a previous comment with `failure` or `neutral`, it will be hidden after update.

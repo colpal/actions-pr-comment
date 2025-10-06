@@ -24127,14 +24127,14 @@ var require_post_comment = __commonJS({
         logger.warning("Not a pull request, skipping review submission.");
         throw new Error("No pull request number found in the context.");
       }
-      const comment = await octokit.rest.issues.createComment({
+      const response = await octokit.rest.issues.createComment({
         owner,
         repo,
         issue_number: prNumber,
         body: commentBody
       });
       logger.debug("Comment posted successfully.");
-      return comment;
+      return response?.data;
     }
     module2.exports = { postComment };
   }

@@ -173,6 +173,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"
           on-resolution-hide: true
+          verbose-logging: true
 
   test_hide_on_resolutions:
     name: Test Comment Hide On Resolution Action

@@ -47,6 +47,11 @@ async function commentWorkflow(token) {
             } else {
                 logger.debug("No existing comment found, posting a new comment.");
                 await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+
+                if (core.getInput('on-resolution-hide', { required: false }) === 'true' && conclusion === 'success') {
+                    logger.debug("New comment hidden as RESOLVED due to success conclusion.");
+                    await hideComment(token, comment, "RESOLVED");
+                }
             }
 
         } else {

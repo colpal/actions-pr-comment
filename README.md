@@ -14,9 +14,9 @@ All inputs for this action are summarized below for quick reference:
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
-| `update-mode`       | string | `create`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
-| `on-resolution-hide`| string (`"true"`/`"false"`) | `"false"`                | No        | Hide previous failure comment when resolved.                                       |
-| `verbose-logging`   | string (`"true"`/`"false"`) | `"false"`                | No        | Enable verbose logging.                                                            |
+| `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
+| `on-resolution-hide`| boolean | `false`                | No        | Hide previous failure comment when resolved.                                       |
+| `verbose-logging`   | boolean | `false`                | No        | Enable verbose logging.                                                            |
 
 ### Example Usage
 ```yaml
@@ -28,8 +28,8 @@ All inputs for this action are summarized below for quick reference:
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ github.token }}"
     update-mode: "create"
-    on-resolution-hide: "false"
-    verbose-logging: "false"
+    on-resolution-hide: false
+    verbose-logging: false
 ```
 
 ### Why use `if: ${{ !cancelled() }}`?
@@ -87,7 +87,7 @@ This flag controls whether successful comments are hidden automatically. When se
 - Hidden comments remain up-to-date, so if you unhide them, the content is correct.
 
 ## Logging
-Set `verbose-logging: "true"` to enable detailed logs for debugging.
+Set `verbose-logging: true` to enable detailed logs for debugging.
 
 ## Examples
 
@@ -103,7 +103,7 @@ Posts a comment to the pull request with the message "Linting passed successfull
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
     update-mode: "create"
-    on-resolution-hide: "true"
+    on-resolution-hide: true
 ```
 
 ### Example: Using a Markdown File
@@ -117,14 +117,17 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     comment-body-path: "path/test-results.md"
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
-    verbose-logging: "true"
+    verbose-logging: true
     update-mode: "replace"
-    on-resolution-hide: "false"
+    on-resolution-hide: false
 ```
 
 This example posts the contents of `path/test-results.md` as the comment body.
 
 ## Changelog
+### [2025-10-06] Hide Initial Comment if Success and On-Resolution-Hide is True - 0.5.0
+- Fixed bug where initial comment would not be hidden if `on-resolution-hide` was true and `conclusion` was `success`
+- Corrected documentation to note that `verbose-logging` and `on-resolution-hide` accept booleans, and not string-wrapped booleans 
 
 ### [2025-10-02] Removing status checks - 0.4.0
 - Status checks are removed due to issue where they would not be attached to the calling action. Resulted in actions failing that didn't actually fail because the commenting of another action was placed onto it.

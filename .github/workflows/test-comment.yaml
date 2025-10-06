@@ -152,6 +152,28 @@ jobs:
           update-mode: "replace"
           on-resolution-hide: true
 
+  test_hide_initial_comment_on_resolutions:
+    name: Test Comment Hide Initial Comment On Resolution Action
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-initial-comment-hide"
+          comment-body: "test resolution - hiding initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+          on-resolution-hide: true
+
   test_hide_on_resolutions:
     name: Test Comment Hide On Resolution Action
     runs-on: cp-ubuntu-amd64-1core-1gb

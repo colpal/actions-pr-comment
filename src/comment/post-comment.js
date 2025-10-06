@@ -26,13 +26,14 @@ async function postComment(octokit, owner, repo, commentIdentifier, conclusionId
         throw new Error('No pull request number found in the context.');
     }
 
-    await octokit.rest.issues.createComment({
+    const comment = await octokit.rest.issues.createComment({
         owner: owner,
         repo: repo,
         issue_number: prNumber,
         body: commentBody,
     });
     logger.debug("Comment posted successfully.");
+    return comment;
 }
 
 module.exports = { postComment };

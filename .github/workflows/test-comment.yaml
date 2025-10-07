@@ -152,8 +152,8 @@ jobs:
           update-mode: "replace"
           on-resolution-hide: true
 
-  test_hide_initial_comment_on_resolutions:
-    name: Test Comment Hide Initial Comment On Resolution Action
+  test_on_resolution_true_initial_success_comment:
+    name: Test Comment Hide Initial Success Comment On Resolution Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       contents: read
@@ -168,7 +168,7 @@ jobs:
         id: comment-direct
         with:
           comment-id: "test-resolution-initial-comment-hide"
-          comment-body: "test resolution - hiding initial comment"
+          comment-body: "test resolution - hiding initial comment - should not see this"
           conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "append"

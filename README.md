@@ -15,7 +15,7 @@ All inputs for this action are summarized below for quick reference:
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
-| `on-resolution-hide`| boolean | `false`                | No        | Hide previous failure comment when resolved.                                       |
+| `on-resolution-hide`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `verbose-logging`   | boolean | `false`                | No        | Enable verbose logging.                                                            |
 
 ### Example Usage
@@ -81,7 +81,8 @@ The `update-mode` input controls how the action handles existing comments with t
 ## On-Resolution-Hide
 This flag controls whether successful comments are hidden automatically. When set to `"true"`:
 
-- If `conclusion` is `success`, the comment is hidden (even if it's the first comment).
+- If `conclusion` is `success`, the comment is hidden.
+  - If `conclusion` is `success` and it's the **first** comment, then the comment is not created at all.
 - If updating a previous comment with `failure` or `neutral`, it will be hidden after update.
 - If a future comment is no longer `success`, it will update and unhide itself according to `update-mode`.
 - Hidden comments remain up-to-date, so if you unhide them, the content is correct.
@@ -125,8 +126,8 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
 This example posts the contents of `path/test-results.md` as the comment body.
 
 ## Changelog
-### [2025-10-06] Hide Initial Comment if Success and On-Resolution-Hide is True - 0.5.0
-- Fixed bug where initial comment would not be hidden if `on-resolution-hide` was true and `conclusion` was `success`
+### [2025-10-07] Don't Create Initial Comment if Success and On-Resolution-Hide is True - 0.5.0
+- If `on-resolution-hide` was true and `conclusion` was `success`, then don't even post the comment
 - Corrected documentation to note that `verbose-logging` and `on-resolution-hide` accept booleans, and not string-wrapped booleans 
 
 ### [2025-10-02] Removing status checks - 0.4.0

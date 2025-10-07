@@ -502,7 +502,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as OUTDATED due to skip conclusion.");
     });
 
-    it('should create and hide success comment if on-resolution-hide is true', async () => {
+    it('should not create success comment if on-resolution-hide is true', async () => {
         findComment.mockResolvedValue();
         hideComment.mockResolvedValue();
         postComment.mockResolvedValue();
@@ -517,10 +517,10 @@ describe('comment-workflow', () => {
 
         await commentWorkflow(token);
 
-        expect(hideComment).toHaveBeenCalled();
-        expect(postComment).toHaveBeenCalled();
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
         expect(updateComment).not.toHaveBeenCalled();
         expect(findComment).toHaveBeenCalled();
-        expect(logger.debug).toHaveBeenCalledWith("New comment hidden as RESOLVED due to success conclusion.");
+        expect(logger.debug).toHaveBeenCalledWith("New comment not posted due to success conclusion and on-resolution-hide being true.");
     });
 });

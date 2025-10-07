@@ -153,7 +153,7 @@ jobs:
           on-resolution-hide: true
 
   test_on_resolution_true_initial_success_comment:
-    name: Test Comment Hide Initial Success Comment On Resolution Action
+    name: Test Don't Create Initial Success Comment On Resolution Action
     runs-on: cp-ubuntu-amd64-1core-1gb
     permissions:
       contents: read

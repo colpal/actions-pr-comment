@@ -554,3 +554,53 @@ jobs:
           conclusion: "success"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "create"
+
+  test_over_262144:
+    name: Test Comment Over 262144 From Markdown File
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Load environment variables from .env file
+        run: |
+          grep '^COMMENT_BODY_PATH_4=' ci/vars/test.env >> $GITHUB_ENV
+
+      - name: Comment on PR with markdown file comment
+        uses: ./
+        id: comment-file
+        with:
+          comment-id: "over-262144"
+          comment-body-path: ${{ env.COMMENT_BODY_PATH_4 }}
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+  test_under_262144:
+    name: Test Comment Under 262144 From Markdown File
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      - name: Load environment variables from .env file
+        run: |
+          grep '^COMMENT_BODY_PATH_5=' ci/vars/test.env >> $GITHUB_ENV
+
+      - name: Comment on PR with markdown file comment
+        uses: ./
+        id: comment-file
+        with:
+          comment-id: "under-262144"
+          comment-body-path: ${{ env.COMMENT_BODY_PATH_5 }}
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"

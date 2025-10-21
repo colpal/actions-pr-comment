@@ -20,7 +20,7 @@ All inputs for this action are summarized below for quick reference:
 
 ### Example Usage
 ```yaml
-- uses: colpal/action-pr-comment@v1.0.0
+- uses: colpal/action-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "my-check"
@@ -96,7 +96,7 @@ Set `verbose-logging: true` to enable detailed logs for debugging.
 Posts a comment to the pull request with the message "Linting passed successfully!" and sets the conclusion to `success`.
 
 ```yaml
-- uses: colpal/action-pr-comment@v1.0.0
+- uses: colpal/action-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "lint-check"
@@ -107,11 +107,11 @@ Posts a comment to the pull request with the message "Linting passed successfull
     on-resolution-hide: true
 ```
 
-### Example: Using a Markdown File
+### Using a Markdown File
 Posts the contents of path/test-results.md as the comment body and sets the conclusion to failure, replacing any previous comment for the same check.
 
 ```yaml
-- uses: colpal/action-pr-comment@v1.0.0
+- uses: colpal/action-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "test-results"
@@ -123,40 +123,13 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     on-resolution-hide: false
 ```
 
-This example posts the contents of `path/test-results.md` as the comment body.
+### References
+Below are some already implemented instances of colpal workflows and actions utilizing this action:
+- [Airflow Dagbag Scanner](https://github.com/colpal/airflow/blob/v1.1/actions/dagbag-scanner/action.yaml#L142)
+- [Airflow Validation](https://github.com/colpal/airflow/blob/v1.1/.github/workflows/validation.yaml#L142)
+<!-- - [Actions Terraform](https://github.com/colpal/actions-terraform/blob/feature/fetch-policy-from-artifact-registry/validate-opa/action.yaml#L124)
+- [MST Branching](https://github.com/colpal/MST-branching) -->
 
 ## Changelog
-### [2025-10-07] Don't Create Initial Comment if Success and On-Resolution-Hide is True - 0.5.0
-- If `on-resolution-hide` was true and `conclusion` was `success`, then don't even post the comment
-- Corrected documentation to note that `verbose-logging` and `on-resolution-hide` accept booleans, and not string-wrapped booleans 
 
-### [2025-10-02] Removing status checks - 0.4.0
-- Status checks are removed due to issue where they would not be attached to the calling action. Resulted in actions failing that didn't actually fail because the commenting of another action was placed onto it.
-- Adding pagination support on finding comments
-  - Resolves an issue where if there were more than 100 comments on a pull request, this action may have trouble finding a previous one to hide or update
-- `conclusion` no longer supports `"neutral"` type
-  - This was used with status checks, which are no longer supported. `"neutral"` is not an output of `steps` and therefore not an accepted `conclusion` input here
-
-### [2025-09-26] Update-Mode `none`, Conclusion `skipped` and `cancelled` - 0.3.0
-- `update-mode` supports `"none"` type
-  - This is intended for uses like one-time checklists to be commented on the top of pull requests
-- `conclusion` supports `"skipped"` and `"cancelled"` types
-  - This is intended for use cases that align with the common `conclusion` pattern: `conclusion: ${{ steps.previous-step.outcome }}`
-
-### [2025-09-25] On-Resolution-Hide Input - 0.2.0
-- `on-resolution-hide` input added (default is `false` (off))
-  - When enabled, will hide comments automatically once its conclusion is `success`
-
-### [2025-09-02] Initial Release - 0.1.0
-- Create and update comments on a pull request
-- Find previous comments to update on
-- Create and update status checks
-- Hide and unhide comments
-- Supports comment contents being supplied directly or via a file.
-
-<!--
-Repeat format:
-#### [YYYY-MM-DD] <Release Title>
-- <Change 1>
-- <Change 2>
--->
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes.

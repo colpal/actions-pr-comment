@@ -1,4 +1,5 @@
 const { getCommentBody } = require('../../src/util/util');
+const { renderCommentBody } = require('../../src/util/util');
 const core = require('@actions/core');
 const fs = require('fs');
 const { logger } = require('../../src/util/logger');
@@ -31,12 +32,20 @@ describe('getCommentBody', () => {
     });
 
     it('returns direct comment when only comment-body is provided', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body' ? 'Direct comment' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body') return 'Direct comment';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         expect(getCommentBody()).toBe('Direct comment');
     });
 
     it('reads comment body from file when only comment-body-path is provided', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'path/to/file.md' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'path/to/file.md';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         fs.readFileSync.mockReturnValue('File comment');
         expect(getCommentBody()).toBe('File comment');
         expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: path/to/file.md');
@@ -65,7 +74,11 @@ describe('getCommentBody', () => {
 
 
     it('removes BOM from file content if present', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'bomfile.md' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'bomfile.md';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         // 0xFEFF is BOM, followed by 'File comment'
         const bomContent = '\uFEFFFile comment';
         fs.readFileSync.mockReturnValue(bomContent);
@@ -75,7 +88,11 @@ describe('getCommentBody', () => {
     });
 
     it('returns empty string when file is empty', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'emptyfile.md' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'emptyfile.md';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         fs.readFileSync.mockReturnValue('');
         expect(getCommentBody()).toBe('');
         expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: emptyfile.md');
@@ -88,13 +105,12 @@ describe('getCommentBody', () => {
         expect(() => getCommentBody()).toThrow();
     });
 
-    it('throws error if comment-body-path does not end with .md', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'file.txt' : '');
-        expect(() => getCommentBody()).toThrow("The 'comment-body-path' must point to a markdown (.md) file.");
-    });
-
     it('handles file content with new lines correctly', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body-path' ? 'multiline.md' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'multiline.md';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         const multilineContent = 'Line 1\nLine 2\nLine 3';
         fs.readFileSync.mockReturnValue(multilineContent);
         expect(getCommentBody()).toBe(multilineContent);
@@ -103,7 +119,36 @@ describe('getCommentBody', () => {
     });
 
     it('returns direct comment even if it contains new lines', () => {
-        core.getInput.mockImplementation((key) => key === 'comment-body' ? 'Line 1\nLine 2' : '');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body') return 'Line 1\nLine 2';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
         expect(getCommentBody()).toBe('Line 1\nLine 2');
     });
+
+    it('returns un-rendered comment even if render-markdown is false', () => {
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body') return 'Line 1\nLine 2';
+            if (key === 'render-markdown') return 'false';
+            return undefined;
+        });
+        expect(renderCommentBody('Line 1\nLine 2')).toBe('<pre id=render-markdown-false>Line 1\nLine 2</pre>');
+        expect(getCommentBody()).toBe('<pre id=render-markdown-false>Line 1\nLine 2</pre>');
+    });
+
+    it('returns un-rendered comment even if render-markdown is false', () => {
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'multiline.md';
+            if (key === 'render-markdown') return 'false';
+            return undefined;
+        });
+        const multilineContent = 'Line 1\nLine 2\nLine 3';
+        fs.readFileSync.mockReturnValue(multilineContent);
+        expect(renderCommentBody(multilineContent)).toBe('<pre id=render-markdown-false>Line 1\nLine 2\nLine 3</pre>');
+        expect(getCommentBody()).toBe('<pre id=render-markdown-false>Line 1\nLine 2\nLine 3</pre>');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: multiline.md');
+        expect(fs.readFileSync).toHaveBeenCalledWith('multiline.md', 'utf8');
+    });
+
 });

@@ -14,8 +14,9 @@ All inputs for this action are summarized below for quick reference:
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
+| `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
+| `sync-conclusion`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
-| `on-resolution-hide`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `verbose-logging`   | boolean | `false`                | No        | Enable verbose logging.                                                            |
 
 ### Example Usage
@@ -27,8 +28,9 @@ All inputs for this action are summarized below for quick reference:
     comment-body: "My comment here"
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ github.token }}"
+    render-markdown: true
+    sync-conclusion: false
     update-mode: "create"
-    on-resolution-hide: false
     verbose-logging: false
 ```
 
@@ -58,7 +60,7 @@ The action places or updates a comment in the pull request. The comment includes
   - `<!-- conclusion: success -->` (for tracking status and visibility)
 
 ## Conclusion
-The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`on-resolution-hide`](#on-resolution-hide) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
+The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#Sync-Conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
 
 | Value      | Effect                                                                                   |
 |------------|-----------------------------------------------------------------------------------------|
@@ -66,6 +68,23 @@ The `conclusion` input is a hidden identifier that tracks the status of the curr
 | `failure`  | Sets hidden identifier to `failure`. Indicates the step failed.                         |
 | `skipped`  | Sets hidden identifier to `skipped`. No new comment created/updated. May hide existing. |
 | `cancelled`| Sets hidden identifier to `cancelled`. No new comment created/updated.                  |
+
+## Render-Markdown
+This flag controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown.
+
+- If `render-markdown` is `true`, the comment body will be rendered as markdown.
+  - `**bold**` will be rendered as **bold** instead of `**bold**`.
+- If `render-markdown` is `false`, the comment body will be rendered as plain text, such that markdown formatting is not applied.
+  - `**bold**` will be rendered as `**bold**` instead of **bold**.
+
+## Sync-Conclusion
+This flag controls whether successful comments are hidden automatically. When set to `"true"`:
+
+- If `conclusion` is `success`, the comment is hidden.
+  - If `conclusion` is `success` and it's the **first** comment, then the comment is not created at all.
+- If updating a previous comment with `failure` or `neutral`, it will be hidden after update.
+- If a future comment is no longer `success`, it will update and unhide itself according to `update-mode`.
+- Hidden comments remain up-to-date, so if you unhide them, the content is correct.
 
 ## Update Mode
 
@@ -78,14 +97,6 @@ The `update-mode` input controls how the action handles existing comments with t
 | `append`  | Adds the new comment body to the end of an existing comment, separated by a timestamp. If no existing comment is found, creates a new one. |
 | `none`    | Does not create a new comment or update existing comments after the initial one. Will create the initial comment when no matching `comment-id` is found, but will not perform any updates after. |
 
-## On-Resolution-Hide
-This flag controls whether successful comments are hidden automatically. When set to `"true"`:
-
-- If `conclusion` is `success`, the comment is hidden.
-  - If `conclusion` is `success` and it's the **first** comment, then the comment is not created at all.
-- If updating a previous comment with `failure` or `neutral`, it will be hidden after update.
-- If a future comment is no longer `success`, it will update and unhide itself according to `update-mode`.
-- Hidden comments remain up-to-date, so if you unhide them, the content is correct.
 
 ## Logging
 Set `verbose-logging: true` to enable detailed logs for debugging.
@@ -104,7 +115,7 @@ Posts a comment to the pull request with the message "Linting passed successfull
     conclusion: "${{ steps.<step_id>.outcome }}"
     github-token: "${{ secrets.github-token }}"
     update-mode: "create"
-    on-resolution-hide: true
+    sync-conclusion: true
 ```
 
 ### Using a Markdown File
@@ -120,7 +131,7 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     github-token: "${{ secrets.github-token }}"
     verbose-logging: true
     update-mode: "replace"
-    on-resolution-hide: false
+    sync-conclusion: false
 ```
 
 ### References

@@ -30,10 +30,6 @@ function getCommentBody() {
 
     if (commentPath) {
 
-        if (!commentPath.endsWith('.md')) {
-            throw new Error("The 'comment-body-path' must point to a markdown (.md) file.");
-        }
-
         try {
             logger.debug(`Reading comment body from file: ${commentPath}`);
             let fileContent = readFileSync(commentPath, 'utf8');
@@ -42,7 +38,7 @@ function getCommentBody() {
                 fileContent = fileContent.slice(1);
             }
 
-            return fileContent;
+            return renderCommentBody(fileContent);
         } catch (error) {
             throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
         }
@@ -50,10 +46,22 @@ function getCommentBody() {
     }
 
     if (directComment) {
-        return directComment;
+        return renderCommentBody(directComment);
     }
 
     throw new Error("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
 }
 
-module.exports = { getCommentBody };
+function renderCommentBody(commentBody) {
+    logger.debug("IN RENDER");
+    if (core.getInput('render-markdown', { required: false }) === 'true') {
+        logger.debug("Rendering comment body as markdown enabled.");
+        return commentBody;
+    } else {
+        logger.debug("Rendering comment body as markdown disabled.");
+        return "<pre id=render-markdown-false>" + commentBody + "</pre>";
+    }
+
+}
+
+module.exports = { getCommentBody, renderCommentBody };

@@ -1,0 +1,141 @@
+name: Test Comment Update Modes
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - labeled
+
+jobs:
+  # Ensures append mode adds new content instead of replacing prior comment text.
+  test_update_mode_append:
+    name: Test Update Mode Append
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+      - name: Update comment with append
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-append"
+          comment-body: "test append - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "append"
+
+  # Confirms create mode always posts a fresh comment on repeated runs.
+  test_update_mode_create:
+    name: Test Update Mode Create
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+      - name: Update comment with create
+        uses: ./
+        id: comment-update-create
+        with:
+          comment-id: "test-create"
+          comment-body: "test create - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "create"
+
+  # Demonstrates replace mode overwrites the existing comment content.
+  test_update_mode_replace:
+    name: Test Update Mode Replace
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-replace"
+          comment-body: "test replace - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+
+      - name: Update comment with replace
+        uses: ./
+        id: comment-update-replace
+        with:
+          comment-id: "test-replace"
+          comment-body: "test replace - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "replace"
+
+  # Confirms none mode leaves the original comment unchanged on subsequent runs.
+  test_update_mode_none_behavior:
+    name: Test Update Mode None Behavior
+    runs-on: cp-ubuntu-amd64-1core-1gb
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-none-update"
+          comment-body: "test update none - initial comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"
+
+      - name: Comment shouldn't update with none update mode
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-none-update"
+          comment-body: "test update none - updated comment"
+          conclusion: "success"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-mode: "none"

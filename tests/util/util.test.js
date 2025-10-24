@@ -127,7 +127,7 @@ describe('getCommentBody', () => {
         expect(getCommentBody()).toBe('Line 1\nLine 2');
     });
 
-    it('returns un-rendered comment even if render-markdown is false', () => {
+    it('returns un-rendered comment from comment-body even if render-markdown is false', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-body') return 'Line 1\nLine 2';
             if (key === 'render-markdown') return 'false';
@@ -137,7 +137,7 @@ describe('getCommentBody', () => {
         expect(getCommentBody()).toBe('<pre id=render-markdown-false>Line 1\nLine 2</pre>');
     });
 
-    it('returns un-rendered comment even if render-markdown is false', () => {
+    it('returns un-rendered comment from comment-body-path even if render-markdown is false', () => {
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-body-path') return 'multiline.md';
             if (key === 'render-markdown') return 'false';

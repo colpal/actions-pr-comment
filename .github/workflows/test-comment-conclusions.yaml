@@ -11,7 +11,7 @@ jobs:
   # Ensures cancelled conclusion posts doesn't create comment.
   test_conclusion_cancelled_no_update:
     name: Test Conclusion Cancelled No Update
-    runs-on: cp-ubuntu-amd64-1core-1gb
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
@@ -28,13 +28,12 @@ jobs:
           comment-id: "test-conclusion-cancelled"
           comment-body: "test conclusion type cancelled - initial comment"
           conclusion: "cancelled"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
 
   # Ensures a skipped conclusion with sync enabled creates no initial comment.
   test_conclusion_skipped_initial_comment:
     name: Test Conclusion Skipped Initial Comment
-    runs-on: cp-ubuntu-amd64-1core-1gb
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
@@ -51,14 +50,13 @@ jobs:
           comment-id: "test-conclusion-skipped-first-comment"
           comment-body: "test conclusion type skipped - initial comment"
           conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           sync-conclusion: true
 
   # Verifies skipped conclusion keeps the comment hidden when sync-conclusion is true.
   test_conclusion_skipped_sync_true:
     name: Test Conclusion Skipped Sync True
-    runs-on: cp-ubuntu-amd64-1core-1gb
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
@@ -75,7 +73,6 @@ jobs:
           comment-id: "test-conclusion-skipped-resolution-true"
           comment-body: "test conclusion type skipped resolution true - initial comment"
           conclusion: "success"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           sync-conclusion: true
 
@@ -86,14 +83,13 @@ jobs:
           comment-id: "test-conclusion-skipped-resolution-true"
           comment-body: "test conclusion type skipped resolution true - updated comment"
           conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           sync-conclusion: true
 
   # Verifies skipped conclusion remains visible when sync-conclusion is false.
   test_conclusion_skipped_sync_false:
     name: Test Conclusion Skipped Sync False
-    runs-on: cp-ubuntu-amd64-1core-1gb
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
@@ -110,7 +106,6 @@ jobs:
           comment-id: "test-conclusion-skipped-resolution-false"
           comment-body: "test conclusion type skipped resolution false - initial comment"
           conclusion: "success"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           sync-conclusion: false
 
@@ -121,6 +116,5 @@ jobs:
           comment-id: "test-conclusion-skipped-resolution-false"
           comment-body: "test conclusion type skipped resolution false - updated comment"
           conclusion: "skipped"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           update-mode: "none"
           sync-conclusion: false

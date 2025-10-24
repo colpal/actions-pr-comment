@@ -17,7 +17,7 @@
     "pull-request-comment"
   ],
   "author": "joseph_mcdonough@colpal.com",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/colpal/actions-pr-comment/issues"
   },

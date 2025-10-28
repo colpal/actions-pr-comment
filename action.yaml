@@ -18,16 +18,20 @@ inputs:
     description: The GitHub token used to create an authenticated client
     required: false
     default: ${{ github.token }}
-  verbose-logging:
-    description: Verbose logging flag for more detailed information
+  render-markdown:
+    description: "If true, render the comment body as markdown."
+    required: false
+    default: true
+  sync-conclusion:
+    description: "If true, hide the comment when the conclusion is now 'success' from previous 'failure'."
     required: false
     default: false
   update-mode:
     description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)."
     required: false
     default: "create"
-  on-resolution-hide:
-    description: "If true, hide the comment when the conclusion is now 'success' from previous 'failure'."
+  verbose-logging:
+    description: Verbose logging flag for more detailed information
     required: false
     default: false
 

@@ -1,4 +1,16 @@
 # CHANGELOG
+# [1.0.0] - 2025-10-31
+### Full Public Release
+#### Added
+- `render-markdown` flag added (default is `true`) which controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown
+- Apache 2.0 license
+#### Changed
+- `on-resolution-hide` flag is now called `sync-conclusion`. Functionality is the same
+- Runners changed from `colpal` internal to `ubuntu-latest`
+- Restructured the test workflow to be more modular and done via manual triggers
+#### Removed
+- Requirement for `comment-body-path` to reference a Markdown `(.md)` file type
+
 ## [0.5.0] - 2025-10-07
 ### Don't Create Initial Comment if Success and On-Resolution-Hide is True
 #### Added

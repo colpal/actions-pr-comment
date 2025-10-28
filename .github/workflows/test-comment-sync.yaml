@@ -1,0 +1,221 @@
+name: Test Comment Sync Conclusion
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - labeled
+
+jobs:
+  # Validates hidden comments remain hidden when success updates re-run while sync-conclusion is enabled.
+  test_sync_conclusion_hide_when_already_hidden:
+    name: Test Sync Conclusion Hide When Already Hidden
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-sync')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - initial comment"
+          conclusion: "failure"
+          update-mode: "replace"
+
+      - name: Update comment with replace (and hide)
+        uses: ./
+        id: comment-update-replace-hide
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - updated comment"
+          conclusion: "success"
+          update-mode: "replace"
+          sync-conclusion: true
+
+      - name: Update comment with replace (and 'hide' again)
+        uses: ./
+        id: comment-update-replace-hide-again
+        with:
+          comment-id: "test-resolution-hide-again"
+          comment-body: "test resolution hide again - updated comment - to hide again"
+          conclusion: "success"
+          update-mode: "replace"
+          sync-conclusion: true
+
+  # Verifies sync-conclusion skips creating the initial comment when the run succeeds immediately.
+  test_sync_conclusion_skip_initial_success:
+    name: Test Sync Conclusion Skip Initial Success
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-sync')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-initial-comment-hide"
+          comment-body: "test resolution - hiding initial comment - should not see this"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: true
+          verbose-logging: true
+
+  # Ensures a follow-up success hides the earlier failure comment when append mode is used.
+  test_sync_conclusion_hide_on_success:
+    name: Test Sync Conclusion Hide On Success
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-sync')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution"
+          comment-body: "test resolution - initial comment"
+          conclusion: "failure"
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append
+        with:
+          comment-id: "test-resolution"
+          comment-body: "test resolution - updated comment"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: true
+
+  # Confirms sync-conclusion can reopen hidden comments when a later run fails again.
+  test_sync_conclusion_reopen_on_failure:
+    name: Test Sync Conclusion Reopen On Failure
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-sync')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - initial comment"
+          conclusion: "failure"
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append-hide
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: true
+
+      - name: Update comment with append (and reopen)
+        uses: ./
+        id: comment-update-append-unhide
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment to reopen"
+          conclusion: "failure"
+          update-mode: "append"
+          sync-conclusion: true
+
+      - name: Success step to remove failure
+        uses: ./
+        id: comment-update-append-unhide-succcess
+        with:
+          comment-id: "test-resolution-reopen"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: false
+
+  # Exercises several hide/unhide cycles to mimic long-lived workflows with sync enabled.
+  test_sync_conclusion_reopen_cycles:
+    name: Test Sync Conclusion Reopen Cycles
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-sync')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment on PR with direct comment
+        uses: ./
+        id: comment-direct
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - initial comment"
+          conclusion: "failure"
+          update-mode: "append"
+
+      - name: Update comment with append (and hide)
+        uses: ./
+        id: comment-update-append-hide
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: true
+
+      - name: Update comment with append (and reopen)
+        uses: ./
+        id: comment-update-append-unhide
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to reopen"
+          conclusion: "failure"
+          update-mode: "append"
+          sync-conclusion: true
+
+      - name: Update comment with append (and reopen again)
+        uses: ./
+        id: comment-update-append-unhide-again
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to reopen again"
+          conclusion: "failure"
+          update-mode: "append"
+          sync-conclusion: true
+
+      - name: Update comment with append (and reopen again)
+        uses: ./
+        id: comment-update-append-unhide-again-success
+        with:
+          comment-id: "test-resolution-reopen-again"
+          comment-body: "test resolution reopen - updated comment to set status to success"
+          conclusion: "success"
+          update-mode: "append"
+          sync-conclusion: false

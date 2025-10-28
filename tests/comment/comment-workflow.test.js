@@ -202,7 +202,7 @@ describe('comment-workflow', () => {
         expect(postComment).not.toHaveBeenCalled();
     });
 
-    it('should call hideComment when conclusion is success and on-resolution-hide is true', async () => {
+    it('should call hideComment when conclusion is success and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -211,7 +211,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -221,7 +221,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as RESOLVED due to success conclusion.");
     });
 
-    it('should not call hideComment when conclusion is failure and on-resolution-hide is true', async () => {
+    it('should not call hideComment when conclusion is failure and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -230,7 +230,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'failure';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -240,7 +240,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment hidden as RESOLVED due to success conclusion.");
     });
 
-    it('should not call hideComment when on-resolution-hide is false', async () => {
+    it('should not call hideComment when sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -249,7 +249,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'false';
+            if (key === 'sync-conclusion') return 'false';
             return undefined;
         });
 
@@ -260,7 +260,7 @@ describe('comment-workflow', () => {
     });
 
 
-    it('should not call unhideComment when conclusion is success and on-resolution-hide is true', async () => {
+    it('should not call unhideComment when conclusion is success and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -269,7 +269,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -279,7 +279,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should not call unhideComment when conclusion is success and on-resolution-hide is false', async () => {
+    it('should not call unhideComment when conclusion is success and sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -288,7 +288,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'false';
+            if (key === 'sync-conclusion') return 'false';
             return undefined;
         });
 
@@ -298,7 +298,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should not call unhideComment when conclusion is failure and on-resolution-hide is false', async () => {
+    it('should not call unhideComment when conclusion is failure and sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -307,7 +307,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'failure';
-            if (key === 'on-resolution-hide') return 'false';
+            if (key === 'sync-conclusion') return 'false';
             return undefined;
         });
 
@@ -317,7 +317,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should call unhideComment when conclusion is failure and on-resolution-hide is true', async () => {
+    it('should call unhideComment when conclusion is failure and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -326,7 +326,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'failure';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -336,7 +336,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should not call unhideComment when conclusion is success and on-resolution-hide is true', async () => {
+    it('should not call unhideComment when conclusion is success and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -345,7 +345,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -355,7 +355,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should call unhideComment when conclusion is failure and on-resolution-hide is true', async () => {
+    it('should call unhideComment when conclusion is failure and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -364,7 +364,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'failure';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -374,7 +374,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
-    it('should not call unhideComment when on-resolution-hide is false', async () => {
+    it('should not call unhideComment when sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         updateComment.mockResolvedValue();
@@ -383,7 +383,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'replace';
             if (key === 'conclusion') return 'failure';
-            if (key === 'on-resolution-hide') return 'false';
+            if (key === 'sync-conclusion') return 'false';
             return undefined;
         });
 
@@ -456,7 +456,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
     });
 
-    it('should exit early and not hide previous comment when conclusion is "skipped" and on-resolution-hide is false', async () => {
+    it('should exit early and not hide previous comment when conclusion is "skipped" and sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         hideComment.mockResolvedValue();
@@ -466,7 +466,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'none';
             if (key === 'conclusion') return 'skipped';
-            if (key === 'on-resolution-hide') return 'false';
+            if (key === 'sync-conclusion') return 'false';
             return undefined;
         });
 
@@ -479,7 +479,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Conclusion is 'skipped', skipping comment update.");
     });
 
-    it('should exit early and not hide previous comment when conclusion is "skipped" and on-resolution-hide is true', async () => {
+    it('should exit early and not hide previous comment when conclusion is "skipped" and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
         hideComment.mockResolvedValue();
@@ -489,7 +489,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'none';
             if (key === 'conclusion') return 'skipped';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -502,7 +502,7 @@ describe('comment-workflow', () => {
         expect(logger.debug).toHaveBeenCalledWith("Existing comment hidden as OUTDATED due to skip conclusion.");
     });
 
-    it('should not create success comment if on-resolution-hide is true', async () => {
+    it('should not create success comment if sync-conclusion is true', async () => {
         findComment.mockResolvedValue();
         hideComment.mockResolvedValue();
         postComment.mockResolvedValue();
@@ -511,7 +511,7 @@ describe('comment-workflow', () => {
             if (key === 'comment-id') return 'Test Check';
             if (key === 'update-mode') return 'none';
             if (key === 'conclusion') return 'success';
-            if (key === 'on-resolution-hide') return 'true';
+            if (key === 'sync-conclusion') return 'true';
             return undefined;
         });
 
@@ -521,6 +521,6 @@ describe('comment-workflow', () => {
         expect(postComment).not.toHaveBeenCalled();
         expect(updateComment).not.toHaveBeenCalled();
         expect(findComment).toHaveBeenCalled();
-        expect(logger.debug).toHaveBeenCalledWith("New comment not posted due to success conclusion and on-resolution-hide being true.");
+        expect(logger.debug).toHaveBeenCalledWith("New comment not posted due to success conclusion and sync-conclusion being true.");
     });
 });

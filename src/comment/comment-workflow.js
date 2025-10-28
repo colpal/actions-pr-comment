@@ -44,8 +44,8 @@ async function commentWorkflow(token) {
             if (conclusion === 'skipped') {
                 logger.debug("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
                 return;
-            } else if (core.getInput('on-resolution-hide', { required: false }) === 'true' && conclusion === 'success') {
-                logger.debug("New comment not posted due to success conclusion and on-resolution-hide being true.");
+            } else if (core.getInput('sync-conclusion', { required: false }) === 'true' && conclusion === 'success') {
+                logger.debug("New comment not posted due to success conclusion and sync-conclusion being true.");
             }
             else {
                 logger.debug("No existing comment found, posting a new comment.");
@@ -59,7 +59,7 @@ async function commentWorkflow(token) {
             if (conclusion === 'skipped') {
                 logger.debug("Conclusion is 'skipped', skipping comment update.");
 
-                if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
+                if (core.getInput('sync-conclusion', { required: false }) === 'true') {
                     logger.debug("Existing comment hidden as OUTDATED due to skip conclusion.");
                     await hideComment(token, comment, "OUTDATED");
                 }
@@ -80,7 +80,7 @@ async function commentWorkflow(token) {
                 await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
                 logger.debug("Existing comment updated successfully.");
 
-                if (core.getInput('on-resolution-hide', { required: false }) === 'true') {
+                if (core.getInput('sync-conclusion', { required: false }) === 'true') {
 
                     if (conclusion === 'success') {
                         await hideComment(token, comment, "RESOLVED");

@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Load environment variables from .env file
+      - name: Load Environment Variables From .env File
         run: |
           grep '^CHECK_NAME_1=' ci/vars/test.env >> $GITHUB_ENV
           grep '^COMMENT_BODY_PATH_1=' ci/vars/test.env >> $GITHUB_ENV
@@ -31,7 +31,7 @@ jobs:
           grep '^UPDATE_MODE_1=' ci/vars/test.env >> $GITHUB_ENV
           grep '^UPDATE_MODE_2=' ci/vars/test.env >> $GITHUB_ENV
 
-      - name: Comment on PR with markdown file comment
+      - name: Comment On PR With Markdown File Comment
         uses: ./
         id: comment-file
         with:
@@ -40,7 +40,7 @@ jobs:
           conclusion: ${{ env.CONCLUSION }}
           update-mode: ${{ env.UPDATE_MODE_1 }}
 
-      - name: Update comment on PR with markdown file comment
+      - name: Update Comment On PR With Markdown File Comment
         uses: ./
         id: comment-file-update
         with:
@@ -62,7 +62,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with verbose logging
+      - name: Comment On PR With Verbose Logging
         uses: ./
         id: comment-direct
         with:
@@ -85,7 +85,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with unrendered markdown comment
+      - name: Comment On PR With Unrendered Markdown Comment
         uses: ./
         id: comment-file
         with:

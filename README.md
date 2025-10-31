@@ -157,6 +157,10 @@ Below are some already implemented instances of colpal workflows and actions uti
 - [Airflow Dagbag Scanner](https://github.com/colpal/airflow/blob/v1.1/actions/dagbag-scanner/action.yaml#L142)
 - [Airflow Validation](https://github.com/colpal/airflow/blob/v1.1/.github/workflows/validation.yaml#L142)
 
+## Tests
+
+This project includes a test directory containing a test suite that covers the functionality of this action. The tests are written in Jest and can be run using `npm test`. The test suite is run automatically by the `test-and-coverage.yaml` workflow, which ensures that at least 95% of the lines, branches, functions, and statements are covered and that there are no failing tests. You can read more about the test suite [here](tests/README.md).
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a list of changes.

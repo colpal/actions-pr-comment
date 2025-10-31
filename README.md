@@ -1,6 +1,8 @@
 # actions-pr-comment
 > GitHub action for creating, updating, and hiding comments on pull requests
 
+<img src="examples/create-comment.gif" width="100%" height="auto" style="display: block; margin: 0 auto"/>
+
 ## Assumptions
 1. A message body is ready to be used as a comment. This can be either passed directly via `comment-body` or as a file via `comment-body-path`.
 
@@ -60,6 +62,11 @@ The action places or updates a comment in the pull request. The comment includes
   - `<!-- comment-id: my-check -->` (for identifying the comment)
   - `<!-- conclusion: success -->` (for tracking status and visibility)
 
+## Comment-Id
+The `comment-id` input is a unique identifier for the comment. It is an hidden identifier that is placed at the beginning of the comment body. It is used to identify the comment in the pull request and to track its visibility. When updating or hiding future comments, the action will look for a comment with the same `comment-id` and update it accordingly.
+
+Furthermore, it allows the same user (typically `github-actions[bot]`) to leave multiple comments at the same time without conflicting with each other. It serves as another identifier to distinguish between different comments. With this, this action can be apart of multiple workflows that leave comments on the same pull request, and not conflict with each other's update methods and contents.
+
 ## Conclusion
 The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
 
@@ -98,6 +105,30 @@ The `update-mode` input controls how the action handles existing comments with t
 | `append`  | Adds the new comment body to the end of an existing comment, separated by a timestamp. If no existing comment is found, creates a new one. |
 | `none`    | Does not create a new comment or update existing comments after the initial one. Will create the initial comment when no matching `comment-id` is found, but will not perform any updates after. |
 
+### Examples
+<details>
+<summary>Creating New Comment and Hiding Previous Comment</summary>
+<br>
+<img src="examples/create-comment.gif"/>
+</details>
+
+<details>
+<summary>Replacing Previous Comment</summary>
+<br>
+<img src="examples/replace-comment.gif"/>
+</details>
+
+<details>
+<summary>Appending to Previous Comment</summary>
+<br>
+<img src="examples/append-comment.gif"/>
+</details>
+
+<details>
+<summary>Performing No Updates to Previous Comment</summary>
+<br>
+<img src="examples/none-update-comment.gif"/>
+</details>
 
 ## Logging
 Set `verbose-logging: true` to enable detailed logs for debugging.

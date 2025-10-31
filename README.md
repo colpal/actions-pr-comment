@@ -1,8 +1,8 @@
 # actions-pr-comment
-> Internal action for creating, updating, and hiding comments on pull requests
+> GitHub action for creating, updating, and hiding comments on pull requests
 
 ## Assumptions
-1. A message body is ready to be used as a comment, either passed directly via `comment-body` or as a markdown file via `comment-body-path`
+1. A message body is ready to be used as a comment. This can be either passed directly via `comment-body` or as a file via `comment-body-path`
 
 ## Inputs
 All inputs for this action are summarized below for quick reference:
@@ -13,7 +13,7 @@ All inputs for this action are summarized below for quick reference:
 | `comment-body`      | string | —                      | No        | Text to use as the comment body. Required if `comment-body-path` is not provided.                |
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
-| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
+| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication for the github-actions[bot] to leave comments.                                                   |
 | `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
 | `sync-conclusion`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
@@ -21,7 +21,8 @@ All inputs for this action are summarized below for quick reference:
 
 ### Example Usage
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "my-check"
@@ -103,11 +104,12 @@ Set `verbose-logging: true` to enable detailed logs for debugging.
 
 ## Examples
 
-### Basic Usage
-Posts a comment to the pull request with the message "Linting passed successfully!" and sets the conclusion to `success`.
+### Using `Comment-Body`
+Posts a comment to the pull request with the message "Linting passed successfully!".
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "lint-check"
@@ -118,11 +120,12 @@ Posts a comment to the pull request with the message "Linting passed successfull
     sync-conclusion: true
 ```
 
-### Using a Markdown File
-Posts the contents of path/test-results.md as the comment body and sets the conclusion to failure, replacing any previous comment for the same check.
+### Using a Markdown File with `Comment-Body-Path`
+Posts the contents of `path/test-results.md` as the comment body, replacing any previous comment for the same check.
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "test-results"
@@ -133,6 +136,21 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     update-mode: "replace"
     sync-conclusion: false
 ```
+
+### Further Examples
+Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching their label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and re-opening will maintain the label and trigger a pull-request open event).
+- [Test Comment Conclusions](.github/workflows/test-comment-conclusions.yaml)
+  - Tests comments `conclusion` functionality
+  - Label: `test-conclusions`
+- [Test Comment Inputs](.github/workflows/test-comment-inputs.yaml)
+  - Tests comments `comment-body`, `comment-body-path`, and `render-markdown` functionality
+  - Label: `test-inputs`
+- [Test Comment Sync Conclusions](.github/workflows/test-comment-sync-conclusions.yaml)
+  - Tests comments `sync-conclusion` functionality
+  - Label: `test-sync-conclusions`
+- [Test Update Mode](.github/workflows/test-comment-update-mode.yaml)
+  - Tests comments `update-mode` functionality
+  - Label: `test-update-mode`
 
 ### References
 Below are some already implemented instances of colpal workflows and actions utilizing this action:

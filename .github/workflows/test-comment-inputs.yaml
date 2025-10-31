@@ -1,4 +1,5 @@
 name: Test Comment Inputs
+description: Workflow to test comment comment-body, comment-body-path, and render-markdown functionality
 
 on:
   pull_request:

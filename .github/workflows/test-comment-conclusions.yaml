@@ -1,4 +1,5 @@
 name: Test Comment Conclusions
+description: Workflow to test comment conclusion functionality
 
 on:
   pull_request:

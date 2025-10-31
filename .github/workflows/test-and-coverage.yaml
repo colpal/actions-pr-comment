@@ -1,5 +1,5 @@
 name: Test and Code Coverage Report
-description: Workflow to run the javascript test suite and upload the code coverage report. Ensuring at least 95% coverage is met.
+description: Workflow to run the jest test suite and upload the code coverage report. Ensuring at least 95% coverage is met.
 
 on:
   pull_request:
@@ -12,14 +12,14 @@ on:
 
 jobs:
   test:
-    name: Run tests with coverage
+    name: Run Tests With Coverage
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Setup Node.js
@@ -28,15 +28,15 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run test suite with coverage threshold
+      - name: Run Test Suite With Coverage Threshold
         run: >-
           npm test -- --coverage --coverageReporters=text-summary --coverageReporters=lcov
           --coverageThreshold='{ "global": { "branches": 95, "functions": 95, "lines": 95, "statements": 95 } }'
 
-      - name: Upload coverage artifact
+      - name: Upload Coverage Artifact
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.4.3
         with:
           name: coverage-report

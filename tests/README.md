@@ -7,7 +7,7 @@
 - **Viewing Coverage:** After running tests, view the coverage summary in the terminal or open the `coverage/lcov-report/index.html` file for a detailed report.
 - **Test Count:** The suite currently contains multiple test files, with each file comprising several individual tests.
 - **Suite Count:** Tests are organized into suites using Jest's `describe` blocks, allowing for grouped functionality checks.
-- **Maintaining Coverage:** Aim to keep line coverage above 90% to ensure reliability. Add tests for new features and edge cases to maintain high coverage.
+- **Maintaining Coverage:** Aim to keep line coverage above 95% to ensure reliability. Add tests for new features and edge cases to maintain high coverage.
 
 ## Current Test Coverage and Status
 
@@ -17,6 +17,16 @@
 - **Passing Tests:** All tests are currently passing, with no failing or skipped tests.
 - **Recent Changes:** Coverage has been maintained at 100% after recent updates.
 - **Continuous Integration:** Tests and coverage checks are run automatically on each pull request to ensure code quality.
+
+## Continuous Integration Workflow
+
+The [.github/workflows/test-and-coverage.yaml](../.github/workflows/test-and-coverage.yaml) workflow runs on pull requests targeting `main`. It:
+
+- installs dependencies with `npm ci` on `ubuntu-latest`
+- executes the Jest suite with a 95% minimum threshold for branches, functions, lines, and statements
+- uploads the generated `coverage/` directory as a build artifact for review
+
+The workflow fails if tests break or coverage drops below the enforced threshold, keeping the action codebase healthy.
 
 ## How to Run Tests
 

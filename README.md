@@ -141,6 +141,10 @@ Below are some already implemented instances of colpal workflows and actions uti
 <!-- - [Actions Terraform](https://github.com/colpal/actions-terraform/blob/feature/fetch-policy-from-artifact-registry/validate-opa/action.yaml#L124)
 - [MST Branching](https://github.com/colpal/MST-branching) -->
 
+## Tests
+
+This project includes a test directory containing a test suite that covers the functionality of this action. The tests are written in Jest and can be run using `npm test`. The test suite is run automatically by the `test-and-coverage.yaml` workflow, which ensures that at least 95% of the lines, branches, functions, and statements are covered and that there are no failing tests. You can read more about the test suite [here](tests/README.md).
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for a list of changes.

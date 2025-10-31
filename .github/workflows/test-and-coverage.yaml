@@ -1,0 +1,44 @@
+name: Test and Code Coverage Report
+description: Workflow to run the javascript test suite and upload the code coverage report. Ensuring at least 95% coverage is met.
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test:
+    name: Run tests with coverage
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.2.0
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run test suite with coverage threshold
+        run: >-
+          npm test -- --coverage --coverageReporters=text-summary --coverageReporters=lcov
+          --coverageThreshold='{ "global": { "branches": 95, "functions": 95, "lines": 95, "statements": 95 } }'
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.4.3
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 1

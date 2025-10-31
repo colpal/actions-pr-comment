@@ -2,7 +2,7 @@
 > GitHub action for creating, updating, and hiding comments on pull requests
 
 ## Assumptions
-1. A message body is ready to be used as a comment. This can be either passed directly via `comment-body` or as a file via `comment-body-path`
+1. A message body is ready to be used as a comment. This can be either passed directly via `comment-body` or as a file via `comment-body-path`.
 
 ## Inputs
 All inputs for this action are summarized below for quick reference:
@@ -13,7 +13,7 @@ All inputs for this action are summarized below for quick reference:
 | `comment-body`      | string | —                      | No        | Text to use as the comment body. Required if `comment-body-path` is not provided.                |
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
-| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication for the github-actions[bot] to leave comments.                                                   |
+| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token used by `github-actions[bot]` to leave comments.                                                   |
 | `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
 | `sync-conclusion`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
@@ -61,7 +61,7 @@ The action places or updates a comment in the pull request. The comment includes
   - `<!-- conclusion: success -->` (for tracking status and visibility)
 
 ## Conclusion
-The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#Sync-Conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
+The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
 
 | Value      | Effect                                                                                   |
 |------------|-----------------------------------------------------------------------------------------|
@@ -71,7 +71,7 @@ The `conclusion` input is a hidden identifier that tracks the status of the curr
 | `cancelled`| Sets hidden identifier to `cancelled`. No new comment created/updated.                  |
 
 ## Render-Markdown
-This flag controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown.
+This flag controls whether the comment body should be rendered as markdown or not. Useful for files like Terraform plans which might not want to be rendered as markdown.
 
 - If `render-markdown` is `true`, the comment body will be rendered as markdown.
   - `**bold**` will be rendered as **bold** instead of `**bold**`.
@@ -138,26 +138,24 @@ Posts the contents of `path/test-results.md` as the comment body, replacing any 
 ```
 
 ### Further Examples
-Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching their label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and re-opening will maintain the label and trigger a pull-request open event).
+Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching a matching label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and reopening will maintain the label and trigger a pull-request open event).
 - [Test Comment Conclusions](.github/workflows/test-comment-conclusions.yaml)
-  - Tests comments `conclusion` functionality
+  - Tests `conclusion` functionality
   - Label: `test-conclusions`
 - [Test Comment Inputs](.github/workflows/test-comment-inputs.yaml)
-  - Tests comments `comment-body`, `comment-body-path`, and `render-markdown` functionality
+  - Tests `comment-body`, `comment-body-path`, and `render-markdown` functionality
   - Label: `test-inputs`
 - [Test Comment Sync Conclusions](.github/workflows/test-comment-sync-conclusions.yaml)
-  - Tests comments `sync-conclusion` functionality
+  - Tests `sync-conclusion` functionality
   - Label: `test-sync-conclusions`
 - [Test Update Mode](.github/workflows/test-comment-update-mode.yaml)
-  - Tests comments `update-mode` functionality
+  - Tests `update-mode` functionality
   - Label: `test-update-mode`
 
 ### References
 Below are some already implemented instances of colpal workflows and actions utilizing this action:
 - [Airflow Dagbag Scanner](https://github.com/colpal/airflow/blob/v1.1/actions/dagbag-scanner/action.yaml#L142)
 - [Airflow Validation](https://github.com/colpal/airflow/blob/v1.1/.github/workflows/validation.yaml#L142)
-<!-- - [Actions Terraform](https://github.com/colpal/actions-terraform/blob/feature/fetch-policy-from-artifact-registry/validate-opa/action.yaml#L124)
-- [MST Branching](https://github.com/colpal/MST-branching) -->
 
 ## Changelog
 

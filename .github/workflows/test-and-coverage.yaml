@@ -1,5 +1,5 @@
 name: Test and Code Coverage Report
-description: Workflow to run the jest test suite and upload the code coverage report. Ensuring at least 95% coverage is met.
+description: Workflow to run the jest test suite and upload the code coverage report. Requires at least 95% test coverage.
 
 on:
   pull_request:

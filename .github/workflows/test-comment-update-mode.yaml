@@ -1,5 +1,5 @@
 name: Test Comment Update Modes
-
+description: Workflow to test the update-mode functionality
 on:
   pull_request:
     types:
@@ -16,12 +16,12 @@ jobs:
       contents: read
       pull-requests: write
     continue-on-error: true
-    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    if: contains(github.event.pull_request.labels.*.name, 'test-update-mode')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with direct comment
+      - name: Comment On PR With Direct Comment
         uses: ./
         id: comment-direct
         with:
@@ -30,7 +30,7 @@ jobs:
           conclusion: "success"
           update-mode: "append"
 
-      - name: Update comment with append
+      - name: Update Comment With Append
         uses: ./
         id: comment-update-append
         with:
@@ -47,12 +47,12 @@ jobs:
       contents: read
       pull-requests: write
     continue-on-error: true
-    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    if: contains(github.event.pull_request.labels.*.name, 'test-update-mode')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with direct comment
+      - name: Comment On PR With Direct Comment
         uses: ./
         id: comment-direct
         with:
@@ -61,7 +61,7 @@ jobs:
           conclusion: "success"
           update-mode: "create"
 
-      - name: Update comment with create
+      - name: Update Comment With Create
         uses: ./
         id: comment-update-create
         with:
@@ -78,12 +78,12 @@ jobs:
       contents: read
       pull-requests: write
     continue-on-error: true
-    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    if: contains(github.event.pull_request.labels.*.name, 'test-update-mode')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with direct comment
+      - name: Comment On PR With Direct Comment
         uses: ./
         id: comment-direct
         with:
@@ -92,7 +92,7 @@ jobs:
           conclusion: "success"
           update-mode: "replace"
 
-      - name: Update comment with replace
+      - name: Update Comment With Replace
         uses: ./
         id: comment-update-replace
         with:
@@ -109,12 +109,12 @@ jobs:
       contents: read
       pull-requests: write
     continue-on-error: true
-    if: contains(github.event.pull_request.labels.*.name, 'test-update')
+    if: contains(github.event.pull_request.labels.*.name, 'test-update-mode')
     steps:
       - name: Checkout Repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-      - name: Comment on PR with direct comment
+      - name: Comment On PR With Direct Comment
         uses: ./
         id: comment-direct
         with:
@@ -123,7 +123,7 @@ jobs:
           conclusion: "success"
           update-mode: "none"
 
-      - name: Comment shouldn't update with none update mode
+      - name: Comment Shouldn't Update With None Update Mode
         uses: ./
         id: comment-update-append
         with:

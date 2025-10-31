@@ -1,8 +1,10 @@
 # actions-pr-comment
-> Internal action for creating, updating, and hiding comments on pull requests
+> GitHub action for creating, updating, and hiding comments on pull requests
+
+<img src="examples/create-comment.gif" width="100%" height="auto" style="display: block; margin: 0 auto"/>
 
 ## Assumptions
-1. A message body is ready to be used as a comment, either passed directly via `comment-body` or as a markdown file via `comment-body-path`
+1. A message body is ready to be used as a comment. This can be either passed directly via `comment-body` or as a file via `comment-body-path`.
 
 ## Inputs
 All inputs for this action are summarized below for quick reference:
@@ -13,7 +15,7 @@ All inputs for this action are summarized below for quick reference:
 | `comment-body`      | string | —                      | No        | Text to use as the comment body. Required if `comment-body-path` is not provided.                |
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
-| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token for authentication.                                                   |
+| `github-token`      | string | `${{ github.token }}`  | No        | GitHub token used by `github-actions[bot]` to leave comments.                                                   |
 | `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
 | `sync-conclusion`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
@@ -21,7 +23,8 @@ All inputs for this action are summarized below for quick reference:
 
 ### Example Usage
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "my-check"
@@ -59,8 +62,13 @@ The action places or updates a comment in the pull request. The comment includes
   - `<!-- comment-id: my-check -->` (for identifying the comment)
   - `<!-- conclusion: success -->` (for tracking status and visibility)
 
+## Comment-Id
+The `comment-id` input is a unique identifier for the comment. It is an hidden identifier that is placed at the beginning of the comment body. It is used to identify the comment in the pull request and to track its visibility. When updating or hiding future comments, the action will look for a comment with the same `comment-id` and update it accordingly.
+
+Furthermore, it allows the same user (typically `github-actions[bot]`) to leave multiple comments at the same time without conflicting with each other. It serves as another identifier to distinguish between different comments. With this, this action can be apart of multiple workflows that leave comments on the same pull request, and not conflict with each other's update methods and contents.
+
 ## Conclusion
-The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#Sync-Conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
+The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
 
 | Value      | Effect                                                                                   |
 |------------|-----------------------------------------------------------------------------------------|
@@ -70,7 +78,7 @@ The `conclusion` input is a hidden identifier that tracks the status of the curr
 | `cancelled`| Sets hidden identifier to `cancelled`. No new comment created/updated.                  |
 
 ## Render-Markdown
-This flag controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown.
+This flag controls whether the comment body should be rendered as markdown or not. Useful for files like Terraform plans which might not want to be rendered as markdown.
 
 - If `render-markdown` is `true`, the comment body will be rendered as markdown.
   - `**bold**` will be rendered as **bold** instead of `**bold**`.
@@ -97,17 +105,42 @@ The `update-mode` input controls how the action handles existing comments with t
 | `append`  | Adds the new comment body to the end of an existing comment, separated by a timestamp. If no existing comment is found, creates a new one. |
 | `none`    | Does not create a new comment or update existing comments after the initial one. Will create the initial comment when no matching `comment-id` is found, but will not perform any updates after. |
 
+### Examples
+<details>
+<summary>Creating New Comment and Hiding Previous Comment</summary>
+<br>
+<img src="examples/create-comment.gif"/>
+</details>
+
+<details>
+<summary>Replacing Previous Comment</summary>
+<br>
+<img src="examples/replace-comment.gif"/>
+</details>
+
+<details>
+<summary>Appending to Previous Comment</summary>
+<br>
+<img src="examples/append-comment.gif"/>
+</details>
+
+<details>
+<summary>Performing No Updates to Previous Comment</summary>
+<br>
+<img src="examples/none-update-comment.gif"/>
+</details>
 
 ## Logging
 Set `verbose-logging: true` to enable detailed logs for debugging.
 
 ## Examples
 
-### Basic Usage
-Posts a comment to the pull request with the message "Linting passed successfully!" and sets the conclusion to `success`.
+### Using `Comment-Body`
+Posts a comment to the pull request with the message "Linting passed successfully!".
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "lint-check"
@@ -118,11 +151,12 @@ Posts a comment to the pull request with the message "Linting passed successfull
     sync-conclusion: true
 ```
 
-### Using a Markdown File
-Posts the contents of path/test-results.md as the comment body and sets the conclusion to failure, replacing any previous comment for the same check.
+### Using a Markdown File with `Comment-Body-Path`
+Posts the contents of `path/test-results.md` as the comment body, replacing any previous comment for the same check.
 
 ```yaml
-- uses: colpal/action-pr-comment@v1
+- name: Create PR Comment
+  uses: colpal/actions-pr-comment@v1
   if: ${{ !cancelled() }}
   with:
     comment-id: "test-results"
@@ -134,12 +168,25 @@ Posts the contents of path/test-results.md as the comment body and sets the conc
     sync-conclusion: false
 ```
 
+### Further Examples
+Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching a matching label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and reopening will maintain the label and trigger a pull-request open event).
+- [Test Comment Conclusions](.github/workflows/test-comment-conclusions.yaml)
+  - Tests `conclusion` functionality
+  - Label: `test-conclusions`
+- [Test Comment Inputs](.github/workflows/test-comment-inputs.yaml)
+  - Tests `comment-body`, `comment-body-path`, and `render-markdown` functionality
+  - Label: `test-inputs`
+- [Test Comment Sync Conclusions](.github/workflows/test-comment-sync-conclusions.yaml)
+  - Tests `sync-conclusion` functionality
+  - Label: `test-sync-conclusions`
+- [Test Update Mode](.github/workflows/test-comment-update-mode.yaml)
+  - Tests `update-mode` functionality
+  - Label: `test-update-mode`
+
 ### References
 Below are some already implemented instances of colpal workflows and actions utilizing this action:
 - [Airflow Dagbag Scanner](https://github.com/colpal/airflow/blob/v1.1/actions/dagbag-scanner/action.yaml#L142)
 - [Airflow Validation](https://github.com/colpal/airflow/blob/v1.1/.github/workflows/validation.yaml#L142)
-<!-- - [Actions Terraform](https://github.com/colpal/actions-terraform/blob/feature/fetch-policy-from-artifact-registry/validate-opa/action.yaml#L124)
-- [MST Branching](https://github.com/colpal/MST-branching) -->
 
 ## Tests
 

@@ -1,5 +1,5 @@
 # CHANGELOG
-# [1.0.0] - 2025-10-31
+## [1.0.0] - 2025-10-31
 ### Full Public Release
 #### Added
 - `render-markdown` flag added (default is `true`) which controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown

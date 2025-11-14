@@ -95,26 +95,25 @@ jobs:
           update-mode: "create"
           render-markdown: false
 
-    # Tests that comment-body and comment-body-path don't have to be supplied.
-    test_input_no_comment:
-      name: Test Input No Comment Body
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        pull-requests: write
-      continue-on-error: true
-      if: contains(github.event.pull_request.labels.*.name, 'test-inputs')
-      steps:
-        - name: Checkout Repo
-          uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+  # Tests that comment-body and comment-body-path don't have to be supplied.
+  test_input_no_comment:
+    name: Test Input No Comment Body
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-inputs')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
 
-        - name: Comment On PR With No Comment Body
-          uses: ./
-          id: comment-file
-          with:
-            comment-id: "test-no-comment-body"
-            conclusion: "success"
-            update-mode: "create"
-            verbose-logging: true
-      
-      
+      - name: Comment On PR With No Comment Body
+        uses: ./
+        id: comment-file
+        with:
+          comment-id: "test-no-comment-body"
+          conclusion: "success"
+          update-mode: "create"
+          verbose-logging: true
+    

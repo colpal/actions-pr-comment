@@ -12,8 +12,8 @@ All inputs for this action are summarized below for quick reference:
 | Name                | Type   | Default                | Required? | Description                                                                                  |
 |---------------------|--------|------------------------|-----------|----------------------------------------------------------------------------------------------|
 | `comment-id`        | string | —                      | Yes       | Unique identifier for the comment/check.                                                     |
-| `comment-body`      | string | —                      | No        | Text to use as the comment body. Required if `comment-body-path` is not provided.                |
-| `comment-body-path` | string | —                      | No        | Path to markdown file for comment body. Required if `comment-body` is not provided.              |
+| `comment-body`      | string | —                      | No        | Text to use as the comment body.
+| `comment-body-path` | string | —                      | No        | Path to markdown file for comment body.
 | `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token used by `github-actions[bot]` to leave comments.                                                   |
 | `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
@@ -66,6 +66,13 @@ The action places or updates a comment in the pull request. The comment includes
 The `comment-id` input is a unique identifier for the comment. It is an hidden identifier that is placed at the beginning of the comment body. It is used to identify the comment in the pull request and to track its visibility. When updating or hiding future comments, the action will look for a comment with the same `comment-id` and update it accordingly.
 
 Furthermore, it allows the same user (typically `github-actions[bot]`) to leave multiple comments at the same time without conflicting with each other. It serves as another identifier to distinguish between different comments. With this, this action can be apart of multiple workflows that leave comments on the same pull request, and not conflict with each other's update methods and contents.
+
+## Comment Body and Comment Body Path
+The `comment-body` input is the text to use as the comment body. This accepts the body of the comment as a string.
+
+The `comment-body-path` input is the path to a markdown file for the comment body. This accepts the path to a file which contains the content for the comment body. The file _should_ be a markdown file.
+
+Both fields cannot be supplied at once. If both are supplied, the action will fail. However, neither field can be supplied and then an empty comment will be generated
 
 ## Conclusion
 The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:

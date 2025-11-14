@@ -43,13 +43,13 @@ function getCommentBody() {
             throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
         }
 
-    }
-
-    if (directComment) {
+    } else if (directComment) {
         return renderCommentBody(directComment);
+    } else {
+        logger.debug("Neither a 'comment-body' or a 'comment-body-path' input was supplied.");
+        return "";
     }
 
-    throw new Error("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
 }
 
 function renderCommentBody(commentBody) {

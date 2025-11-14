@@ -8,7 +8,7 @@ on:
       - labeled
 
 jobs:
-  # Ensures append mode adds new content instead of replacing prior comment text.
+  # Tests append mode adds new content instead of replacing prior comment text.
   test_update_mode_append:
     name: Test Update Mode Append
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
           conclusion: "success"
           update-mode: "append"
 
-  # Confirms create mode always posts a fresh comment on repeated runs.
+  # Tests create mode always posts a fresh comment on repeated runs.
   test_update_mode_create:
     name: Test Update Mode Create
     runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
           conclusion: "success"
           update-mode: "create"
 
-  # Demonstrates replace mode overwrites the existing comment content.
+  # Tests replace mode overwrites the existing comment content.
   test_update_mode_replace:
     name: Test Update Mode Replace
     runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
           conclusion: "success"
           update-mode: "replace"
 
-  # Confirms none mode leaves the original comment unchanged on subsequent runs.
+  # Tests none mode leaves the original comment unchanged on subsequent runs.
   test_update_mode_none_behavior:
     name: Test Update Mode None Behavior
     runs-on: ubuntu-latest

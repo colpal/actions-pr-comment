@@ -1,4 +1,9 @@
 # CHANGELOG
+## [1.1.0] - 2025-11-14
+### Comment-Body and Comment-Body-Path Truly 'Optional'
+#### Changed
+- Providing neither `comment-body` or `comment-body-path` will generate an empty comment opposed to erroring out
+
 ## [1.0.0] - 2025-10-31
 ### Full Public Release
 #### Added

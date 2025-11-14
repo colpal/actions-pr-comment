@@ -9,7 +9,7 @@ on:
       - labeled
 
 jobs:
-  # Validates hidden comments remain hidden when success updates re-run while sync-conclusion is enabled.
+  # Tests hidden comments remain hidden when success updates re-run while sync-conclusion is enabled.
   test_sync_conclusion_hide_when_already_hidden:
     name: Test Sync Conclusion Hide When Already Hidden
     runs-on: ubuntu-latest
@@ -51,7 +51,7 @@ jobs:
           update-mode: "replace"
           sync-conclusion: true
 
-  # Verifies sync-conclusion skips creating the initial comment when the run succeeds immediately.
+  # Tests sync-conclusion skips creating the initial comment when the run succeeds immediately.
   test_sync_conclusion_skip_initial_success:
     name: Test Sync Conclusion Skip Initial Success
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
           sync-conclusion: true
           verbose-logging: true
 
-  # Ensures a follow-up success hides the earlier failure comment when append mode is used.
+  # Tests a follow-up success hides the earlier failure comment when append mode is used.
   test_sync_conclusion_hide_on_success:
     name: Test Sync Conclusion Hide On Success
     runs-on: ubuntu-latest
@@ -107,7 +107,7 @@ jobs:
           update-mode: "append"
           sync-conclusion: true
 
-  # Confirms sync-conclusion can reopen hidden comments when a later run fails again.
+  # Tests sync-conclusion can reopen hidden comments when a later run fails again.
   test_sync_conclusion_reopen_on_failure:
     name: Test Sync Conclusion Reopen On Failure
     runs-on: ubuntu-latest
@@ -159,7 +159,7 @@ jobs:
           update-mode: "append"
           sync-conclusion: false
 
-  # Exercises several hide/unhide cycles to mimic long-lived workflows with sync enabled.
+  # Tests several hide/unhide cycles to mimic long-lived workflows with sync enabled.
   test_sync_conclusion_reopen_cycles:
     name: Test Sync Conclusion Reopen Cycles
     runs-on: ubuntu-latest

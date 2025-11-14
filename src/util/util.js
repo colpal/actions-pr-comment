@@ -13,11 +13,10 @@ const { logger } = require('../util/logger.js');
  * If both inputs are provided, an error is thrown.
  * If 'comment-body-path' is provided, reads the file content and removes BOM if present.
  * If 'comment-body' is provided, returns its value directly.
- * If neither input is provided, an error is thrown.
+ * If neither input is provided, returns an empty string.
  * 
  * @throws {Error} If both 'comment-body' and 'comment-body-path' are provided.
  * @throws {Error} If the file at 'comment-body-path' cannot be read.
- * @throws {Error} If neither input is provided.
  * @returns {string} The comment body to be used.
  */
 function getCommentBody() {
@@ -43,13 +42,13 @@ function getCommentBody() {
             throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
         }
 
-    }
-
-    if (directComment) {
+    } else if (directComment) {
         return renderCommentBody(directComment);
+    } else {
+        logger.debug("Neither a 'comment-body' or a 'comment-body-path' input was supplied.");
+        return "";
     }
 
-    throw new Error("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
 }
 
 function renderCommentBody(commentBody) {

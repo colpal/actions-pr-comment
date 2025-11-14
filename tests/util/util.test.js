@@ -67,9 +67,10 @@ describe('getCommentBody', () => {
         expect(() => getCommentBody()).toThrow("Could not read file at path: bad/path.md. Error: File not found");
     });
 
-    it('throws error if neither comment-body nor comment-body-path is provided', () => {
+    it('returns empty string if neither comment-body nor comment-body-path is provided', () => {
         core.getInput.mockReturnValue('');
-        expect(() => getCommentBody()).toThrow("Either a 'comment-body' or a 'comment-body-path' input must be supplied.");
+        expect(getCommentBody()).toBe('');
+        expect(logger.debug).toHaveBeenCalledWith("Neither a 'comment-body' or a 'comment-body-path' input was supplied.");
     });
 
 

@@ -9,7 +9,7 @@ on:
       - labeled
 
 jobs:
-  # Exercises reading the comment body from markdown files and updating via a second file.
+  # Tests reading the comment body from markdown files and updating via a second file.
   test_input_markdown_file:
     name: Test Input Markdown File
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
           conclusion: ${{ env.CONCLUSION }}
           update-mode: ${{ env.UPDATE_MODE_2 }}
 
-  # Checks that the verbose-logging input enables extended logging paths.
+  # Tests that the verbose-logging input enables extended logging paths.
   test_input_verbose_logging:
     name: Test Input Verbose Logging
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
           verbose-logging: true
           update-mode: "create"
 
-  # Confirms markdown formatting is not rendered when render-markdown is false.
+  # Tests markdown formatting is not rendered when render-markdown is false.
   test_render_markdown_false:
     name: Test Render Markdown False
     runs-on: ubuntu-latest
@@ -94,3 +94,26 @@ jobs:
           conclusion: "success"
           update-mode: "create"
           render-markdown: false
+
+  # Tests that comment-body and comment-body-path don't have to be supplied.
+  test_input_no_comment:
+    name: Test Input No Comment Body
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-inputs')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Comment On PR With No Comment Body
+        uses: ./
+        id: comment-file
+        with:
+          comment-id: "test-no-comment-body"
+          conclusion: "success"
+          update-mode: "create"
+          verbose-logging: true
+    

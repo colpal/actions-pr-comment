@@ -1,5 +1,5 @@
 # CHANGELOG
-## [1.2.0] - 2026-02-17
+## [1.2.0] - 2026-02-20
 ### Don't Comment/Hide if Empty
 #### Added
 - `hide-on-empty` input added (default is `true`) which controls whether the comment should be hidden if the `comment-body` or `comment-body-path` is empty

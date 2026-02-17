@@ -6,6 +6,10 @@ const { logger } = require('../util/logger.js');
 /**
  * Posts a comment to a pull request using the provided Octokit instance.
  *
+ * If the comment body is empty and hideOnEmpty is true, the function will skip posting
+ * and return undefined. Otherwise, it constructs the full comment body by prepending
+ * the commentIdentifier and conclusionIdentifier to the comment body, then posts it.
+ *
  * @async
  * @function postComment
  * @param {object} octokit - An authenticated Octokit REST client instance.
@@ -13,11 +17,21 @@ const { logger } = require('../util/logger.js');
  * @param {string} repo - The name of the repository.
  * @param {string} commentIdentifier - A string to identify the comment, prepended to the comment body.
  * @param {string} conclusionIdentifier - A string to identify the conclusion, appended to the comment body.
- * @returns {Promise<void>} Resolves when the comment is posted or skipped if not a pull request.
+ * @param {boolean} hideOnEmpty - Whether to skip posting if the comment body is empty.
+ * @returns {Promise<object|undefined>} Resolves with the created comment data, or undefined if skipped.
+ * @throws {Error} If no pull request number is found in the context.
  */
-async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
+async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty) {
     logger.info("Starting to post a comment...");
-    const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
+
+    let commentBody = getCommentBody();
+
+    if (commentBody === "" && hideOnEmpty) {
+        logger.debug("Comment body is empty. Skipping comment post.");
+        return;
+    }
+
+    commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + commentBody;
 
     const prNumber = github.context.payload.pull_request.number;
 

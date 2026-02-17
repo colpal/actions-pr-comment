@@ -97,7 +97,31 @@ describe('getCommentBody', () => {
         fs.readFileSync.mockReturnValue('');
         expect(getCommentBody()).toBe('');
         expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: emptyfile.md');
+        expect(logger.debug).toHaveBeenCalledWith("Comment body path's file is empty.");
         expect(fs.readFileSync).toHaveBeenCalledWith('emptyfile.md', 'utf8');
+    });
+
+    it('returns empty string when directComment is empty', () => {
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body') return '';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
+        expect(getCommentBody()).toBe('');
+        expect(logger.debug).toHaveBeenCalledWith("Neither a 'comment-body' or a 'comment-body-path' input was supplied.");
+    });
+
+    it('returns empty string when file content is empty after BOM removal', () => {
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-body-path') return 'bom-only.md';
+            if (key === 'render-markdown') return 'true';
+            return undefined;
+        });
+        fs.readFileSync.mockReturnValue('\uFEFF');
+        expect(getCommentBody()).toBe('');
+        expect(logger.debug).toHaveBeenCalledWith('Reading comment body from file: bom-only.md');
+        expect(logger.debug).toHaveBeenCalledWith("Comment body path's file is empty.");
+        expect(fs.readFileSync).toHaveBeenCalledWith('bom-only.md', 'utf8');
     });
 
     it('throws error if file content is not a string', () => {

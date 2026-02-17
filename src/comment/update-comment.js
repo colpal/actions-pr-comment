@@ -6,9 +6,9 @@ const { logger } = require('../util/logger.js');
 /**
  * Updates a GitHub pull request comment with new content.
  *
- * Depending on the updateType, the comment body is either replaced or appended with new content.
- * - "replace": Replaces the comment body with the commentIdentifier and new content.
- * - "append": Appends new content to the existing comment body, separated by a divider and timestamp.
+ * Depending on the updateType, the comment body is either replaced or appended with new content:
+ * - "replace": Replaces the entire comment body with commentIdentifier, conclusionIdentifier, and new content.
+ * - "append": Appends new content to the existing comment body, separated by a divider with timestamp.
  *
  * @async
  * @param {object} octokit - The authenticated Octokit REST client instance.
@@ -18,7 +18,8 @@ const { logger } = require('../util/logger.js');
  * @param {string} commentIdentifier - A string used to identify the comment (used in "replace" mode).
  * @param {string} updateType - The type of update ("replace" or "append").
  * @param {string} conclusionIdentifier - A string to identify the conclusion, appended to the comment body.
- * @returns {Promise<void>} Resolves when the comment is updated or skips if not a pull request.
+ * @returns {Promise<string>} Resolves with the new comment body content retrieved from getCommentBody().
+ * @throws {Error} If no pull request number is found in the context or if updateType is unknown.
  */
 async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
     logger.info("Starting to update a comment...");
@@ -60,6 +61,7 @@ async function updateComment(octokit, owner, repo, comment, commentIdentifier, u
         body: commentBody,
     });
     logger.debug("Comment updated successfully.");
+    return newCommentBody;
 }
 
 module.exports = { updateComment };

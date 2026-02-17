@@ -107,7 +107,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
 
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier);
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier, true);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -127,7 +127,7 @@ describe('comment-workflow', () => {
         await commentWorkflow(token);
 
         expect(hideComment).toHaveBeenCalledWith(token, mockComment, "OUTDATED");
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier);
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, '<!-- Test Check -->', conclusionIdentifier, true);
         expect(updateComment).not.toHaveBeenCalled();
     });
 
@@ -158,7 +158,7 @@ describe('comment-workflow', () => {
         await expect(commentWorkflow(token)).resolves.toBeUndefined();
 
         expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('No existing comment found, posting a new comment.'));
-        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+        expect(postComment).toHaveBeenCalledWith(octokit, owner, repo, commentIdentifier, conclusionIdentifier, true);
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred during comment workflow: postComment error'));
     });
 
@@ -205,7 +205,7 @@ describe('comment-workflow', () => {
     it('should call hideComment when conclusion is success and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         hideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -224,7 +224,7 @@ describe('comment-workflow', () => {
     it('should not call hideComment when conclusion is failure and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         hideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -243,7 +243,7 @@ describe('comment-workflow', () => {
     it('should not call hideComment when sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         hideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -263,7 +263,7 @@ describe('comment-workflow', () => {
     it('should not call unhideComment when conclusion is success and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         unhideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -282,7 +282,7 @@ describe('comment-workflow', () => {
     it('should not call unhideComment when conclusion is success and sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         unhideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -301,7 +301,7 @@ describe('comment-workflow', () => {
     it('should not call unhideComment when conclusion is failure and sync-conclusion is false', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         unhideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -320,7 +320,7 @@ describe('comment-workflow', () => {
     it('should call unhideComment when conclusion is failure and sync-conclusion is true', async () => {
         const mockComment = { id: 1, body: 'Existing comment' };
         findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: 'Updated comment' });
         unhideComment.mockResolvedValue();
         core.getInput.mockImplementation((key) => {
             if (key === 'comment-id') return 'Test Check';
@@ -334,63 +334,6 @@ describe('comment-workflow', () => {
 
         expect(unhideComment).toHaveBeenCalledWith(token, mockComment);
         expect(logger.debug).toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
-    });
-
-    it('should not call unhideComment when conclusion is success and sync-conclusion is true', async () => {
-        const mockComment = { id: 1, body: 'Existing comment' };
-        findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
-        unhideComment.mockResolvedValue();
-        core.getInput.mockImplementation((key) => {
-            if (key === 'comment-id') return 'Test Check';
-            if (key === 'update-mode') return 'replace';
-            if (key === 'conclusion') return 'success';
-            if (key === 'sync-conclusion') return 'true';
-            return undefined;
-        });
-
-        await commentWorkflow(token);
-
-        expect(unhideComment).not.toHaveBeenCalled();
-        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
-    });
-
-    it('should call unhideComment when conclusion is failure and sync-conclusion is true', async () => {
-        const mockComment = { id: 1, body: 'Existing comment' };
-        findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
-        unhideComment.mockResolvedValue();
-        core.getInput.mockImplementation((key) => {
-            if (key === 'comment-id') return 'Test Check';
-            if (key === 'update-mode') return 'replace';
-            if (key === 'conclusion') return 'failure';
-            if (key === 'sync-conclusion') return 'true';
-            return undefined;
-        });
-
-        await commentWorkflow(token);
-
-        expect(unhideComment).toHaveBeenCalledWith(token, mockComment);
-        expect(logger.debug).toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
-    });
-
-    it('should not call unhideComment when sync-conclusion is false', async () => {
-        const mockComment = { id: 1, body: 'Existing comment' };
-        findComment.mockResolvedValue(mockComment);
-        updateComment.mockResolvedValue();
-        unhideComment.mockResolvedValue();
-        core.getInput.mockImplementation((key) => {
-            if (key === 'comment-id') return 'Test Check';
-            if (key === 'update-mode') return 'replace';
-            if (key === 'conclusion') return 'failure';
-            if (key === 'sync-conclusion') return 'false';
-            return undefined;
-        });
-
-        await commentWorkflow(token);
-
-        expect(unhideComment).not.toHaveBeenCalled();
-        expect(logger.debug).not.toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
     });
 
     it('should call hideComment and postComment when update-mode is "create"', async () => {
@@ -522,5 +465,123 @@ describe('comment-workflow', () => {
         expect(updateComment).not.toHaveBeenCalled();
         expect(findComment).toHaveBeenCalled();
         expect(logger.debug).toHaveBeenCalledWith("New comment not posted due to success conclusion and sync-conclusion being true.");
+    });
+
+    it('should hide comment after update if the comment body is empty and hide-on-empty is true', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue('');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'hide-on-empty') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Comment body is empty and hide-on-empty is true. Hiding comment.");
+    });
+
+    it('should not hide comment after update if the comment body is empty and hide-on-empty is false', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: '' });
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'hide-on-empty') return 'false';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+    });
+
+    it('should unhide comment after update if the comment body is empty and hide-on-empty is false and conclusion is failure', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: '' });
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'hide-on-empty') return 'false';
+            if (key === 'conclusion') return 'failure';
+            if (key === 'sync-conclusion') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(unhideComment).toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Existing comment unhidden due to failure conclusion.");
+    });
+
+    it('should hide comment after update if the comment body is empty and hide-on-empty is true and conclusion is failure', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue('');
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'hide-on-empty') return 'true';
+            if (key === 'conclusion') return 'failure';
+            if (key === 'sync-conclusion') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).toHaveBeenCalled();
+        expect(unhideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Comment body is empty and hide-on-empty is true. Hiding comment.");
+    });
+
+    it('should not hide or unhide comment if sync-conclusion is true but conclusion is not success or failure', async () => {
+        const mockComment = { id: 1, body: 'Existing comment' };
+        findComment.mockResolvedValue(mockComment);
+        hideComment.mockResolvedValue();
+        postComment.mockResolvedValue();
+        updateComment.mockResolvedValue({ body: '' });
+        core.getInput.mockImplementation((key) => {
+            if (key === 'comment-id') return 'Test Check';
+            if (key === 'update-mode') return 'replace';
+            if (key === 'hide-on-empty') return 'false';
+            if (key === 'conclusion') return '';
+            if (key === 'sync-conclusion') return 'true';
+            return undefined;
+        });
+
+        await commentWorkflow(token);
+
+        expect(hideComment).not.toHaveBeenCalled();
+        expect(unhideComment).not.toHaveBeenCalled();
+        expect(postComment).not.toHaveBeenCalled();
+        expect(updateComment).toHaveBeenCalled();
+        expect(findComment).toHaveBeenCalled();
+        expect(logger.debug).toHaveBeenCalledWith("Conclusion is not 'success' or 'failure', cannot properly sync-conclusion.");
     });
 });

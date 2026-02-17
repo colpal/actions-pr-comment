@@ -1,4 +1,11 @@
 # CHANGELOG
+## [1.2.0] - 2026-02-17
+### Don't Comment/Hide if Empty
+#### Added
+- `hide-on-empty` input added (default is `true`) which controls whether the comment should be hidden if the `comment-body` or `comment-body-path` is empty
+#### Changed
+- `conclusion` input is now 'optional'. However it will be required if `sync-conclusion` is enabled as that input is dependent on `conclusion`
+
 ## [1.1.0] - 2025-11-14
 ### Comment-Body and Comment-Body-Path Truly 'Optional'
 #### Changed
@@ -7,10 +14,10 @@
 ## [1.0.0] - 2025-10-31
 ### Full Public Release
 #### Added
-- `render-markdown` flag added (default is `true`) which controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown
+- `render-markdown` input added (default is `true`) which controls whether the comment body should be rendered as markdown or not. Useful for files like terraform plans which might not want to be rendered as markdown
 - Apache 2.0 license
 #### Changed
-- `on-resolution-hide` flag is now called `sync-conclusion`. Functionality is the same
+- `on-resolution-hide` input is now called `sync-conclusion`. Functionality is the same
 - Runners changed from `colpal` internal to `ubuntu-latest`
 - Restructured the test workflow to be more modular and done via manual triggers
 #### Removed
@@ -24,7 +31,7 @@
 - Corrected documentation to note that `verbose-logging` and `on-resolution-hide` accept booleans, and not string-wrapped booleans 
 
 ## [0.4.0] - 2025-10-02
-### Removing status checks
+### Removing Status Checks
 #### Added
 - Adding pagination support on finding comments
   - Resolves an issue where if there were more than 100 comments on a pull request, this action may have trouble finding a previous one to hide or update
@@ -42,9 +49,9 @@
   - This is intended for use cases that align with the common `conclusion` pattern: `conclusion: ${{ steps.previous-step.outcome }}`
 
 ## [0.2.0] - 2025-09-25
-### On-Resolution-Hide Input
+### On-Resolution-Hide Flag
 #### Added
-- `on-resolution-hide` input added (default is `false` (off))
+- `on-resolution-hide` flag added (default is `false` (off))
   - When enabled, will hide comments automatically once its conclusion is `success`
 
 ## [0.1.0] - 2025-09-02

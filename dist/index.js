@@ -23993,6 +23993,10 @@ var require_util8 = __commonJS({
           if (fileContent.charCodeAt(0) === 65279) {
             fileContent = fileContent.slice(1);
           }
+          if (fileContent === "") {
+            logger.debug("Comment body path's file is empty.");
+            return "";
+          }
           return renderCommentBody(fileContent);
         } catch (error) {
           throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
@@ -24005,7 +24009,6 @@ var require_util8 = __commonJS({
       }
     }
     function renderCommentBody(commentBody) {
-      logger.debug("IN RENDER");
       if (core.getInput("render-markdown", { required: false }) === "true") {
         logger.debug("Rendering comment body as markdown enabled.");
         return commentBody;
@@ -24064,6 +24067,7 @@ var require_update_comment = __commonJS({
         body: commentBody
       });
       logger.debug("Comment updated successfully.");
+      return newCommentBody;
     }
     module2.exports = { updateComment };
   }
@@ -24127,9 +24131,16 @@ var require_post_comment = __commonJS({
     var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
-    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier) {
+    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty) {
       logger.info("Starting to post a comment...");
-      const commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + getCommentBody();
+      let commentBody = getCommentBody();
+      logger.debug("Comment Body: ", commentBody);
+      logger.debug("Hide On Empty: ", hideOnEmpty);
+      if (commentBody === "" && hideOnEmpty) {
+        logger.debug("Comment body is empty. Skipping comment post.");
+        return;
+      }
+      commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + commentBody;
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
         logger.warning("Not a pull request, skipping review submission.");
@@ -24161,7 +24172,8 @@ var require_comment_workflow = __commonJS({
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
-      const conclusion = core.getInput("conclusion", { required: true });
+      const conclusion = core.getInput("conclusion", { required: false }) || "";
+      const hideOnEmpty = (core.getInput("hide-on-empty", { required: false }) || "true") === "true";
       if (conclusion === "cancelled") {
         logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
         return;
@@ -24179,7 +24191,7 @@ var require_comment_workflow = __commonJS({
             logger.debug("New comment not posted due to success conclusion and sync-conclusion being true.");
           } else {
             logger.debug("No existing comment found, posting a new comment.");
-            comment = await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+            comment = await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
           }
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
@@ -24195,21 +24207,25 @@ var require_comment_workflow = __commonJS({
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
             logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier);
+            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
             logger.debug("New comment posted successfully.");
           } else if (updateMode === "none") {
             logger.debug("Update mode is 'none', skipping comment update.");
           } else {
-            await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
+            const commentToUpdateWith = await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
             logger.debug("Existing comment updated successfully.");
-            if (core.getInput("sync-conclusion", { required: false }) === "true") {
+            if (commentToUpdateWith === "" && hideOnEmpty) {
+              logger.debug("Comment body is empty and hide-on-empty is true. Hiding comment.");
+              await hideComment(token, comment, "OUTDATED");
+            } else if (core.getInput("sync-conclusion", { required: false }) === "true") {
               if (conclusion === "success") {
                 await hideComment(token, comment, "RESOLVED");
                 logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
-              }
-              if (conclusion === "failure") {
+              } else if (conclusion === "failure") {
                 await unhideComment(token, comment);
                 logger.debug("Existing comment unhidden due to failure conclusion.");
+              } else {
+                logger.debug("Conclusion is not 'success' or 'failure', cannot properly sync-conclusion.");
               }
             }
           }

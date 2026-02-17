@@ -26,6 +26,9 @@ async function postComment(octokit, owner, repo, commentIdentifier, conclusionId
 
     let commentBody = getCommentBody();
 
+    logger.debug("Comment Body: ", commentBody);
+    logger.debug("Hide On Empty: ", hideOnEmpty);
+
     if (commentBody === "" && hideOnEmpty) {
         logger.debug("Comment body is empty. Skipping comment post.");
         return;

@@ -14,8 +14,9 @@ All inputs for this action are summarized below for quick reference:
 | `comment-id`        | string | —                      | Yes       | Unique identifier for the comment/check.                                                     |
 | `comment-body`      | string | —                      | No        | Text to use as the comment body.
 | `comment-body-path` | string | —                      | No        | Path to markdown file for comment body.
-| `conclusion`        | string | —                      | Yes       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
+| `conclusion`        | string | —                      | No       | Workflow result: `success`, `failure`, `skipped`, or `cancelled`.                           |
 | `github-token`      | string | `${{ github.token }}`  | No        | GitHub token used by `github-actions[bot]` to leave comments.                                                   |
+| `hide-on-empty` | boolean | `true` | No | Hide previous comment if `comment-body` or `comment-body-path` is supplied but empty. Do not create a new comment. |
 | `render-markdown`   | boolean | `true`                 | No        | Render the comment body as markdown.                                                     |
 | `sync-conclusion`| boolean | `false`                | No        | Hide previous failure comment when resolved. If the initial comment is `conclusion: success` and this is set to `true`, then the comment will not be created.                                       |
 | `update-mode`       | string | `"create"`               | No        | How to handle existing comments: `replace`, `append`, `create`, or `none`.                   |
@@ -75,7 +76,7 @@ The `comment-body-path` input is the path to a markdown file for the comment bod
 Both fields cannot be supplied at once. If both are supplied, the action will fail. However, neither field can be supplied and then an empty comment will be generated
 
 ## Conclusion
-The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
+The `conclusion` input is a hidden identifier that tracks the status of the current run. It works with [`sync-conclusion`](#sync-conclusion) to control comment visibility. **While `conclusion` is not required, it becomes required if `sync-conclusion` is used.** Use `steps.<step_id>.outcome` for this value. Possible values and their effects:
 
 | Value      | Effect                                                                                   |
 |------------|-----------------------------------------------------------------------------------------|
@@ -84,8 +85,14 @@ The `conclusion` input is a hidden identifier that tracks the status of the curr
 | `skipped`  | Sets hidden identifier to `skipped`. No new comment created/updated. May hide existing. |
 | `cancelled`| Sets hidden identifier to `cancelled`. No new comment created/updated.                  |
 
+## Hide-On-Empty
+The `hide-on-empty` input controls whether the comment should be hidden if the `comment-body` or `comment-body-path` is empty. This provides a mechanism to hide comments without the knowledge of a `conclusion`. Calling workflows can be configured in such a way that it will supply an empty body when the action should not create a comment. 
+
+- If `true`, then no new comment will be created if the `comment-body` or `comment-body-path` is empty, and any previous comment will also be hidden. 
+- If `false`, then an empty comment will be created as that is what is supplied via the `comment-body` or `comment-body-path`.
+
 ## Render-Markdown
-This flag controls whether the comment body should be rendered as markdown or not. Useful for files like Terraform plans which might not want to be rendered as markdown.
+The `render-markdown` input controls whether the comment body should be rendered as markdown or not. Useful for files like Terraform plans which might not want to be rendered as markdown.
 
 - If `render-markdown` is `true`, the comment body will be rendered as markdown.
   - `**bold**` will be rendered as **bold** instead of `**bold**`.
@@ -93,7 +100,7 @@ This flag controls whether the comment body should be rendered as markdown or no
   - `**bold**` will be rendered as `**bold**` instead of **bold**.
 
 ## Sync-Conclusion
-This flag controls whether successful comments are hidden automatically. When set to `"true"`:
+The `sync-conclusion` input controls whether successful comments are hidden automatically. When set to `"true"`:
 
 - If `conclusion` is `success`, the comment is hidden.
   - If `conclusion` is `success` and it's the **first** comment, then the comment is not created at all.

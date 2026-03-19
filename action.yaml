@@ -13,21 +13,25 @@ inputs:
     required: false
   conclusion:
     description: The conclusion status of the check (can be success, failure, cancelled)
-    required: true
+    required: false
+  hide-on-empty:
+    description: If true, hide the comment when the comment contents are empty
+    required: false
+    default: true
   github-token:
     description: The GitHub token used to create an authenticated client
     required: false
     default: ${{ github.token }}
   render-markdown:
-    description: "If true, render the comment body as markdown."
+    description: If true, render the comment body as markdown
     required: false
     default: true
   sync-conclusion:
-    description: "If true, hide the comment when the conclusion is now 'success' from previous 'failure'."
+    description: "If true, hide the comment when the conclusion is now 'success' from previous 'failure'"
     required: false
     default: false
   update-mode:
-    description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)."
+    description: "How to handle existing comments. Options: 'replace' (overwrite), 'append' (add to end), 'create' (always make a new comment)"
     required: false
     default: "create"
   verbose-logging:

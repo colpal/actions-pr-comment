@@ -101,4 +101,34 @@ describe('postComment', () => {
         await expect(postComment(octokit, 'owner', 'repo', 'identifier'))
             .rejects.toThrow("No pull request number found in the context.");
     });
+
+    it('should not create a comment if commentBody is empty and hideOnEmpty is true', async () => {
+        getCommentBody.mockReturnValueOnce('');
+
+        const result = await postComment(octokit, 'owner', 'repo', 'identifier', 'conclusion', true);
+
+        expect(logger.info).toHaveBeenCalledWith("Starting to post a comment...");
+        expect(logger.debug).toHaveBeenCalledWith("Comment body is empty. Skipping comment post.");
+        expect(getCommentBody).toHaveBeenCalled();
+        expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+        expect(result).toBeUndefined();
+    });
+
+    it('should create a comment if commentBody is empty and hideOnEmpty is false', async () => {
+        getCommentBody.mockReturnValueOnce('');
+
+        const comment = await postComment(octokit, 'owner', 'repo', 'identifier', 'conclusion', false);
+
+        expect(logger.info).toHaveBeenCalledWith("Starting to post a comment...");
+        expect(getCommentBody).toHaveBeenCalled();
+        expect(octokit.rest.issues.createComment).toHaveBeenCalledWith({
+            owner: 'owner',
+            repo: 'repo',
+            issue_number: 42,
+            body: 'identifier\nconclusion\n'
+        });
+        expect(logger.debug).toHaveBeenCalledWith("Comment posted successfully.");
+        expect(comment).toBeDefined();
+    });
+
 });

@@ -183,19 +183,7 @@ Posts the contents of `path/test-results.md` as the comment body, replacing any 
 ```
 
 ### Further Examples
-Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching a matching label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and reopening will maintain the label and trigger a pull-request open event).
-- [Test Comment Conclusions](.github/workflows/test-comment-conclusions.yaml)
-  - Tests `conclusion` functionality
-  - Label: `test-conclusions`
-- [Test Comment Inputs](.github/workflows/test-comment-inputs.yaml)
-  - Tests `comment-body`, `comment-body-path`, and `render-markdown` functionality
-  - Label: `test-inputs`
-- [Test Comment Sync Conclusions](.github/workflows/test-comment-sync-conclusions.yaml)
-  - Tests `sync-conclusion` functionality
-  - Label: `test-sync-conclusions`
-- [Test Update Mode](.github/workflows/test-comment-update-mode.yaml)
-  - Tests `update-mode` functionality
-  - Label: `test-update-mode`
+By applying the `test-conclusions`, `test-inputs`, `test-sync-conclusions`, and `test-update-mode` labels to a pull request, you can see examples of this action in use. You can read more about these examples and how to manually test them [here](tests/README.md#manual-testing).
 
 ### References
 Below are some already implemented instances of colpal workflows and actions utilizing this action:
@@ -204,7 +192,11 @@ Below are some already implemented instances of colpal workflows and actions uti
 
 ## Tests
 
+### Automated Unit Tests
 This project includes a test directory containing a test suite that covers the functionality of this action. The tests are written in Jest and can be run using `npm test`. The test suite is run automatically by the `test-and-coverage.yaml` workflow, which ensures that at least 95% of the lines, branches, functions, and statements are covered and that there are no failing tests. You can read more about the test suite [here](tests/README.md).
+
+### Manual Testing
+There are several test workflows in the [.github/workflows](.github/workflows) directory that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching a matching label to it. Can read more about those examples and manually testing [here](tests/README.md#manual-testing)
 
 ## Changelog
 

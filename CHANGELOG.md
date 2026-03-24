@@ -1,4 +1,9 @@
 # CHANGELOG
+## [1.3.0] - 2026-03-24
+### Upgrade to Node 24
+#### Changed
+- Using `node24` action instead of `node20`
+
 ## [1.2.0] - 2026-02-20
 ### Don't Comment/Hide if Empty
 #### Added

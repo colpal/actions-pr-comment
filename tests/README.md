@@ -51,3 +51,18 @@ The workflow fails if tests break or coverage drops below the enforced threshold
 - If tests fail, check error messages in the terminal for details.
 - Ensure all dependencies are installed and up to date.
 - For coverage issues, verify that all code paths are tested.
+
+## Manual Testing
+Within the [.github/workflows](.github/workflows) directory, there are test workflows that demonstrate most configurations of this action. They are grouped by functionality and can be added to an open pull request by attaching a matching label to it. The workflow will run and post comments to the pull request on label attachment, pushes to the branch, and when the pull request is opened (such that closing and reopening will maintain the label and trigger a pull-request open event). There is no automatic mechanism for reading the output and ensuring it is correct, it is up to the tester to verify the output.
+- [Test Comment Conclusions](.github/workflows/test-comment-conclusions.yaml)
+  - Tests `conclusion` functionality
+  - Label: `test-conclusions`
+- [Test Comment Inputs](.github/workflows/test-comment-inputs.yaml)
+  - Tests `comment-body`, `comment-body-path`, and `render-markdown` functionality
+  - Label: `test-inputs`
+- [Test Comment Sync Conclusions](.github/workflows/test-comment-sync-conclusions.yaml)
+  - Tests `sync-conclusion` functionality
+  - Label: `test-sync-conclusions`
+- [Test Update Mode](.github/workflows/test-comment-update-mode.yaml)
+  - Tests `update-mode` functionality
+  - Label: `test-update-mode`

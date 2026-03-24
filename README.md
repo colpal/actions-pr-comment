@@ -183,7 +183,7 @@ Posts the contents of `path/test-results.md` as the comment body, replacing any 
 ```
 
 ### Further Examples
-By applying the `test-conclusions`, `test-inputs`, `test-sync-conclusions`, and `test-update-mode` labels to a pull request, you can see examples of this action in use. You can read more about these examples and how to manually test them [here](tests/README.md#manual-testing).
+By applying the `test-conclusions`, `test-inputs`, `test-sync-conclusions`, and/or `test-update-mode` labels to a pull request, you can see examples of this action in use. You can read more about these examples and how to manually test them [here](tests/README.md#manual-testing).
 
 ### References
 Below are some already implemented instances of colpal workflows and actions utilizing this action:

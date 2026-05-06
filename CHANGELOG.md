@@ -1,4 +1,9 @@
 # CHANGELOG
+## [1.4.0] - 2026-05-06
+### Unhide Comment When Body Populated
+#### Added
+- Comments are now unhidden when `comment-body` or `comment-body-path` is populated after previously being empty and hidden
+
 ## [1.3.0] - 2026-03-24
 ### Upgrade to Node 24
 #### Changed

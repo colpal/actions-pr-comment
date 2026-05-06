@@ -24185,47 +24185,92 @@ var require_comment_workflow = __commonJS({
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
           if (conclusion === "skipped") {
-            logger.debug("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
+            logger.debug(
+              "Conclusion is 'skipped' and no existing comment found, skipping comment workflow."
+            );
             return;
           } else if (core.getInput("sync-conclusion", { required: false }) === "true" && conclusion === "success") {
-            logger.debug("New comment not posted due to success conclusion and sync-conclusion being true.");
+            logger.debug(
+              "New comment not posted due to success conclusion and sync-conclusion being true."
+            );
           } else {
             logger.debug("No existing comment found, posting a new comment.");
-            comment = await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
+            comment = await postComment(
+              octokit,
+              owner,
+              repo,
+              commentIdentifier,
+              conclusionIdentifier,
+              hideOnEmpty
+            );
           }
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
-          logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
+          logger.debug(
+            `Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`
+          );
           if (conclusion === "skipped") {
             logger.debug("Conclusion is 'skipped', skipping comment update.");
             if (core.getInput("sync-conclusion", { required: false }) === "true") {
-              logger.debug("Existing comment hidden as OUTDATED due to skip conclusion.");
+              logger.debug(
+                "Existing comment hidden as OUTDATED due to skip conclusion."
+              );
               await hideComment(token, comment, "OUTDATED");
             }
             return;
           }
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
-            logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
+            logger.debug(
+              "Existing comment hidden as OUTDATED. Posting a new comment."
+            );
+            await postComment(
+              octokit,
+              owner,
+              repo,
+              commentIdentifier,
+              conclusionIdentifier,
+              hideOnEmpty
+            );
             logger.debug("New comment posted successfully.");
           } else if (updateMode === "none") {
             logger.debug("Update mode is 'none', skipping comment update.");
           } else {
-            const commentToUpdateWith = await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
+            const commentToUpdateWith = await updateComment(
+              octokit,
+              owner,
+              repo,
+              comment,
+              commentIdentifier,
+              updateMode,
+              conclusionIdentifier
+            );
             logger.debug("Existing comment updated successfully.");
-            if (commentToUpdateWith === "" && hideOnEmpty) {
-              logger.debug("Comment body is empty and hide-on-empty is true. Hiding comment.");
+            if (comment.body.replace(/^[\s\S]*-->\s*/, "").trim() === "" && commentToUpdateWith !== "" && hideOnEmpty) {
+              logger.debug(
+                "Existing comment unhidden because it went from an empty body to a populated body."
+              );
+              await unhideComment(token, comment);
+            } else if (commentToUpdateWith === "" && hideOnEmpty) {
+              logger.debug(
+                "Comment body is empty and hide-on-empty is true. Hiding comment."
+              );
               await hideComment(token, comment, "OUTDATED");
             } else if (core.getInput("sync-conclusion", { required: false }) === "true") {
               if (conclusion === "success") {
                 await hideComment(token, comment, "RESOLVED");
-                logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+                logger.debug(
+                  "Existing comment hidden as RESOLVED due to success conclusion."
+                );
               } else if (conclusion === "failure") {
                 await unhideComment(token, comment);
-                logger.debug("Existing comment unhidden due to failure conclusion.");
+                logger.debug(
+                  "Existing comment unhidden due to failure conclusion."
+                );
               } else {
-                logger.debug("Conclusion is not 'success' or 'failure', cannot properly sync-conclusion.");
+                logger.debug(
+                  "Conclusion is not 'success' or 'failure', cannot properly sync-conclusion."
+                );
               }
             }
           }

@@ -242,3 +242,53 @@ jobs:
           verbose-logging: true
           hide-on-empty: true
 
+  # Tests that hide-on-empty hides an existing comment if the file at comment-body-path is empty - update mode replace.
+  test_unhide_comment_with_comment_body_previously_empty_no_conclusion:
+    name: Test Update Hide On Empty With Empty Comment Body Path
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    if: contains(github.event.pull_request.labels.*.name, 'test-update-mode')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Load Environment Variables From .env File
+        run: |
+          grep '^COMMENT_BODY_PATH_2=' ci/vars/test.env >> $GITHUB_ENV
+          grep '^COMMENT_BODY_PATH_3=' ci/vars/test.env >> $GITHUB_ENV
+
+      - name: Make Initial Comment With Hide On Empty
+        uses: ./
+        id: test-unhide-comment-with-comment-body-previously-empty-no-conclusion-initial
+        with:
+          comment-id: "test-unhide-comment-with-comment-body-previously-empty-no-conclusi\
+            on"
+          comment-body-path: ${{ env.COMMENT_BODY_PATH_2 }}
+          update-mode: "create"
+          verbose-logging: true
+          hide-on-empty: true
+
+      - name: Update Comment With Hide On Empty
+        uses: ./
+        id: test-unhide-comment-with-comment-body-previously-empty-no-conclusion-hide
+        with:
+          comment-id: "test-unhide-comment-with-comment-body-previously-empty-no-conclusi\
+            on"
+          comment-body: ""
+          update-mode: "replace"
+          verbose-logging: true
+          hide-on-empty: true
+
+      - name: Update Comment With Content - Should Unhide
+        uses: ./
+        id: test-unhide-comment-with-comment-body-previously-empty-no-conclusion-unhide
+        with:
+          comment-id: "test-unhide-comment-with-comment-body-previously-empty-no-conclusi\
+            on"
+          comment-body: "test update hide on empty - comment body"
+          update-mode: "replace"
+          verbose-logging: true
+          hide-on-empty: true

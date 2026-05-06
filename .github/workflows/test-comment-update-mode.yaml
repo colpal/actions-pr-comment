@@ -244,7 +244,7 @@ jobs:
 
   # Tests that hide-on-empty hides an existing comment if the file at comment-body-path is empty - update mode replace.
   test_unhide_comment_with_comment_body_previously_empty_no_conclusion:
-    name: Test Update Hide On Empty With Empty Comment Body Path
+    name: Test Unhide Comment With Comment Body Previously Empty - No Conclusion
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -266,7 +266,8 @@ jobs:
         with:
           comment-id: "test-unhide-comment-with-comment-body-previously-empty-no-conclusi\
             on"
-          comment-body-path: ${{ env.COMMENT_BODY_PATH_2 }}
+          comment-body: "test unhide comment that was hidden because the comment body was
+            empty - initial."
           update-mode: "create"
           verbose-logging: true
           hide-on-empty: true
@@ -288,7 +289,8 @@ jobs:
         with:
           comment-id: "test-unhide-comment-with-comment-body-previously-empty-no-conclusi\
             on"
-          comment-body: "test update hide on empty - comment body"
+          comment-body: "test unhide comment that was hidden because the comment body was
+            empty - unhiding.."
           update-mode: "replace"
           verbose-logging: true
           hide-on-empty: true

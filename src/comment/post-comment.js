@@ -1,7 +1,6 @@
-const { getCommentBody } = require("../util/util");
-
 const github = require("@actions/github");
-const { logger } = require('../util/logger.js');
+const { logger } = require("../util/logger.js");
+const { getCommentBody } = require("../util/util.js");
 
 /**
  * Posts a comment to a pull request using the provided Octokit instance.
@@ -21,36 +20,43 @@ const { logger } = require('../util/logger.js');
  * @returns {Promise<object|undefined>} Resolves with the created comment data, or undefined if skipped.
  * @throws {Error} If no pull request number is found in the context.
  */
-async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty) {
-    logger.info("Starting to post a comment...");
+async function postComment(
+  octokit,
+  owner,
+  repo,
+  commentIdentifier,
+  conclusionIdentifier,
+  hideOnEmpty,
+) {
+  logger.info("Starting to post a comment...");
 
-    let commentBody = getCommentBody();
+  let commentBody = getCommentBody();
 
-    logger.debug("Comment Body: ", commentBody);
-    logger.debug("Hide On Empty: ", hideOnEmpty);
+  logger.debug("Comment Body: ", commentBody);
+  logger.debug("Hide On Empty: ", hideOnEmpty);
 
-    if (commentBody === "" && hideOnEmpty) {
-        logger.debug("Comment body is empty. Skipping comment post.");
-        return;
-    }
+  if (commentBody === "" && hideOnEmpty) {
+    logger.debug("Comment body is empty. Skipping comment post.");
+    return;
+  }
 
-    commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + commentBody;
+  commentBody = `${commentIdentifier}\n${conclusionIdentifier}\n${commentBody}`;
 
-    const prNumber = github.context.payload.pull_request.number;
+  const prNumber = github.context.payload.pull_request.number;
 
-    if (!prNumber) {
-        logger.warning('Not a pull request, skipping review submission.');
-        throw new Error('No pull request number found in the context.');
-    }
+  if (!prNumber) {
+    logger.warning("Not a pull request, skipping review submission.");
+    throw new Error("No pull request number found in the context.");
+  }
 
-    const response = await octokit.rest.issues.createComment({
-        owner: owner,
-        repo: repo,
-        issue_number: prNumber,
-        body: commentBody,
-    });
-    logger.debug("Comment posted successfully.");
-    return response?.data;
+  const response = await octokit.rest.issues.createComment({
+    owner: owner,
+    repo: repo,
+    issue_number: prNumber,
+    body: commentBody,
+  });
+  logger.debug("Comment posted successfully.");
+  return response?.data;
 }
 
 module.exports = { postComment };

@@ -1,27 +1,28 @@
-const core = require('@actions/core');
-const { main } = require('../src/index');
-const { commentWorkflow } = require('../src/comment/comment-workflow');
-jest.mock('@actions/core');
-jest.mock('../src/comment/comment-workflow');
+const core = require("@actions/core");
+const { commentWorkflow } = require("../src/comment/comment-workflow.js");
+const { main } = require("../src/index.js");
 
-describe('main', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
+jest.mock("@actions/core");
+jest.mock("../src/comment/comment-workflow");
 
-    it('should call core.setFailed if github-token is not provided', async () => {
-        core.getInput.mockReturnValue('');
-        await main();
-        expect(core.setFailed).toHaveBeenCalledWith(
-            'github-token is not available. Ensure the workflow has proper permissions.'
-        );
-        expect(commentWorkflow).not.toHaveBeenCalled();
-    });
+describe("main", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    it('should call commentWorkflow if github-token is provided', async () => {
-        core.getInput.mockReturnValue('fake-token');
-        await main();
-        expect(commentWorkflow).toHaveBeenCalledWith('fake-token');
-        expect(core.setFailed).not.toHaveBeenCalled();
-    });
+  it("should call core.setFailed if github-token is not provided", async () => {
+    core.getInput.mockReturnValue("");
+    await main();
+    expect(core.setFailed).toHaveBeenCalledWith(
+      "github-token is not available. Ensure the workflow has proper permissions.",
+    );
+    expect(commentWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("should call commentWorkflow if github-token is provided", async () => {
+    core.getInput.mockReturnValue("fake-token");
+    await main();
+    expect(commentWorkflow).toHaveBeenCalledWith("fake-token");
+    expect(core.setFailed).not.toHaveBeenCalled();
+  });
 });

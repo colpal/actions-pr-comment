@@ -1,5 +1,5 @@
 const { graphql } = require("@octokit/graphql");
-const { logger } = require('../util/logger.js');
+const { logger } = require("../util/logger.js");
 
 /**
  * Hides a GitHub comment by minimizing it using the GraphQL API.
@@ -10,27 +10,29 @@ const { logger } = require('../util/logger.js');
  * @returns {Promise<void>} Resolves when the comment has been minimized.
  */
 async function hideComment(token, comment, reason) {
-    logger.info(`Hiding comment ${comment.id}...`);
-    logger.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
-    const graphqlWithAuth = graphql.defaults({
-        headers: {
-            authorization: `token ${token}`,
-        },
-    });
+  logger.info(`Hiding comment ${comment.id}...`);
+  logger.debug(
+    `Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`,
+  );
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${token}`,
+    },
+  });
 
-    await graphqlWithAuth(
-        `
+  await graphqlWithAuth(
+    `
             mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
                 minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
                     clientMutationId
                 }
             }
         `,
-        {
-            subjectId: comment.node_id,
-            classifier: reason,
-        }
-    );
+    {
+      subjectId: comment.node_id,
+      classifier: reason,
+    },
+  );
 }
 
 /**
@@ -41,26 +43,28 @@ async function hideComment(token, comment, reason) {
  * @returns {Promise<void>} Resolves when the comment has been unhidden.
  */
 async function unhideComment(token, comment) {
-    logger.info(`Unhiding comment ${comment.id}...`);
-    logger.debug(`Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`);
-    const graphqlWithAuth = graphql.defaults({
-        headers: {
-            authorization: `token ${token}`,
-        },
-    });
+  logger.info(`Unhiding comment ${comment.id}...`);
+  logger.debug(
+    `Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`,
+  );
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${token}`,
+    },
+  });
 
-    await graphqlWithAuth(
-        `
+  await graphqlWithAuth(
+    `
             mutation unminimizeComment($subjectId: ID!) {
                 unminimizeComment(input: { subjectId: $subjectId }) {
                     clientMutationId
                 }
             }
         `,
-        {
-            subjectId: comment.node_id,
-        }
-    );
+    {
+      subjectId: comment.node_id,
+    },
+  );
 }
 
 module.exports = { hideComment, unhideComment };

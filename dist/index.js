@@ -23929,6 +23929,62 @@ var require_logger = __commonJS({
   }
 });
 
+// src/comment/comment-visibility.js
+var require_comment_visibility = __commonJS({
+  "src/comment/comment-visibility.js"(exports2, module2) {
+    var { graphql } = require_dist_node6();
+    var { logger } = require_logger();
+    async function hideComment(token, comment, reason) {
+      logger.info(`Hiding comment ${comment.id}...`);
+      logger.debug(
+        `Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`
+      );
+      const graphqlWithAuth = graphql.defaults({
+        headers: {
+          authorization: `token ${token}`
+        }
+      });
+      await graphqlWithAuth(
+        `
+            mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
+                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
+                    clientMutationId
+                }
+            }
+        `,
+        {
+          subjectId: comment.node_id,
+          classifier: reason
+        }
+      );
+    }
+    async function unhideComment(token, comment) {
+      logger.info(`Unhiding comment ${comment.id}...`);
+      logger.debug(
+        `Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`
+      );
+      const graphqlWithAuth = graphql.defaults({
+        headers: {
+          authorization: `token ${token}`
+        }
+      });
+      await graphqlWithAuth(
+        `
+            mutation unminimizeComment($subjectId: ID!) {
+                unminimizeComment(input: { subjectId: $subjectId }) {
+                    clientMutationId
+                }
+            }
+        `,
+        {
+          subjectId: comment.node_id
+        }
+      );
+    }
+    module2.exports = { hideComment, unhideComment };
+  }
+});
+
 // src/comment/find-comment.js
 var require_find_comment = __commonJS({
   "src/comment/find-comment.js"(exports2, module2) {
@@ -23962,12 +24018,16 @@ var require_find_comment = __commonJS({
         (comment) => comment.user.login === author && comment.body?.includes(commentIdentifier)
       );
       if (!targetComment) {
-        logger.debug("No comment matching the author and identifier was not found.");
+        logger.debug(
+          "No comment matching the author and identifier was not found."
+        );
         return;
       }
       core.setOutput("comment-id", targetComment.id);
       core.setOutput("comment-body", targetComment.body);
-      logger.debug(`Matching comment found successfully. Comment ID: ${targetComment.id} Body: ${targetComment.body}`);
+      logger.debug(
+        `Matching comment found successfully. Comment ID: ${targetComment.id} Body: ${targetComment.body}`
+      );
       return targetComment;
     }
     module2.exports = { findComment };
@@ -23977,14 +24037,16 @@ var require_find_comment = __commonJS({
 // src/util/util.js
 var require_util8 = __commonJS({
   "src/util/util.js"(exports2, module2) {
+    var { readFileSync } = require("node:fs");
     var core = require_core();
-    var { readFileSync } = require("fs");
     var { logger } = require_logger();
     function getCommentBody() {
       const directComment = core.getInput("comment-body");
       const commentPath = core.getInput("comment-body-path");
       if (directComment && commentPath) {
-        throw new Error("Both 'comment-body' and 'comment-body-path' inputs were provided. Please use only one.");
+        throw new Error(
+          "Both 'comment-body' and 'comment-body-path' inputs were provided. Please use only one."
+        );
       }
       if (commentPath) {
         try {
@@ -23999,12 +24061,16 @@ var require_util8 = __commonJS({
           }
           return renderCommentBody(fileContent);
         } catch (error) {
-          throw new Error(`Could not read file at path: ${commentPath}. Error: ${error.message}`);
+          throw new Error(
+            `Could not read file at path: ${commentPath}. Error: ${error.message}`
+          );
         }
       } else if (directComment) {
         return renderCommentBody(directComment);
       } else {
-        logger.debug("Neither a 'comment-body' or a 'comment-body-path' input was supplied.");
+        logger.debug(
+          "Neither a 'comment-body' or a 'comment-body-path' input was supplied."
+        );
         return "";
       }
     }
@@ -24021,15 +24087,51 @@ var require_util8 = __commonJS({
   }
 });
 
+// src/comment/post-comment.js
+var require_post_comment = __commonJS({
+  "src/comment/post-comment.js"(exports2, module2) {
+    var github = require_github();
+    var { logger } = require_logger();
+    var { getCommentBody } = require_util8();
+    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty) {
+      logger.info("Starting to post a comment...");
+      let commentBody = getCommentBody();
+      logger.debug("Comment Body: ", commentBody);
+      logger.debug("Hide On Empty: ", hideOnEmpty);
+      if (commentBody === "" && hideOnEmpty) {
+        logger.debug("Comment body is empty. Skipping comment post.");
+        return;
+      }
+      commentBody = `${commentIdentifier}
+${conclusionIdentifier}
+${commentBody}`;
+      const prNumber = github.context.payload.pull_request.number;
+      if (!prNumber) {
+        logger.warning("Not a pull request, skipping review submission.");
+        throw new Error("No pull request number found in the context.");
+      }
+      const response = await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        body: commentBody
+      });
+      logger.debug("Comment posted successfully.");
+      return response?.data;
+    }
+    module2.exports = { postComment };
+  }
+});
+
 // src/comment/update-comment.js
 var require_update_comment = __commonJS({
   "src/comment/update-comment.js"(exports2, module2) {
-    var { getCommentBody } = require_util8();
     var github = require_github();
     var { logger } = require_logger();
+    var { getCommentBody } = require_util8();
     async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
       logger.info("Starting to update a comment...");
-      let newCommentBody = getCommentBody();
+      const newCommentBody = getCommentBody();
       const prNumber = github.context.payload.pull_request.number;
       if (!prNumber) {
         logger.warning("Not a pull request, skipping review submission.");
@@ -24039,7 +24141,9 @@ var require_update_comment = __commonJS({
       switch (updateType) {
         case "replace":
           logger.debug("Replacing comment body.");
-          commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
+          commentBody = `${commentIdentifier}
+${conclusionIdentifier}
+${newCommentBody}`;
           break;
         case "append": {
           logger.debug("Appending to comment body.");
@@ -24051,7 +24155,10 @@ var require_update_comment = __commonJS({
 *Update posted on: ${timestamp}*
 
 `;
-          comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success) -->$/, conclusionIdentifier);
+          comment.body = comment.body.replace(
+            /<!-- CONCLUSION: (failure|success) -->$/,
+            conclusionIdentifier
+          );
           commentBody = comment.body + divider + newCommentBody;
           break;
         }
@@ -24073,102 +24180,16 @@ var require_update_comment = __commonJS({
   }
 });
 
-// src/comment/comment-visibility.js
-var require_comment_visibility = __commonJS({
-  "src/comment/comment-visibility.js"(exports2, module2) {
-    var { graphql } = require_dist_node6();
-    var { logger } = require_logger();
-    async function hideComment(token, comment, reason) {
-      logger.info(`Hiding comment ${comment.id}...`);
-      logger.debug(`Hiding comment with comment id ${comment.id} (node id: ${comment.node_id}) for reason: ${reason}`);
-      const graphqlWithAuth = graphql.defaults({
-        headers: {
-          authorization: `token ${token}`
-        }
-      });
-      await graphqlWithAuth(
-        `
-            mutation minimizeComment($subjectId: ID!, $classifier: ReportedContentClassifiers!) {
-                minimizeComment(input: { subjectId: $subjectId, classifier: $classifier }) {
-                    clientMutationId
-                }
-            }
-        `,
-        {
-          subjectId: comment.node_id,
-          classifier: reason
-        }
-      );
-    }
-    async function unhideComment(token, comment) {
-      logger.info(`Unhiding comment ${comment.id}...`);
-      logger.debug(`Unhiding comment with comment id ${comment.id} (node id: ${comment.node_id})`);
-      const graphqlWithAuth = graphql.defaults({
-        headers: {
-          authorization: `token ${token}`
-        }
-      });
-      await graphqlWithAuth(
-        `
-            mutation unminimizeComment($subjectId: ID!) {
-                unminimizeComment(input: { subjectId: $subjectId }) {
-                    clientMutationId
-                }
-            }
-        `,
-        {
-          subjectId: comment.node_id
-        }
-      );
-    }
-    module2.exports = { hideComment, unhideComment };
-  }
-});
-
-// src/comment/post-comment.js
-var require_post_comment = __commonJS({
-  "src/comment/post-comment.js"(exports2, module2) {
-    var { getCommentBody } = require_util8();
-    var github = require_github();
-    var { logger } = require_logger();
-    async function postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty) {
-      logger.info("Starting to post a comment...");
-      let commentBody = getCommentBody();
-      logger.debug("Comment Body: ", commentBody);
-      logger.debug("Hide On Empty: ", hideOnEmpty);
-      if (commentBody === "" && hideOnEmpty) {
-        logger.debug("Comment body is empty. Skipping comment post.");
-        return;
-      }
-      commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + commentBody;
-      const prNumber = github.context.payload.pull_request.number;
-      if (!prNumber) {
-        logger.warning("Not a pull request, skipping review submission.");
-        throw new Error("No pull request number found in the context.");
-      }
-      const response = await octokit.rest.issues.createComment({
-        owner,
-        repo,
-        issue_number: prNumber,
-        body: commentBody
-      });
-      logger.debug("Comment posted successfully.");
-      return response?.data;
-    }
-    module2.exports = { postComment };
-  }
-});
-
 // src/comment/comment-workflow.js
 var require_comment_workflow = __commonJS({
   "src/comment/comment-workflow.js"(exports2, module2) {
     var core = require_core();
     var github = require_github();
-    var { findComment } = require_find_comment();
-    var { updateComment } = require_update_comment();
-    var { hideComment, unhideComment } = require_comment_visibility();
-    var { postComment } = require_post_comment();
     var { logger } = require_logger();
+    var { hideComment, unhideComment } = require_comment_visibility();
+    var { findComment } = require_find_comment();
+    var { postComment } = require_post_comment();
+    var { updateComment } = require_update_comment();
     async function commentWorkflow2(token) {
       const octokit = github.getOctokit(token);
       const { owner, repo } = github.context.repo;
@@ -24178,54 +24199,99 @@ var require_comment_workflow = __commonJS({
         logger.debug("Conclusion is 'cancelled', skipping comment workflow.");
         return;
       }
-      const conclusionIdentifier = `<!-- CONCLUSION: ` + conclusion + ` -->`;
+      const conclusionIdentifier = `<!-- CONCLUSION: ${conclusion} -->`;
       const checkName = core.getInput("comment-id", { required: true });
-      const commentIdentifier = `<!-- ` + checkName + ` -->`;
+      const commentIdentifier = `<!-- ${checkName} -->`;
       try {
         let comment = await findComment(octokit, owner, repo, commentIdentifier);
         if (!comment) {
           if (conclusion === "skipped") {
-            logger.debug("Conclusion is 'skipped' and no existing comment found, skipping comment workflow.");
+            logger.debug(
+              "Conclusion is 'skipped' and no existing comment found, skipping comment workflow."
+            );
             return;
           } else if (core.getInput("sync-conclusion", { required: false }) === "true" && conclusion === "success") {
-            logger.debug("New comment not posted due to success conclusion and sync-conclusion being true.");
+            logger.debug(
+              "New comment not posted due to success conclusion and sync-conclusion being true."
+            );
           } else {
             logger.debug("No existing comment found, posting a new comment.");
-            comment = await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
+            comment = await postComment(
+              octokit,
+              owner,
+              repo,
+              commentIdentifier,
+              conclusionIdentifier,
+              hideOnEmpty
+            );
           }
         } else {
           const updateMode = core.getInput("update-mode", { required: false }) || "create";
-          logger.debug(`Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`);
+          logger.debug(
+            `Comment found. ID: ${comment.id}. Update Mode: ${updateMode}`
+          );
           if (conclusion === "skipped") {
             logger.debug("Conclusion is 'skipped', skipping comment update.");
             if (core.getInput("sync-conclusion", { required: false }) === "true") {
-              logger.debug("Existing comment hidden as OUTDATED due to skip conclusion.");
+              logger.debug(
+                "Existing comment hidden as OUTDATED due to skip conclusion."
+              );
               await hideComment(token, comment, "OUTDATED");
             }
             return;
           }
           if (updateMode === "create") {
             await hideComment(token, comment, "OUTDATED");
-            logger.debug("Existing comment hidden as OUTDATED. Posting a new comment.");
-            await postComment(octokit, owner, repo, commentIdentifier, conclusionIdentifier, hideOnEmpty);
+            logger.debug(
+              "Existing comment hidden as OUTDATED. Posting a new comment."
+            );
+            await postComment(
+              octokit,
+              owner,
+              repo,
+              commentIdentifier,
+              conclusionIdentifier,
+              hideOnEmpty
+            );
             logger.debug("New comment posted successfully.");
           } else if (updateMode === "none") {
             logger.debug("Update mode is 'none', skipping comment update.");
           } else {
-            const commentToUpdateWith = await updateComment(octokit, owner, repo, comment, commentIdentifier, updateMode, conclusionIdentifier);
+            const commentToUpdateWith = await updateComment(
+              octokit,
+              owner,
+              repo,
+              comment,
+              commentIdentifier,
+              updateMode,
+              conclusionIdentifier
+            );
             logger.debug("Existing comment updated successfully.");
-            if (commentToUpdateWith === "" && hideOnEmpty) {
-              logger.debug("Comment body is empty and hide-on-empty is true. Hiding comment.");
+            if (comment.body.replace(/^[\s\S]*-->\s*/, "").trim() === "" && commentToUpdateWith !== "" && hideOnEmpty) {
+              logger.debug(
+                "Existing comment unhidden because it went from an empty body to a populated body."
+              );
+              await unhideComment(token, comment);
+            } else if (commentToUpdateWith === "" && hideOnEmpty) {
+              logger.debug(
+                "Comment body is empty and hide-on-empty is true. Hiding comment."
+              );
               await hideComment(token, comment, "OUTDATED");
             } else if (core.getInput("sync-conclusion", { required: false }) === "true") {
               if (conclusion === "success") {
                 await hideComment(token, comment, "RESOLVED");
-                logger.debug("Existing comment hidden as RESOLVED due to success conclusion.");
+                logger.debug(
+                  "Existing comment hidden as RESOLVED due to success conclusion."
+                );
               } else if (conclusion === "failure") {
                 await unhideComment(token, comment);
-                logger.debug("Existing comment unhidden due to failure conclusion.");
+                logger.debug(
+                  "Existing comment unhidden due to failure conclusion."
+                );
               } else {
-                logger.debug("Conclusion is not 'success' or 'failure', cannot properly sync-conclusion.");
+                logger.debug(
+                  "Conclusion is not 'success' or 'failure', cannot properly sync-conclusion."
+                );
               }
             }
           }
@@ -24239,12 +24305,14 @@ var require_comment_workflow = __commonJS({
 });
 
 // src/index.js
-var { commentWorkflow } = require_comment_workflow();
 var { getInput, setFailed } = require_core();
+var { commentWorkflow } = require_comment_workflow();
 async function main() {
   const token = getInput("github-token", { required: true });
   if (!token) {
-    setFailed("github-token is not available. Ensure the workflow has proper permissions.");
+    setFailed(
+      "github-token is not available. Ensure the workflow has proper permissions."
+    );
   } else {
     await commentWorkflow(token);
   }

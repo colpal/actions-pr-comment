@@ -1,7 +1,6 @@
-const { getCommentBody } = require("../util/util");
-
 const github = require("@actions/github");
-const { logger } = require('../util/logger.js');
+const { logger } = require("../util/logger.js");
+const { getCommentBody } = require("../util/util.js");
 
 /**
  * Updates a GitHub pull request comment with new content.
@@ -21,47 +20,58 @@ const { logger } = require('../util/logger.js');
  * @returns {Promise<string>} Resolves with the new comment body content retrieved from getCommentBody().
  * @throws {Error} If no pull request number is found in the context or if updateType is unknown.
  */
-async function updateComment(octokit, owner, repo, comment, commentIdentifier, updateType, conclusionIdentifier) {
-    logger.info("Starting to update a comment...");
-    let newCommentBody = getCommentBody();
+async function updateComment(
+  octokit,
+  owner,
+  repo,
+  comment,
+  commentIdentifier,
+  updateType,
+  conclusionIdentifier,
+) {
+  logger.info("Starting to update a comment...");
+  const newCommentBody = getCommentBody();
 
-    const prNumber = github.context.payload.pull_request.number;
+  const prNumber = github.context.payload.pull_request.number;
 
-    if (!prNumber) {
-        logger.warning('Not a pull request, skipping review submission.');
-        throw new Error('No pull request number found in the context.');
+  if (!prNumber) {
+    logger.warning("Not a pull request, skipping review submission.");
+    throw new Error("No pull request number found in the context.");
+  }
+
+  let commentBody = "";
+  switch (updateType) {
+    case "replace":
+      logger.debug("Replacing comment body.");
+      commentBody = `${commentIdentifier}\n${conclusionIdentifier}\n${newCommentBody}`;
+      break;
+    case "append": {
+      logger.debug("Appending to comment body.");
+      const timestamp = new Date().toUTCString();
+      const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
+
+      comment.body = comment.body.replace(
+        /<!-- CONCLUSION: (failure|success) -->$/,
+        conclusionIdentifier,
+      ); //remove any existing conclusion identifier
+
+      commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment
+      break;
     }
-
-    let commentBody = ""
-    switch (updateType) {
-        case "replace":
-            logger.debug("Replacing comment body.");
-            commentBody = commentIdentifier + "\n" + conclusionIdentifier + "\n" + newCommentBody;
-            break;
-        case "append": {
-            logger.debug("Appending to comment body.");
-            const timestamp = new Date().toUTCString();
-            const divider = `\n\n---\n\n*Update posted on: ${timestamp}*\n\n`;
-
-            comment.body = comment.body.replace(/<!-- CONCLUSION: (failure|success) -->$/, conclusionIdentifier); //remove any existing conclusion identifier
-
-            commentBody = comment.body + divider + newCommentBody; // dont need comment identifier here since it is already on the comment
-            break;
-        }
-        default: {
-            logger.warning(`Unknown update type: ${updateType}`);
-            throw new Error(`Unknown update type: ${updateType}`);
-        }
+    default: {
+      logger.warning(`Unknown update type: ${updateType}`);
+      throw new Error(`Unknown update type: ${updateType}`);
     }
+  }
 
-    await octokit.rest.issues.updateComment({
-        owner: owner,
-        repo: repo,
-        comment_id: comment.id,
-        body: commentBody,
-    });
-    logger.debug("Comment updated successfully.");
-    return newCommentBody;
+  await octokit.rest.issues.updateComment({
+    owner: owner,
+    repo: repo,
+    comment_id: comment.id,
+    body: commentBody,
+  });
+  logger.debug("Comment updated successfully.");
+  return newCommentBody;
 }
 
 module.exports = { updateComment };
